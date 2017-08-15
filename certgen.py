@@ -21,7 +21,7 @@ resp = subprocess.call( # Check for existence of request file on remote server
         ['ssh', ssh_host, 'test -e ' + pipes.quote(path)]) 
 
 if resp == 0:
-    print("Certificate request succedssfull. Please wait up to 10 minutes before attempting to import.")
+    print("Certificate request successful. Please wait up to 10 minutes before attempting to import.")
 else:
     print("Cannot find " + name + "in requests directory. Please manually check.")
 
