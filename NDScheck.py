@@ -9,7 +9,6 @@ import paramiko
 client = paramiko.SSHClient()
 client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 client.connect('10.14.0.20', username='root')
-shell = client.get_transport().open_session()
 
 print('Checking NDS time sync...')
 stdin, stdout, stderr = client.exec_command('ndsrepair -T')
