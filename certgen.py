@@ -102,7 +102,7 @@ def certcheck():
                 gen()
             elif resp != 0: ## If the request does not exist, starts the script from the beginning
                 start()
-        elif tryAgain == 'n' or tryAgain =='no': ## Id user inputs no, exits the program
+        elif tryAgain == 'n' or tryAgain =='no': ## If user inputs no, exits the program
             print('Exiting...')
             close()
         else:## If anything other than an input above is given, the script errors out and exits
@@ -110,4 +110,4 @@ def certcheck():
             close()
     return
 
-start()
+start() ## Initiates the script
