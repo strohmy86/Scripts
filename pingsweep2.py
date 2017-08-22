@@ -5,6 +5,15 @@ import os
 import time
 from subprocess import Popen, DEVNULL
 
+print("*********************************")
+print("*      Pingsweep script         *")
+print("*                               *")
+print("*  Written and maintained by:   *")
+print("*        Luke Strohm            *")
+print("*    strohm.luke@gmail.com      *")
+print("*                               *")
+print("*********************************")
+print("\n")
 # Prompt the user to input a network address
 net_addr = input("Enter a network address in CIDR format(ex.192.168.1.0/24):  ")
 net = net_addr.replace(".", "_")
