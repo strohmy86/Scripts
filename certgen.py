@@ -8,16 +8,20 @@ import paramiko
 import subprocess
 import pipes
 
-print("\n")
-print("*********************************")
-print("*       CertGen Utility         *")
-print("*                               *")
-print("*  Written and maintained by:   *")
-print("*        Luke Strohm            *")
-print("*    strohm.luke@gmail.com      *")
-print("*                               *")
-print("*********************************")
-print("\n")
+
+
+def credits():
+    print("\n")
+    print("*********************************")
+    print("*       CertGen Utility         *")
+    print("*                               *")
+    print("*  Written and maintained by:   *")
+    print("*        Luke Strohm            *")
+    print("*    strohm.luke@gmail.com      *")
+    print("*                               *")
+    print("*********************************")
+    print("\n")
+
 
 ## Specify private key file
 k = paramiko.RSAKey.from_private_key_file('/home/lstrohm/.ssh/Identityrsa')
