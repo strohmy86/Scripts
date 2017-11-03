@@ -25,7 +25,7 @@ while True:
     print '3)\tActivate Suspended User'
     print '4)\tSuspend User'
     print "5)\tExport a List of a User's Drive Files"
-    print "6)\tUpload a Local FIle To a User's Drive"
+    print "6)\tUpload a Local File To a User's Drive"
     print '0)\tExit'
     print '\n'
 
