@@ -1,11 +1,32 @@
 #!/bin/bash
 
-echo -n "What is the full directory path you wish to parse?  "
+bold=$(tput bold)
+normal=$(tput sgr0)
+
+echo ""
+echo "*********************************"
+echo "*  Directory Listing Utility    *"
+echo "*                               *"
+echo "*  Written and maintained by:   *"
+echo "*        Luke Strohm            *"
+echo "*    strohm.luke@gmail.com      *"
+echo "*                               *"
+echo "*********************************"
+echo ""
+
+echo "What is the full directory path you wish to parse?"
+echo ""
 
 read dir
 
 if [ $dir ]; then
-	find $dir/* -type f -print0 | xargs -0 -n1 du -h | sort -n -r
+	find $dir -mindepth 1 -maxdepth 1 -type d | while read -r dir
+	do
+	    pushd "$dir"
+	    echo ${bold}$dir${normal}
+	    du -ahc --max-depth=5
+	    popd
+	done
 else
 	echo "No directory provided."
 fi
