@@ -125,4 +125,5 @@ def certcheck():
             close()
     return
 
+credits()
 start() ## Initiates the script
