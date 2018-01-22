@@ -1,10 +1,10 @@
-#!/usr/bin/python2
+#!/usr/bin/env python
 
 import socket
-ip = raw_input("Enter the IP address: ")
-port = input("Enter port number: ")
+ip = input("Enter the IP address: ")
+port = eval(input("Enter port number: "))
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 if sock.connect_ex((ip,port)):
-    print "Port", port, "is closed"
+    print("Port", port, "is closed")
 else:
-    print "Port", port, "is open"
+    print("Port", port, "is open")
