@@ -26,6 +26,7 @@ while True:
     print '4)\tSuspend User'
     print "5)\tExport a List of a User's Drive Files"
     print "6)\tUpload a Local File To a User's Drive"
+    print "7)\tView a User's Team Drive(s)"
     print '0)\tExit'
     print '\n'
 
@@ -36,24 +37,31 @@ while True:
         os.system(cmd)
         print '\n'
         time.sleep(2)
+        raw_input("Press ENTER to Continue...")
     elif selection =='2':
         cmd="~/bin/gam/gam print users allfields > Userlist.csv"
         os.system(cmd)
         print '\n'
         print "Userlist.csv saved."
         time.sleep(2)
+        raw_input("Press ENTER to Continue...")
     elif selection =='3':
         username=raw_input("Please enter a username: ")
         cmd="~/bin/gam/gam update user " +username + " suspended off"
+        cmd2="~/bin/gam/gam info user " +username
         os.system(cmd)
+        time.sleep(2)
+        os.system(cmd2)
         print '\n'
         time.sleep(2)
+        raw_input("Press ENTER to Continue...")
     elif selection =='4':
         username=raw_input("Please enter a username: ")
         cmd="~/bin/gam/gam update user " +username + " suspended on"
         os.system(cmd)
         print '\n'
         time.sleep(2)
+        raw_input("Press ENTER to Continue...")
     elif selection =='5':
         username=raw_input("Please enter a username: ")
         cmd="~/bin/gam/gam user " +username + " show filelist allfields > " +username + "-filelist.csv"
@@ -62,6 +70,7 @@ while True:
         print "File list saved as " + username +"-filelist.csv."
         print '\n'
         time.sleep(2)
+        raw_input("Press ENTER to Continue...")
     elif selection =='6':
         username=raw_input("Please enter a username: ")
         filename=raw_input("Please enter the full path to the file you wish to upload: ")
@@ -71,6 +80,15 @@ while True:
         print "File uploaded successfully"
         print '\n'
         time.sleep(2)
+        raw_input("Press ENTER to Continue...")
+    elif selection == '7':
+        username=raw_input("Please enter a username: ")
+        cmd='~/bin/gam/gam user ' +username+ ' show teamdrives'
+        print '\n'
+        os.system(cmd)
+        print '\n'
+        time.sleep(2)
+        raw_input("Press ENTER to Continue...")
     elif selection =='0':
         break
     else:
