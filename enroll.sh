@@ -2,6 +2,19 @@
 
 PATH="$PATH:~/bin/gam"; export PATH
 
+echo "*********************************"
+echo "*  GAM script to activate the   *"
+echo "*    Enroll user that gets      *"
+echo "*   suspended periodically.     *"
+echo "*                               *"
+echo "*     Uses  GAM by jay0lee      *"
+echo "*                               *"
+echo "*   Written and maintained by:  *"
+echo "*         Luke Strohm           *"
+echo "*    strohm.luke@gmail.com      *"
+echo "*                               *"
+echo "*********************************"
+
 echo "Checking status of Enroll user..."
 gam info user enroll | grep Suspended > enroll.txt
 sleep 2
