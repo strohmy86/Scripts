@@ -1,6 +1,5 @@
 #!/usr/bin/python
 
-
 import ipaddress
 import os
 import time
