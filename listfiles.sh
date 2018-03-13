@@ -19,11 +19,11 @@ echo ""
 
 read dir
 
-if [ $dir ]; then
-	find $dir -mindepth 1 -maxdepth 1 -type d | while read -r dir
+if [ ${dir} ]; then
+	find ${dir} -mindepth 1 -maxdepth 1 -type d | while read -r dir
 	do
 	    pushd "$dir"
-	    echo ${bold}$dir${normal}
+	    echo ${bold}${dir}${normal}
 	    du -ahc --max-depth=5
 	    popd
 	done

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-## Just a simple script to create different types of hashes for a string.
+# Just a simple script to create different types of hashes for a string.
 
 import os
 import time
@@ -29,10 +29,10 @@ while True:
     print('0)\tExit')
     print('\n')
 
-    selection=input('Please Choose an Option: ')
+    selection = input('Please Choose an Option: ')
     if selection == '1':
-        string=input('Please input a string you would like to hash:  ')
-        cmd='echo -n "'+string+'" | md5sum | cut -d " " -f1'
+        string = input('Please input a string you would like to hash:  ')
+        cmd = 'echo -n "'+string+'" | md5sum | cut -d " " -f1'
         print('\n')
         print('Your hashed string is:  \n')
         os.system(cmd)
@@ -40,8 +40,8 @@ while True:
         time.sleep(1)
         input('Press Enter to continue...')
     elif selection == '2':
-        string=input('Please input a string you would like to hash:  ')
-        cmd='echo -n "'+string+'" | sha1sum | cut -d " " -f1'
+        string = input('Please input a string you would like to hash:  ')
+        cmd = 'echo -n "'+string+'" | sha1sum | cut -d " " -f1'
         print('\n')
         print('Your hashed string is:  \n')
         os.system(cmd)
@@ -49,8 +49,8 @@ while True:
         time.sleep(1)
         input('Press Enter to continue...')
     elif selection == '3':
-        string=input('Please input a string you would like to hash:  ')
-        cmd='echo -n "'+string+'" | sha256sum | cut -d " " -f1'
+        string = input('Please input a string you would like to hash:  ')
+        cmd = 'echo -n "'+string+'" | sha256sum | cut -d " " -f1'
         print('\n')
         print('Your hashed string is:  \n')
         os.system(cmd)
@@ -58,8 +58,8 @@ while True:
         time.sleep(1)
         input('Press Enter to continue...')
     elif selection == '4':
-        string=input('Please input a string you would like to hash:  ')
-        cmd='echo -n "'+string+'" | sha512sum | cut -d " " -f1'
+        string = input('Please input a string you would like to hash:  ')
+        cmd = 'echo -n "'+string+'" | sha512sum | cut -d " " -f1'
         print('\n')
         print('Your hashed string is:  \n')
         os.system(cmd)
@@ -67,8 +67,8 @@ while True:
         time.sleep(1)
         input('Press Enter to continue...')
     elif selection == '5':
-        string=input('Please input a string you would like to encode:  ')
-        cmd='echo -n "'+string+'" | base64'
+        string = input('Please input a string you would like to encode:  ')
+        cmd = 'echo -n "'+string+'" | base64'
         print('\n')
         print('Your encoded string is:\n')
         os.system(cmd)
@@ -76,23 +76,15 @@ while True:
         time.sleep(1)
         input('Press Enter to continue...')
     elif selection == '6':
-        string=input('Please input a base64 string you would like to decode:  ')
-        cmd='echo -n '+string+' | base64 -d'
+        string = input('Please input a base64 string you would like to decode:  ')
+        cmd = 'echo -n '+string+' | base64 -d'
         print('\n')
         print('Your decoded string is:\n')
         os.system(cmd)
         print('\n')
         time.sleep(1)
         input('Press Enter to continue...')
-
     elif selection == '0':
         break
     else:
         print('Unknown Option Selected!')
-
-
-
-
-
-
-
