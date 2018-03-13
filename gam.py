@@ -282,8 +282,8 @@ def drive():  # Drive Management Main Menu
             break
         elif selection == '5':
             user = input("Please enter a username: ")
-            id = input('What is the Team Drive ID? (Not the name) ')
-            cmd = '~/bin/gam/gam user ' + user + ' delete teamdrive ' + id
+            dr_id = input('What is the Team Drive ID? (Not the name) ')
+            cmd = '~/bin/gam/gam user ' + user + ' delete teamdrive ' + dr_id
             os.system(cmd)
             time.sleep(2)
             print('\n')
@@ -442,16 +442,16 @@ def devices():  # Device Management Main Menu
 
         selection = input('Please Choose an Option: ')
         if selection == '1':
-            id = input('Please enter the Chrome Device Serial Number (Case sensitive): ')
-            cmd = '~/bin/gam/gam print cros query "id:' + id + '"'
+            cr_id = input('Please enter the Chrome Device Serial Number (Case sensitive): ')
+            cmd = '~/bin/gam/gam print cros query "id:' + cr_id + '"'
             os.system(cmd)
             time.sleep(2)
             print('\n')
             input("Press ENTER to Continue...")
             break
         elif selection == '2':
-            id = input('Please enter the Chrome Device Serial Number: ')
-            cmd = '~/bin/gam/gam print cros query "id:' + id + '" > id.txt'
+            cr_id = input('Please enter the Chrome Device Serial Number: ')
+            cmd = '~/bin/gam/gam print cros query "id:' + cr_id + '" > id.txt'
             print('Looking up the device ID...')
             time.sleep(1)
             os.system(cmd)
@@ -462,17 +462,18 @@ def devices():  # Device Management Main Menu
             if act == 'location' or act == 'Location' or act == 'loc' or act == 'Loc' or act == 'L' or act == 'l':
                 loc = input('Enter new location: ')
                 cmd2 = '~/bin/gam/gam update cros ' + id2 + ' location "' + loc + '"'
-                os.system(cmd)
+                os.system(cmd2)
                 time.sleep(2)
                 print('\n')
                 input("Press ENTER to Continue...")
                 f.close()
                 os.system('rm -rf id.txt')
                 break
-            elif act == 'asset' or act == 'asset id' or act == 'assetid' or act == 'Asset' or act == 'Asset Id' or act == 'Asset ID' or act == 'Asset id' or act == 'A' or act == 'a':
+            elif act == 'asset' or act == 'asset id' or act == 'assetid' or act == 'Asset' or act == 'Asset Id' or \
+                    act == 'Asset ID' or act == 'Asset id' or act == 'A' or act == 'a':
                 asset = input('Enter new Asset ID: ')
-                cmd2 = '~/bin/gam/gam update cros ' + id2 + ' assetid ' + asset
-                os.system(cmd)
+                cmd2 = '~/bin/gam/gam update cros ' + id2 + ' assetid "' + asset + '"'
+                os.system(cmd2)
                 time.sleep(2)
                 print('\n')
                 input("Press ENTER to Continue...")
@@ -518,7 +519,8 @@ def classroom1():
             head = input('What is the heading? ')
             room = input('What room is the class in? (No spaces')
             teach = input("What is the teacher's username? ")
-            cmd = '~/bin/gam/gam create course alias ' + al + ' name "' + name + '" section ' + sec + ' heading "' + head + '" room ' + room + ' teacher ' + teach + ' status ACTIVE'
+            cmd = '~/bin/gam/gam create course alias ' + al + ' name "' + name + '" section ' + sec + ' heading "' \
+                  + head + '" room ' + room + ' teacher ' + teach + ' status ACTIVE'
             os.system(cmd)
             time.sleep(2)
             print('\n')
@@ -748,8 +750,8 @@ def devices3():  # Devices main menu option 3 submenu
 
         selection = input('Please Choose an Option: ')
         if selection == '1':
-            id = input('Please enter the Chrome Device Serial Number (Case sensitive): ')
-            cmd = '~/bin/gam/gam print cros query "id:' + id + '" > id.txt'
+            cr_id = input('Please enter the Chrome Device Serial Number (Case sensitive): ')
+            cmd = '~/bin/gam/gam print cros query "id:' + cr_id + '" > id.txt'
             print('Looking up the device ID...')
             os.system(cmd)
             time.sleep(1)
@@ -805,8 +807,8 @@ def devices4():  # Devices main menu option 4 submenu
 
         selection = input('Please Choose an Option: ')
         if selection == '1':
-            id = input('Please enter the Chrome Device Serial Number (Case sensitive): ')
-            cmd = '~/bin/gam/gam print cros query "id:' + id + '" > id.txt'
+            cr_id = input('Please enter the Chrome Device Serial Number (Case sensitive): ')
+            cmd = '~/bin/gam/gam print cros query "id:' + cr_id + '" > id.txt'
             print('Looking up the device ID...')
             os.system(cmd)
             time.sleep(1)
@@ -821,8 +823,8 @@ def devices4():  # Devices main menu option 4 submenu
             input("Press ENTER to Continue...")
             break
         elif selection == '2':
-            id = input('Please enter the Chrome Device Serial Number (Case sensitive): ')
-            cmd = '~/bin/gam/gam print cros query "id:' + id + '" > id.txt'
+            cr_id = input('Please enter the Chrome Device Serial Number (Case sensitive): ')
+            cmd = '~/bin/gam/gam print cros query "id:' + cr_id + '" > id.txt'
             print('Looking up the device ID...')
             os.system(cmd)
             time.sleep(1)
@@ -860,14 +862,15 @@ def devices4_3():  # Devices Main menu option 4. submenu 3
 
         selection = input('Please Choose an Option: ')
         if selection == '1':
-            id = input('Please enter the Chrome Device Serial Number (Case sensitive): ')
-            cmd = '~/bin/gam/gam print cros query "id:' + id + '" > id.txt'
+            cr_id = input('Please enter the Chrome Device Serial Number (Case sensitive): ')
+            cmd = '~/bin/gam/gam print cros query "id:' + cr_id + '" > id.txt'
             print('Looking up the device ID...')
             os.system(cmd)
             time.sleep(1)
             f = open('id.txt')
             id2 = f.readlines()[-1]
-            cmd2 = '~/bin/gam/gam update cros ' + id2 + ' action deprovision_same_model_replace acknowledge_device_touch_requirement'
+            cmd2 = '~/bin/gam/gam update cros ' + id2 + \
+                   ' action deprovision_same_model_replace acknowledge_device_touch_requirement'
             os.system(cmd2)
             time.sleep(2)
             f.close()
@@ -876,14 +879,15 @@ def devices4_3():  # Devices Main menu option 4. submenu 3
             input("Press ENTER to Continue...")
             break
         elif selection == '2':
-            id = input('Please enter the Chrome Device Serial Number (Case sensitive): ')
-            cmd = '~/bin/gam/gam print cros query "id:' + id + '" > id.txt'
+            cr_id = input('Please enter the Chrome Device Serial Number (Case sensitive): ')
+            cmd = '~/bin/gam/gam print cros query "id:' + cr_id + '" > id.txt'
             print('Looking up the device ID...')
             os.system(cmd)
             time.sleep(1)
             f = open('id.txt')
             id2 = f.readlines()[-1]
-            cmd2 = '~/bin/gam/gam update cros ' + id2 + ' action deprovision_different_model_replace acknowledge_device_touch_requirement'
+            cmd2 = '~/bin/gam/gam update cros ' + id2 + \
+                   ' action deprovision_different_model_replace acknowledge_device_touch_requirement'
             os.system(cmd2)
             time.sleep(2)
             f.close()
@@ -891,14 +895,15 @@ def devices4_3():  # Devices Main menu option 4. submenu 3
             input("Press ENTER to Continue...")
             break
         elif selection == '3':
-            id = input('Please enter the Chrome Device Serial Number (Case sensitive): ')
-            cmd = '~/bin/gam/gam print cros query "id:' + id + '" > id.txt'
+            cr_id = input('Please enter the Chrome Device Serial Number (Case sensitive): ')
+            cmd = '~/bin/gam/gam print cros query "id:' + cr_id + '" > id.txt'
             print('Looking up the device ID...')
             os.system(cmd)
             time.sleep(1)
             f = open('id.txt')
             id2 = f.readlines()[-1]
-            cmd2 = '~/bin/gam/gam update cros ' + id2 + ' action deprovision_retiring_device acknowledge_device_touch_requirement'
+            cmd2 = '~/bin/gam/gam update cros ' + id2 + \
+                   ' action deprovision_retiring_device acknowledge_device_touch_requirement'
             os.system(cmd2)
             time.sleep(2)
             f.close()
