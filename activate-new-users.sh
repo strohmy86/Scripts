@@ -21,13 +21,13 @@ echo "Getting a list of suspended users..."
 
 gam print users creationtime suspended | grep True | cut -d ',' -f 1-2 > suspended.txt
 
-awk -F'[,]' -v MIN=$date1 '$2 >= MIN' suspended.txt | cut -d ',' -f 1 > susp.txt
+awk -F'[,]' -v MIN=${date1} '$2 >= MIN' suspended.txt | cut -d ',' -f 1 > susp.txt
 sleep 1
 
 echo " Activating suspended users...."
 
 while read i; do
-	gam update user $i suspended off
+	gam update user ${i} suspended off
 done < susp.txt
 
 
