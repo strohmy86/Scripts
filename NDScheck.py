@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 # This script will run NDSrepair on a selected server and report any errors
 

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 # This is a python script to create a certificate request and then process it using the radius server.
 
@@ -9,7 +9,7 @@ import subprocess
 import pipes
 
 
-def credits():
+def cred():
 
     print("\n")
     print("*********************************")
@@ -94,9 +94,9 @@ def certcheck():
     global path
     global name
     cert = '/media/nss/VOL1/shared/madhs01rad1/certs/' + name + '_cert.p12'
-    gen = subprocess.call(  # Checks to see if the certificate file was generated correctly
+    gen1 = subprocess.call(  # Checks to see if the certificate file was generated correctly
         ['ssh', '-q', '-i', '/home/lstrohm/.ssh/Identityrsa', 'root@10.14.0.20', 'test -e ' + pipes.quote(cert)])
-    if gen == 0:  # If the certificate exists, prompts user if they want to generate another
+    if gen1 == 0:  # If the certificate exists, prompts user if they want to generate another
         again = input('Certificate generated successfully! Would you like to generate another certificate? [y/N]  ')
         if again == 'y' or again == 'yes':  # If yes, the script starts from the beginning
             time.sleep(1)
@@ -107,9 +107,9 @@ def certcheck():
         else:  # If anything other than an input above is given, the script errors out and exits
             print('Error!')
             close()
-    elif gen != 0:  # If certificate generation failed, prompts user to try again
-        tryAgain = input('Certificate generation failed. Would you like to try again? [Y/n]  ')
-        if tryAgain == 'y' or tryAgain == 'yes' or tryAgain == '':  # If user inputs yes, checks for existing request
+    elif gen1 != 0:  # If certificate generation failed, prompts user to try again
+        tryagain = input('Certificate generation failed. Would you like to try again? [Y/n]  ')
+        if tryagain == 'y' or tryagain == 'yes' or tryagain == '':  # If user inputs yes, checks for existing request
             time.sleep(1)
             resp = subprocess.call(
                 ['ssh', '-q', '-i', '/home/lstrohm/.ssh/Identityrsa', 'root@10.14.0.20', 'test -e ' + pipes.quote(path + name)])
@@ -117,7 +117,7 @@ def certcheck():
                 gen()
             elif resp != 0:  # If the request does not exist, starts the script from the beginning
                 start()
-        elif tryAgain == 'n' or tryAgain == 'no':  # If user inputs no, exits the program
+        elif tryagain == 'n' or tryagain == 'no':  # If user inputs no, exits the program
             print('Exiting...')
             close()
         else:  # If anything other than an input above is given, the script errors out and exits
@@ -126,5 +126,5 @@ def certcheck():
     return
 
 
-credits()
+cred()
 start()  # Initiates the script
