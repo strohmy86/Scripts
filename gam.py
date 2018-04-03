@@ -25,7 +25,7 @@
 # This program relies on GAM to function. You must install and configure it before using this program.
 # GAM can be found at: https://github.com/jay0lee/GAM
 
-# See line 589 for a domain specific setting that will need changed.
+# See lines 517, 614, 860, 869, 877, 907, and 915 for a domain specific setting that will need changed.
 
 import os
 import time
@@ -51,10 +51,12 @@ class Gam:  # Various GAM arguments
     group = '~/bin/gam/gam group '
     ou = '~/bin/gam/gam ou '
     all = '~/bin/gam/gam all users '
-    update = ' update '
+    up = '~/bin/gam/gam update '
     add = 'add'
     remove = 'remove'
-    delete = 'delete'
+    de = '~/bin/gam/gam delete '
+    cr = '~/bin/gam/gam create '
+    info = '~/bin/gam/gam info '
     
     
 class Msgs:  # Various repeated messages
@@ -94,6 +96,7 @@ def main_menu():  # Main Menu
         print('6)   Device Management')
         print('7)   Email Management')
         print('8)   Bulk Operations')
+        print('9)   Vault Management')
         print('0)   Exit')
         print('\n')
 
@@ -116,6 +119,8 @@ def main_menu():  # Main Menu
             email()
         elif selection1 == '8':
             bulk()
+        elif selection1 == '9':
+            vault()
         else:
             print(Color.RED + Msgs.err + Color.END)
             print('\n')
@@ -132,6 +137,7 @@ def users():  # User Management Main Menu
         print('2)   Export List of All Users')
         print('3)   Activate Suspended User')
         print('4)   Suspend User')
+        print('5)   Transfer Drive Files')
         print('0)   Back')
         print('\n')
 
@@ -166,6 +172,15 @@ def users():  # User Management Main Menu
         elif selection == '4':  # Suspend a user menu item
             username = input(Color.BOLD + "Please enter a username: " + Color.END)
             cmd = Gam.gam + " update user " + username + " suspended on"
+            os.system(cmd)
+            print('\n')
+            time.sleep(2)
+            input(Color.GREEN + Msgs.cont + Color.END)
+            users()
+        elif selection == '5':  # Transfer drive files from one user to another
+            user = input(Color.BOLD + 'Please enter username of source drive:  ' + Color.END)
+            user2 = input(Color.BOLD + 'Please enter username of destination drive:  ' + Color.END)
+            cmd = Gam.user + user + ' transfer drive ' + user2
             os.system(cmd)
             print('\n')
             time.sleep(2)
@@ -354,9 +369,10 @@ def drive():  # Drive Management Main Menu
         print('\n')
         print("1)   Export a List of a User(s) Drive Files")
         print("2)   Upload a Local File To a Google Drive")
-        print("3)   View a Team Drive(s)")
-        print('4)   Create a Team Drive')
-        print("5)   Delete a Team Drive")
+        print("3)   Delete a User's Drive File")
+        print("4)   View a Team Drive(s)")
+        print('5)   Create a Team Drive')
+        print("6)   Delete a Team Drive")
         print('0)   Back')
         print('\n')
 
@@ -390,6 +406,8 @@ def drive():  # Drive Management Main Menu
             input(Color.GREEN + Msgs.cont + Color.END)
             drive()
         elif selection == '2':  # Upload file menu item
+            filename = input(Color.BOLD + "Please enter the full path to the file you wish to upload "
+                                          "(Case Sensitive):  " + Color.END)
             who = input(Color.BOLD + Msgs.ent + Color.END)
             if who == 'user':
                 user = input(Color.BOLD + 'Please enter a username:  ' + Color.END)
@@ -408,8 +426,6 @@ def drive():  # Drive Management Main Menu
                 time.sleep(2)
                 input(Color.GREEN + Msgs.cont + Color.END)
                 drive()
-            filename = input(Color.BOLD + "Please enter the full path to the file you wish to upload "
-                                          "(Case Sensitive):  " + Color.END)
             os.system(cmd)
             print('\n')
             print("File uploaded successfully")
@@ -417,7 +433,16 @@ def drive():  # Drive Management Main Menu
             time.sleep(2)
             input(Color.GREEN + Msgs.cont + Color.END)
             drive()
-        elif selection == '3':  # View Team Drives menu item
+        elif selection == '3':  # Delete User's drive file
+            user = input(Color.BOLD + 'Please enter a username:  ' + Color.END)
+            file = input(Color.BOLD + 'Please enter the file ID to be deleted:  ' + Color.END)
+            cmd = Gam.user + user + ' delete drivefile ' + file
+            os.system(cmd)
+            time.sleep(2)
+            print('\n')
+            input(Color.GREEN + Msgs.cont + Color.END)
+            drive()
+        elif selection == '4':  # View Team Drives menu item
             who = input(Color.BOLD + Msgs.ent + Color.END)
             if who == 'user':
                 user = input(Color.BOLD + 'Please enter a username:  ' + Color.END)
@@ -427,7 +452,7 @@ def drive():  # Drive Management Main Menu
                 cmd = Gam.group + user + ' print teamdrives todrive'
             elif who == 'ou':
                 user = input(Color.BOLD + 'Please enter an OU (Case Sensitive, Full Path):  ' + Color.END)
-                cmd = Gam.ou + user + ' print teamdrives todrive'
+                cmd = Gam.ou + '"' + user + '" print teamdrives todrive'
             elif who == 'all' or who == 'all users':
                 cmd = Gam.all + ' print teamdrives todrive'
             else:
@@ -443,7 +468,7 @@ def drive():  # Drive Management Main Menu
             print('\n')
             input(Color.GREEN + Msgs.cont + Color.END)
             drive()
-        elif selection == '4':  # Create team drive for user menu item
+        elif selection == '6':  # Create team drive for user menu item
             user = input(Color.BOLD + "Please enter a username: " + Color.END)
             name = input(Color.BOLD + 'What is the name of the Team Drive?' + Color.END)
             cmd = Gam.gam + ' user ' + user + ' add teamdrive "' + name + '"'
@@ -452,7 +477,7 @@ def drive():  # Drive Management Main Menu
             print('\n')
             input(Color.GREEN + Msgs.cont + Color.END)
             drive()
-        elif selection == '5':  # Delete user's Team Drive menu item
+        elif selection == '6':  # Delete user's Team Drive menu item
             user = input(Color.BOLD + "Please enter a username: " + Color.END)
             dr_id = input(Color.BOLD + 'What is the Team Drive ID? (Not the name)' + Color.END)
             cmd = Gam.gam + ' user ' + user + ' delete teamdrive ' + dr_id
@@ -489,7 +514,7 @@ def groups():  # Groups Management Main Menu
 
         if selection == '1':  # Create group menu item
             name = input(Color.BOLD + 'What is the name of the group to be created?' + Color.END)
-            cmd = Gam.gam + ' create group ' + name + '@madisonrams.net'  # PLEASE CHANGE THIS DOMAIN TO MATCH YOURS.
+            cmd = Gam.gam + ' create group ' + name + '@madisonrams.net'  # CHANGE THIS DOMAIN TO MATCH YOURS.
             os.system(cmd)
             time.sleep(2)
             print('\n')
@@ -586,7 +611,7 @@ def classroom():  # Classroom Management Main Menu
             who = input(Color.BOLD + 'Is the person a student or a teacher? (Must be lower case) [student | teacher]'
                         + Color.END)
             user = input(Color.BOLD + "What is the person's username? " + Color.END)
-            cmd = Gam.gam + ' course ' + al + ' ' + act + ' ' + who + ' ' + user + '@madisonrams.net'
+            cmd = Gam.gam + ' course ' + al + ' ' + act + ' ' + who + ' ' + user + '@madisonrams.net'  # CHANGE THIS DOMAIN TO MATCH YOURS.
             os.system(cmd)
             time.sleep(2)
             print('\n')
@@ -832,7 +857,7 @@ def classroom3():  # Classroom main menu option 3 submenu
         if selection == '1':  # Invite guardian menu item
             stu = input(Color.BOLD + "What is the student's username? " + Color.END)
             guard = input(Color.BOLD + "What is the guardian's email address? " + Color.END)
-            cmd = Gam.gam + ' create guardianinvite ' + guard + ' ' + stu + '@madisonrams.net'
+            cmd = Gam.gam + ' create guardianinvite ' + guard + ' ' + stu + '@madisonrams.net'  # CHANGE THIS DOMAIN TO MATCH YOURS.
             os.system(cmd)
             time.sleep(2)
             print('\n')
@@ -841,7 +866,7 @@ def classroom3():  # Classroom main menu option 3 submenu
         elif selection == '2':  # Delete guardian menu item
             stu = input(Color.BOLD + "What is the student's username? " + Color.END)
             guard = input(Color.BOLD + "What is the guardian's email address? " + Color.END)
-            cmd = Gam.gam + ' delete guardian ' + guard + ' ' + stu + '@madisonrams.net'
+            cmd = Gam.gam + ' delete guardian ' + guard + ' ' + stu + '@madisonrams.net'  # CHANGE THIS DOMAIN TO MATCH YOURS.
             os.system(cmd)
             time.sleep(2)
             print('\n')
@@ -849,7 +874,7 @@ def classroom3():  # Classroom main menu option 3 submenu
             classroom3()
         elif selection == '3':  # View a student's guardian(s) menu item
             stu = input(Color.BOLD + "What is the student's username? " + Color.END)
-            cmd = Gam.gam + ' print guardians student ' + stu + '@madisonrams.net'
+            cmd = Gam.gam + ' print guardians student ' + stu + '@madisonrams.net'  # CHANGE THIS DOMAIN TO MATCH YOURS.
             os.system(cmd)
             time.sleep(2)
             print('\n')
@@ -879,7 +904,7 @@ def classroom4():  # Classroom main menu option 4 submenu
         selection = input(Color.BOLD + Msgs.choose + Color.END)
         if selection == '1':  # View teacher's courses menu item
             user = input(Color.BOLD + "What is the teacher's username? " + Color.END)
-            cmd = Gam.gam + ' print courses teacher ' + user + '@madisonrams.net'
+            cmd = Gam.gam + ' print courses teacher ' + user + '@madisonrams.net'  # CHANGE THIS DOMAIN TO MATCH YOURS.
             os.system(cmd)
             time.sleep(2)
             print('\n')
@@ -887,7 +912,7 @@ def classroom4():  # Classroom main menu option 4 submenu
             classroom4()
         elif selection == '2':  # View student's courses menu item
             user = input(Color.BOLD + "What is the student's username? " + Color.END)
-            cmd = Gam.gam + ' print courses student ' + user + '@madisonrams.net'
+            cmd = Gam.gam + ' print courses student ' + user + '@madisonrams.net'  # CHANGE THIS DOMAIN TO MATCH YOURS.
             os.system(cmd)
             time.sleep(2)
             print('\n')
@@ -1165,6 +1190,7 @@ def email1():  # Email main menu option 1 submenu
         selection = input(Color.BOLD + Msgs.choose + Color.END)
 
         if selection == '1':  # Set sig from txt file
+            txt = input(Color.BOLD + 'Please enter the full path to the text file to read:' + Color.END)
             who = input(Color.BOLD + Msgs.ent + Color.END)
             if who == 'user':
                 user = input(Color.BOLD + 'Please enter a username:  ' + Color.END)
@@ -1183,13 +1209,13 @@ def email1():  # Email main menu option 1 submenu
                 time.sleep(2)
                 input(Color.GREEN + Msgs.cont + Color.END)
                 email1()
-            txt = input(Color.BOLD + 'Please enter the full path to the text file to read:' + Color.END)
             os.system(cmd)
             time.sleep(2)
             print('\n')
             input(Color.GREEN + Msgs.cont + Color.END)
             email1()
         elif selection == '2':  # Set sig from html file
+            txt = input(Color.BOLD + 'Please enter the full path to the html file to read:' + Color.END)
             who = input(Color.BOLD + Msgs.ent + Color.END)
             if who == 'user':
                 user = input(Color.BOLD + 'Please enter a username:  ' + Color.END)
@@ -1208,13 +1234,16 @@ def email1():  # Email main menu option 1 submenu
                 time.sleep(2)
                 input(Color.GREEN + Msgs.cont + Color.END)
                 email1()
-            txt = input(Color.BOLD + 'Please enter the full path to the html file to read:' + Color.END)
             os.system(cmd)
             time.sleep(2)
             print('\n')
             input(Color.GREEN + Msgs.cont + Color.END)
             email1()
         elif selection == '3':  # Set sig manually
+            print(Color.YELLOW + 'Line breaks must be designated by <br>. EX: Acme Inc<br>123 Main Ave<br>'
+                                 'http://www.acme.com' + Color.END)
+            time.sleep(1)
+            txt = input(Color.BOLD + 'Please enter the full text of the signature:' + Color.END)
             who = input(Color.BOLD + Msgs.ent + Color.END)
             if who == 'user':
                 user = input(Color.BOLD + 'Please enter a username:  ' + Color.END)
@@ -1233,9 +1262,7 @@ def email1():  # Email main menu option 1 submenu
                 time.sleep(2)
                 input(Color.GREEN + Msgs.cont + Color.END)
                 email1()
-            print('Line breaks must be designated by <br>. EX: Acme Inc<br>123 Main Ave<br>http://www.acme.com')
-            time.sleep(1)
-            txt = input(Color.BOLD + 'Please enter the full text of the signature:' + Color.END)
+
             os.system(cmd)
             time.sleep(2)
             print('\n')
@@ -1266,6 +1293,9 @@ def email1():  # Email main menu option 1 submenu
             input(Color.GREEN + Msgs.cont + Color.END)
             email1()
         elif selection == '5':  # Set vacation responder
+            sub = input(Color.BOLD + 'Please enter a message subject: ' + Color.END)
+            print(Color.YELLOW + 'Line breaks must be designated using the "\ n" (no space).' + Color.END)
+            mes = input(Color.BOLD + 'Please enter the vacation message: ' + Color.END)
             who = input(Color.BOLD + Msgs.ent + Color.END)
             if who == 'user':
                 user = input(Color.BOLD + 'Please enter a username:  ' + Color.END)
@@ -1284,9 +1314,6 @@ def email1():  # Email main menu option 1 submenu
                 time.sleep(2)
                 input(Color.GREEN + Msgs.cont + Color.END)
                 email1()
-            sub = input(Color.BOLD + 'Please enter a message subject: ' + Color.END)
-            print('Line breaks must be designated using the "\ n" (no space).')
-            mes = input(Color.BOLD + 'Please enter the vacation message: ' + Color.END)
             os.system(cmd)
             time.sleep(2)
             print('\n')
@@ -1342,6 +1369,7 @@ def email2():  # Email main menu option 2 menu
         selection = input(Color.BOLD + Msgs.choose + Color.END)
 
         if selection == '1':  # Create a label
+            lab = input(Color.BOLD + 'Please enter a name for the label: ' + Color.END)
             who = input(Color.BOLD + Msgs.ent + Color.END)
             if who == 'user':
                 user = input(Color.BOLD + 'Please enter a username:  ' + Color.END)
@@ -1360,7 +1388,6 @@ def email2():  # Email main menu option 2 menu
                 time.sleep(2)
                 input(Color.GREEN + Msgs.cont + Color.END)
                 email2()
-            lab = input(Color.BOLD + 'Please enter a name for the label: ' + Color.END)
             os.system(cmd)
             time.sleep(2)
             print('\n')
@@ -1391,6 +1418,7 @@ def email2():  # Email main menu option 2 menu
             input(Color.GREEN + Msgs.cont + Color.END)
             email2()
         elif selection == '3':  # Delete Label
+            lab = input(Color.BOLD + 'Please enter the label name: ' + Color.END)
             who = input(Color.BOLD + Msgs.ent + Color.END)
             if who == 'user':
                 user = input(Color.BOLD + 'Please enter a username:  ' + Color.END)
@@ -1409,7 +1437,6 @@ def email2():  # Email main menu option 2 menu
                 time.sleep(2)
                 input(Color.GREEN + Msgs.cont + Color.END)
                 email2()
-            lab = input(Color.BOLD + 'Please enter the label name: ' + Color.END)
             os.system(cmd)
             time.sleep(2)
             print('\n')
@@ -1465,6 +1492,11 @@ def email2_4():  # create filter menu
         selection = input(Color.BOLD + Msgs.choose + Color.END)
 
         if selection == '1':  # Filter by from address only
+            eml = input(Color.BOLD + 'Please enter an email address to filter on: ' + Color.END)
+            print('Separate action using a space')
+            act = input(Color.BOLD + 'What action to take? [markread | archive | star | trash | neverspam] '
+                        + Color.END)
+            lab = input(Color.BOLD + 'Please enter a label for the filtered messages: ' + Color.END)
             who = input(Color.BOLD + Msgs.ent + Color.END)
             if who == 'user':
                 user = input(Color.BOLD + 'Please enter a username:  ' + Color.END)
@@ -1483,17 +1515,18 @@ def email2_4():  # create filter menu
                 time.sleep(2)
                 input(Color.GREEN + Msgs.cont + Color.END)
                 email2_4()
-            eml = input(Color.BOLD + 'Please enter an email address to filter on: ' + Color.END)
-            print('Separate action using a space')
-            act = input(Color.BOLD + 'What action to take? [markread | archive | star | trash | neverspam] '
-                        + Color.END)
-            lab = input(Color.BOLD + 'Please enter a label for the filtered messages: ' + Color.END)
             os.system(cmd)
             time.sleep(2)
             print('\n')
             input(Color.GREEN + Msgs.cont + Color.END)
             email2_4()
         elif selection == '2':  # Filter by address and subject
+            eml = input(Color.BOLD + 'Please enter an email address to filter on: ' + Color.END)
+            sub = input(Color.BOLD + 'Please enter a subject to filter on: ' + Color.END)
+            print('Separate action using a space')
+            act = input(Color.BOLD + 'What action to take? [markread | archive | star | trash | neverspam] '
+                        + Color.END)
+            lab = input(Color.BOLD + 'Please enter a label for the filtered messages: ' + Color.END)
             who = input(Color.BOLD + Msgs.ent + Color.END)
             if who == 'user':
                 user = input(Color.BOLD + 'Please enter a username:  ' + Color.END)
@@ -1513,18 +1546,17 @@ def email2_4():  # create filter menu
                 time.sleep(2)
                 input(Color.GREEN + Msgs.cont + Color.END)
                 email2_4()
-            eml = input(Color.BOLD + 'Please enter an email address to filter on: ' + Color.END)
-            sub = input(Color.BOLD + 'Please enter a subject to filter on: ' + Color.END)
-            print('Separate action using a space')
-            act = input(Color.BOLD + 'What action to take? [markread | archive | star | trash | neverspam] '
-                        + Color.END)
-            lab = input(Color.BOLD + 'Please enter a label for the filtered messages: ' + Color.END)
             os.system(cmd)
             time.sleep(2)
             print('\n')
             input(Color.GREEN + Msgs.cont + Color.END)
             email2_4()
         elif selection == '3':  # Filter by subject
+            sub = input(Color.BOLD + 'Please enter a subject to filter on: ' + Color.END)
+            print('Separate action using a space')
+            act = input(Color.BOLD + 'What action to take? [markread | archive | star | trash | neverspam] '
+                        + Color.END)
+            lab = input(Color.BOLD + 'Please enter a label for the filtered messages: ' + Color.END)
             who = input(Color.BOLD + Msgs.ent + Color.END)
             if who == 'user':
                 user = input(Color.BOLD + 'Please enter a username:  ' + Color.END)
@@ -1543,11 +1575,6 @@ def email2_4():  # create filter menu
                 time.sleep(2)
                 input(Color.GREEN + Msgs.cont + Color.END)
                 email2_4()
-            sub = input(Color.BOLD + 'Please enter a subject to filter on: ' + Color.END)
-            print('Separate action using a space')
-            act = input(Color.BOLD + 'What action to take? [markread | archive | star | trash | neverspam] '
-                        + Color.END)
-            lab = input(Color.BOLD + 'Please enter a label for the filtered messages: ' + Color.END)
             os.system(cmd)
             time.sleep(2)
             print('\n')
@@ -1576,6 +1603,8 @@ def email3():  # Pop and imap settings
         selection = input(Color.BOLD + Msgs.choose + Color.END)
 
         if selection == '1':  # IMAP/POP on/off
+            prot = input(Color.BOLD + 'What protocol? [pop | imap] ' + Color.END)
+            act = input(Color.BOLD + 'Turn ON or OFF? [on | off] ' + Color.END)
             who = input(Color.BOLD + Msgs.ent + Color.END)
             if who == 'user':
                 user = input(Color.BOLD + 'Please enter a username:  ' + Color.END)
@@ -1594,14 +1623,13 @@ def email3():  # Pop and imap settings
                 time.sleep(2)
                 input(Color.GREEN + Msgs.cont + Color.END)
                 email3()
-            prot = input(Color.BOLD + 'What protocol? [pop | imap] ' + Color.END)
-            act = input(Color.BOLD + 'Turn ON or OFF? [on | off] ' + Color.END)
             os.system(cmd)
             time.sleep(2)
             print('\n')
             input(Color.GREEN + Msgs.cont + Color.END)
             email3()
         elif selection == '2':  # IMAP/POP status
+            prot = input(Color.BOLD + 'What protocol? [pop | imap] ' + Color.END)
             who = input(Color.BOLD + Msgs.ent + Color.END)
             if who == 'user':
                 user = input(Color.BOLD + 'Please enter a username:  ' + Color.END)
@@ -1620,7 +1648,6 @@ def email3():  # Pop and imap settings
                 time.sleep(2)
                 input(Color.GREEN + Msgs.cont + Color.END)
                 email3()
-            prot = input(Color.BOLD + 'What protocol? [pop | imap] ' + Color.END)
             os.system(cmd)
             time.sleep(2)
             print('\n')
@@ -1735,6 +1762,9 @@ def email5():  # Profile Settings
         selection = input(Color.BOLD + Msgs.choose + Color.END)
 
         if selection == '1':  # Update profile photo
+            print(Color.YELLOW + 'Photos must be jpg format, and the file path and name are case sensitive.'
+                  + Color.END)
+            fn = input(Color.BOLD + 'Please enter the full path to the photo you wish to upload: ' + Color.END)
             who = input(Color.BOLD + Msgs.ent + Color.END)
             if who == 'user':
                 user = input(Color.BOLD + 'Please enter a username:  ' + Color.END)
@@ -1746,7 +1776,6 @@ def email5():  # Profile Settings
                 user = input(Color.BOLD + 'Please enter an OU (Case Sensitive, Full Path):  ' + Color.END)
                 cmd = Gam.ou + ' "' + user + '" update photo ' + fn
             elif who == 'all' or who == 'all users':
-                user = 'AllUsers'
                 cmd = Gam.all + ' update photo ' + fn
             else:
                 print(Color.RED + Msgs.err + Color.END)
@@ -1754,14 +1783,13 @@ def email5():  # Profile Settings
                 time.sleep(2)
                 input(Color.GREEN + Msgs.cont + Color.END)
                 email5()
-            print('Photos must be jpg format, and the file path and name are case sensitive.')
-            fn = input(Color.BOLD + 'Please enter the full path to the photo you wish to upload: ' + Color.END)
             os.system(cmd)
             time.sleep(2)
             print('\n')
             input(Color.GREEN + Msgs.cont + Color.END)
             email5()
         elif selection == '2':  # Download profile photo
+            fn = input(Color.BOLD + 'Please enter the full path to a folder to save the photo(s): ' + Color.END)
             who = input(Color.BOLD + Msgs.ent + Color.END)
             if who == 'user':
                 user = input(Color.BOLD + 'Please enter a username:  ' + Color.END)
@@ -1773,7 +1801,6 @@ def email5():  # Profile Settings
                 user = input(Color.BOLD + 'Please enter an OU (Case Sensitive, Full Path):  ' + Color.END)
                 cmd = Gam.ou + ' "' + user + '" get photo targetfolder ' + fn
             elif who == 'all' or who == 'all users':
-                user = 'AllUsers'
                 cmd = Gam.all + ' get photo targetfolder ' + fn
             else:
                 print(Color.RED + Msgs.err + Color.END)
@@ -1781,7 +1808,6 @@ def email5():  # Profile Settings
                 time.sleep(2)
                 input(Color.GREEN + Msgs.cont + Color.END)
                 email5()
-            fn = input(Color.BOLD + 'Please enter the full path to a folder to save the photo(s): ' + Color.END)
             os.system(cmd)
             time.sleep(2)
             print('\n')
@@ -1799,7 +1825,6 @@ def email5():  # Profile Settings
                 user = input(Color.BOLD + 'Please enter an OU (Case Sensitive, Full Path):  ' + Color.END)
                 cmd = Gam.ou + ' "' + user + '" delete photo'
             elif who == 'all' or who == 'all users':
-                user = 'AllUsers'
                 cmd = Gam.all + ' delete photo'
             else:
                 print(Color.RED + Msgs.err + Color.END)
@@ -1863,8 +1888,6 @@ def email5():  # Profile Settings
                 time.sleep(2)
                 input(Color.GREEN + Msgs.cont + Color.END)
                 email5()
-            usr = input(Color.BOLD + 'Please enter a username: ' + Color.END)
-            cmd = Gam.gam + ' user ' + usr + ' show gplusprofile'
             os.system(cmd)
             print(Color.YELLOW + '\nFile saved as ' + user1 + '-gplus-profile.csv\n' + Color.END)
             time.sleep(2)
@@ -1896,9 +1919,9 @@ def bulk():  # Bulk operations main menu
 
         selection = input(Color.BOLD + Msgs.choose + Color.END)
 
-        if selection == '1':  # Traditional commands
+        if selection == '1':  # CSV Batch Mode
             csv()
-        elif selection == '2':  # CSV Batch Mode
+        elif selection == '2':  # Batch file mode
             batch()
         elif selection == '0':  # Back to main menu
             main_menu()
@@ -1929,6 +1952,230 @@ def csv():  # GAM CSV file batch mode
     print('\n')
     input(Color.GREEN + Msgs.cont + Color.END)
     bulk()
+
+
+def vault():  # Vault Management
+    while True:
+        print('\n')
+        print(Color.PURPLE + 'Vault Management Menu:' + Color.END)
+        print('\n')
+        print('1)   Create Matter')
+        print('2)   Update Matter')
+        print('3)   Retrieve Matter Info')
+        print('4)   Create Hold')
+        print('5)   Update Hold')
+        print('6)   Retrieve Hold Info')
+        print('0)   Back')
+        print('\n')
+
+        selection = input(Color.BOLD + Msgs.choose + Color.END)
+
+        if selection == '1':  # Create Matter
+            name = input(Color.BOLD + 'Please enter a name for the matter:  ' + Color.END)
+            desc = input(Color.BOLD + 'Please enter a short description for the matter:  ' + Color.END)
+            collab = input(Color.BOLD + 'Would you like to add collaborators [y/N]?  ' + Color.END)
+            if collab == 'n' or collab == 'no':
+                cmd = Gam.cr + 'vaultmatter name "' + name + '" description "' + desc + '"'
+            elif collab == 'y' or collab == 'yes':
+                collab1 = input(Color.BOLD + ' Please enter collaborator email address(es), '
+                                'separated by commas without spaces:  ')
+                cmd = Gam.cr + 'vaultmatter name "' + name + '" description "' + desc + '" collaborators "' \
+                    + collab1 + '"'
+            else:  # Invalid selection. returns to current menu.
+                print(Color.RED + Msgs.err + Color.END)
+                print('\n')
+                time.sleep(2)
+                input(Color.GREEN + Msgs.cont + Color.END)
+                vault()
+            os.system(cmd)
+            time.sleep(2)
+            print('\n')
+            input(Color.GREEN + Msgs.cont + Color.END)
+            vault()
+        elif selection == '2':  # Update Matter
+            vault2()
+        elif selection == '3':  # Retrieve Matter Info
+            name = input(Color.BOLD + 'Please enter the matter name:  ' + Color.END)
+            cmd = Gam.info + ' vaultmatter "' + name + '"'
+            os.system(cmd)
+            time.sleep(2)
+            print('\n')
+            input(Color.GREEN + Msgs.cont + Color.END)
+            vault()
+        elif selection == '4':  # Create Hold
+            matname = input(Color.BOLD + 'Please enter the matter name:  ' + Color.END)
+            name = input(Color.BOLD + 'Please enter a name for the hold:  ' + Color.END)
+            corpus = input(Color.BOLD + 'Hold what items? [mail | drive]  ' + Color.END)
+            wt = input(Color.BOLD + 'Individual users or OU [user | ou]?  ' + Color.END)
+            start = input(Color.BOLD + 'What is the start time [YYYY-MM-DD]?  ' + Color.END)
+            end = input(Color.BOLD + 'What is the end time [YYYY-MM-DD]?  ' + Color.END)
+            if wt == 'user':
+                user = input(Color.BOLD + 'Please enter 1 or more email addresses separated by commas (no spaces):  '
+                             + Color.END)
+                cmd = Gam.cr + 'vaulthold matter "' + matname + '" name "' + name + '" corpus ' + corpus + \
+                    ' accounts "' + user + '" starttime ' + start + ' endtime ' + end
+            elif wt == 'ou':
+                ou = input(Color.BOLD + 'Please enter an ou (Case Sensitive):  ' + Color.END)
+                cmd = Gam.cr + 'vaulthold matter "' + matname + '" name "' + name + '" corpus ' + corpus + \
+                    ' orgunit "' + ou + '" starttime ' + start + ' endtime ' + end
+            else:  # Invalid selection. returns to current menu.
+                print(Color.RED + Msgs.err + Color.END)
+                print('\n')
+                time.sleep(2)
+                input(Color.GREEN + Msgs.cont + Color.END)
+                vault()
+            os.system(cmd)
+            time.sleep(2)
+            print('\n')
+            input(Color.GREEN + Msgs.cont + Color.END)
+            vault()
+        elif selection == '5':  # Update Hold
+            vault5()
+        elif selection == '6':  # Hold Info
+            matname = input(Color.BOLD + 'Please enter the matter name:  ' + Color.END)
+            name = input(Color.BOLD + 'Please enter the hold name:  ' + Color.END)
+            cmd = Gam.info + 'vaulthold ' + name + ' matter ' + matname
+            os.system(cmd)
+            time.sleep(2)
+            print('\n')
+            input(Color.GREEN + Msgs.cont + Color.END)
+            vault()
+        elif selection == '0':  # Back to main menu
+            main_menu()
+        else:  # Invalid selection. returns to current menu.
+            print(Color.RED + Msgs.err + Color.END)
+            print('\n')
+            time.sleep(2)
+            input(Color.GREEN + Msgs.cont + Color.END)
+            vault()
+
+
+def vault2():  # Update Vault matter menu
+    while True:
+        print('\n')
+        print(Color.CYAN + 'Update Matter Menu:' + Color.END)
+        print('\n')
+        print('1)   Update Collaborators')
+        print('2)   Update Description')
+        print('3)   Close/Re-open Matter ')
+        print('4)   Delete/Undelete Matter')
+        print('0)   Back')
+        print('\n')
+
+        selection = input(Color.BOLD + Msgs.choose + Color.END)
+
+        if selection == '1':  # Update Collaborators
+            name = input(Color.BOLD + 'Please enter the matter name:  ' + Color.END)
+            ar = input(Color.BOLD + 'Add or remove collaborators [add | remove]?  ' + Color.END)
+            coll = input(Color.BOLD + ' Collaborator(s) to add/remove, comma separated(no spaces):  ' + Color.END)
+            cmd = Gam.up + 'vaultmatter "' + name + '" ' + ar + 'collaborators "' + coll + '"'
+            os.system(cmd)
+            time.sleep(2)
+            print('\n')
+            input(Color.GREEN + Msgs.cont + Color.END)
+            vault2()
+        elif selection == '2':  # Update description
+            name = input(Color.BOLD + 'Please enter the matter name:  ' + Color.END)
+            desc = input(Color.BOLD + 'Please enter a short description:  ' + Color.END)
+            cmd = Gam.up + 'vaultmatter "' + name + '" description "' + desc + '"'
+            os.system(cmd)
+            time.sleep(2)
+            print('\n')
+            input(Color.GREEN + Msgs.cont + Color.END)
+            vault2()
+        elif selection == '3':  # Close/Reopen matter
+            name = input(Color.BOLD + 'Please enter the matter name:  ' + Color.END)
+            co = input(Color.BOLD + 'Close or Re-open matter [close | reopen]?  ' + Color.END)
+            cmd = Gam.up + 'vaultmatter "' + name + '" action ' + co
+            os.system(cmd)
+            time.sleep(2)
+            print('\n')
+            input(Color.GREEN + Msgs.cont + Color.END)
+            vault2()
+        elif selection == '4':  # Delete/Undelete matter
+            print(Color.RED + 'Matters must be closed before they can be deleted!\n' + Color.END)
+            name = input(Color.BOLD + 'Please enter the matter name:  ' + Color.END)
+            co = input(Color.BOLD + 'Delete or Undelete matter [delete | undelete]?  ' + Color.END)
+            cmd = Gam.up + 'vaultmatter "' + name + '" action ' + co
+            os.system(cmd)
+            time.sleep(2)
+            print('\n')
+            input(Color.GREEN + Msgs.cont + Color.END)
+            vault2()
+        elif selection == '0':  # Back to previous menu
+            vault()
+        else:  # Invalid selection. returns to current menu.
+            print(Color.RED + Msgs.err + Color.END)
+            print('\n')
+            time.sleep(2)
+            input(Color.GREEN + Msgs.cont + Color.END)
+            vault2()
+
+
+def vault5():  # Update vault hold menu
+    while True:
+        print('\n')
+        print(Color.CYAN + 'Update Hold Menu:' + Color.END)
+        print('\n')
+        print('1)   Update Org Unit/User Account(s)')
+        print('2)   Update Start/End time')
+        print('3)   Delete Hold')
+        print('0)   Back')
+        print('\n')
+
+        selection = input(Color.BOLD + Msgs.choose + Color.END)
+
+        if selection == '1':  # Update ou
+            matname = input(Color.BOLD + 'Please enter the matter name:  ' + Color.END)
+            name = input(Color.BOLD + 'Please enter the hold name:  ' + Color.END)
+            wt = input(Color.BOLD + 'Individual user(s) or OU [user | ou]?  ' + Color.END)
+            if wt == 'user':
+                user = input(Color.BOLD + 'Please enter 1 or more email addresses separated by commas (no spaces):  '
+                             + Color.END)
+                ar = input(Color.BOLD + 'Add or remove [add | remove]?  ' + Color.END)
+                cmd = Gam.up + 'vaulthold "' + name + '" matter "' + matname + '" ' + ar + 'accounts "' + user + '"'
+            elif wt == 'ou':
+                ou = input(Color.BOLD + 'Please enter an ou (Case Sensitive):  ' + Color.END)
+                cmd = Gam.up + 'vaulthold "' + name + '" matter "' + matname + '"  orgunit "' + ou + '"'
+            else:  # Invalid selection. returns to current menu.
+                print(Color.RED + Msgs.err + Color.END)
+                print('\n')
+                time.sleep(2)
+                input(Color.GREEN + Msgs.cont + Color.END)
+                vault5()
+            os.system(cmd)
+            time.sleep(2)
+            print('\n')
+            input(Color.GREEN + Msgs.cont + Color.END)
+            vault5()
+        elif selection == '2':  # Update start/end
+            matname = input(Color.BOLD + 'Please enter the matter name:  ' + Color.END)
+            name = input(Color.BOLD + 'Please enter the hold name:  ' + Color.END)
+            start = input(Color.BOLD + 'What is the new start time [YYYY-MM-DD]?  ' + Color.END)
+            end = input(Color.BOLD + 'What is the new end time [YYYY-MM-DD]?  ' + Color.END)
+            cmd = Gam.up + 'vaulthold "' + name + '" matter "' + matname + '" starttime ' + start + ' endtime ' + end
+            os.system(cmd)
+            time.sleep(2)
+            print('\n')
+            input(Color.GREEN + Msgs.cont + Color.END)
+            vault5()
+        elif selection == '3':  # Delete Hold
+            matname = input(Color.BOLD + 'Please enter the matter name:  ' + Color.END)
+            name = input(Color.BOLD + 'Please enter the hold name:  ' + Color.END)
+            cmd = Gam.de + 'vaulthold "' + name + '" matter "' + matname + '"'
+            os.system(cmd)
+            time.sleep(2)
+            print('\n')
+            input(Color.GREEN + Msgs.cont + Color.END)
+            vault5()
+        elif selection == '0':  # Back to previous menu
+            vault()
+        else:  # Invalid selection. returns to current menu.
+            print(Color.RED + Msgs.err + Color.END)
+            print('\n')
+            time.sleep(2)
+            input(Color.GREEN + Msgs.cont + Color.END)
+            vault5()
 
 
 cred()
