@@ -5,4 +5,5 @@ portcheck.py.bak
 .gitignore
 .directory 
 decommission.py
+dbQueryToCsv.py
 
