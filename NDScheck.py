@@ -76,15 +76,16 @@ def menu():
         print('Menu:')
         print('\n')
         print('1)\tMADHS01FP1')
-        print('2)\tMADHS01STU1')
-        print('3)\tMADHS01NS1')
-        print('4)\tMADHS01NS2')
-        print('5)\tMADHS01WEB1')
-        print('6)\tMADHS01GW1')
-        print('7)\tMADMS01FP1')
-        print('8)\tMADEA01FP1')
-        print('9)\tMADMI01FP1')
-        print('10)\tMADSO01FP1')
+        print('2)\tMADHS01STAFF1')
+        print('3)\tMADHS01STU1')
+        print('4)\tMADHS01NS1')
+        print('5)\tMADHS01NS2')
+        print('6)\tMADHS01WEB1')
+        print('7)\tMADHS01GW1')
+        print('8)\tMADMS01FP1')
+        print('9)\tMADEA01FP1')
+        print('10)\tMADMI01FP1')
+        print('11)\tMADSO01FP1')
         print('0)\tExit')
         print('\n')
 
@@ -96,30 +97,33 @@ def menu():
             server = '10.14.0.20'
             main(server)
         elif selection == '2':
-            server = '10.14.10.11'
+            server = '10.14.10.12'
             main(server)
         elif selection == '3':
-            server = '10.14.0.4'
+            server = '10.14.10.11'
             main(server)
         elif selection == '4':
-            server = '10.14.0.5'
+            server = '10.14.0.4'
             main(server)
         elif selection == '5':
-            server = '10.14.0.22'
+            server = '10.14.0.5'
             main(server)
         elif selection == '6':
-            server = '10.14.0.6'
+            server = '10.14.0.22'
             main(server)
         elif selection == '7':
-            server = '10.14.48.10'
+            server = '10.14.0.6'
             main(server)
         elif selection == '8':
-            server = '10.14.16.10'
+            server = '10.14.48.10'
             main(server)
         elif selection == '9':
-            server = '10.14.40.10'
+            server = '10.14.16.10'
             main(server)
         elif selection == '10':
+            server = '10.14.40.10'
+            main(server)
+        elif selection == '11':
             server = '10.14.32.10'
             main(server)
         elif selection == '0':
