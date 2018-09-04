@@ -19,12 +19,12 @@ echo ""
 
 echo "The size of $yep is $sz."
 echo ""
-echo "$yep will be erased. THIS IS UNRECOVERABLE! resume? [Y/n] "
+echo "The partition table for $yep will be erased. resume? [Y/n] "
 echo ""
 
 read ans
 
-if [ $ans == y ]; then
+if [[ ($ans == y) || ($ans == Y) || ($ans == "") ]]; then
     echo "Erasing partition table for $yep."
     parted -a optimal -s $yep mklabel msdos
     echo "Done!"
