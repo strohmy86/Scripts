@@ -3,7 +3,8 @@
 gam.py.bak
 portcheck.py.bak
 .gitignore
-.directory 
+.directory
 decommission.py
 dbQueryToCsv.py
-
+pwexpiry
+results.sh
