@@ -15,7 +15,7 @@ echo "*    strohm.luke@gmail.com      *"
 echo "*                               *"
 echo "*********************************"
 
-date1=`date -utc +%FT%T.%3NZ --date="7 days ago"`
+date1=`date --utc +%FT%T.%3NZ --date="7 days ago"`
 
 echo "Getting a list of suspended users..."
 
