@@ -2,7 +2,7 @@
 
 # MIT License
 
-# Copyright (c) 2018 Luke Strohm
+# Copyright (c) 2019 Luke Strohm
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,7 @@
 # This program relies on GAM to function. You must install and configure it before using this program.
 # GAM can be found at: https://github.com/jay0lee/GAM
 
-# See lines 517, 614, 860, 869, 877, 907, and 915 for a domain specific setting that will need changed.
+# ******See lines 517, 614, 860, 869, 877, 907, and 915 for a domain specific setting that will need changed.******
 
 import os
 import time
