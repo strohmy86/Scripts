@@ -99,7 +99,7 @@ The Madison Technology Office"""
 				text.format(name=name,title=title),
 				)
 
-		with open('Invalid-Files-'+date+'.csv', mode='w', newline='') as fa:
+		with open('Unauthorized-Files-'+date+'.csv', mode='w', newline='') as fa:
 			writer = csv.writer(fa)
 			headers = ['Name', 'Email', 'File']
 			writer.writerow(headers)
