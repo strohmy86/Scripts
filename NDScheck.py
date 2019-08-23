@@ -6,6 +6,19 @@ import sys
 import time
 import paramiko
 
+class Color:
+    PURPLE = '\033[95m'
+    CYAN = '\033[96m'
+    DARKCYAN = '\033[36m'
+    BLUE = '\033[94m'
+    GREEN = '\033[92m'
+    YELLOW = '\033[93m'
+    RED = '\033[91m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+    END = '\033[0m'
+
+print(Color.DARKCYAN + '\n')
 print("*********************************")
 print("*      NDScheck Utility         *")
 print("*                               *")
@@ -14,7 +27,7 @@ print("*        Luke Strohm            *")
 print("*    strohm.luke@gmail.com      *")
 print("*                               *")
 print("*********************************")
-print("\n")
+print("\n" + Color.END)
 
 
 def main(server):
@@ -28,29 +41,29 @@ def main(server):
     client.connect(server, username='root', pkey=k)
 
     # Checks NDS time sync
-    print('Checking NDS time sync...')
+    print(Color.YELLOW+'Checking NDS time sync...'+Color.END)
     stdin, stdout, stderr = client.exec_command('ndsrepair -T')
     for line in stdout:
         print(line.strip('\n'))
     print('\n')
 
     # Prompts user to run more tests
-    e = input('Would you like to continue checks? [Y/n]:  ')
+    e = input(Color.CYAN+'Would you like to continue checks? [Y/n]:  '+Color.END)
     if e == 'y' or e == 'yes' or e == '':
-        print('Checking NDS replication status...')
+        print(Color.YELLOW+'Checking NDS replication status...'+Color.END)
         stdin, stdout, stderr = client.exec_command('ndsrepair -E')
         for line in stdout:
             print(line.strip('\n'))
         print('\n')
     elif e != 'y' or e != 'yes' or e != '':
-        print('Exiting.')
+        print(COlor.GREEN+'Exiting.'+Color.END)
         client.close()
         menu()
 
     # Prompts user to run the last test
-    n = input('Would you like to run the last check? [Y/n]:  ')
+    n = input(Color.CYAN+'Would you like to run the last check? [Y/n]:  '+Color.END)
     if n == 'y' or n == 'yes' or n == '':
-        print('Checking NDS server status...')
+        print(Color.YELLOW+'Checking NDS server status...'+Color.END)
         stdin, stdout, stderr = client.exec_command('ndsrepair -N')
         time.sleep(1)
         stdin.write('\n')
@@ -61,9 +74,9 @@ def main(server):
         for line in data:
             print(line)
         print('\n')
-        input('Press Enter to continue...')
+        input(Color.GREEN+'Press Enter to continue...'+Color.END)
     elif n != 'y' or n != 'yes' or n != '':
-        print('Exiting.')
+        print(Color.GREEN+'Exiting.'+Color.END)
         client.close()
         menu()
 
@@ -73,63 +86,57 @@ def menu():
     # Generate the menu.
     while True:
         print('\n')
-        print('Menu:')
+        print(Color.PURPLE + 'Menu:' + Color.END)
         print('\n')
-        print('1)\tMADHS01FP1')
-        print('2)\tMADHS01STAFF1')
-        print('3)\tMADHS01STU1')
-        print('4)\tMADHS01NS1')
-        print('5)\tMADHS01NS2')
-        print('6)\tMADHS01WEB1')
-        print('7)\tMADHS01GW1')
-        print('8)\tMADMS01FP1')
-        print('9)\tMADEA01FP1')
-        print('10)\tMADMI01FP1')
-        print('11)\tMADSO01FP1')
-        print('0)\tExit')
+        print('1)  MADHS01STAFF1')
+        print('2)  MADHS01STU1')
+        print('3)  MADHS01WEB1')
+        print('4)  MADHS01IDM')
+        print('5)  MADHS01GW1')
+        print('6)  MADMS01FP1')
+        print('7)  MADEA01FP1')
+        print('8)  MADMI01FP1')
+        print('9)  MADSO01FP1')
+        print('0)  Exit')
         print('\n')
 
         # Prompts user to select a menu item.
-        selection = input('Please Choose a Server: ')
+        selection = input(Color.BOLD+'Please Choose a Server: '+Color.END)
 
         # Sets the server variable based on menu selection then executes the main function.
         if selection == '1':
-            server = '10.14.0.20'
+            server = 'madhs01staff1.mlsd.net'
             main(server)
         elif selection == '2':
-            server = '10.14.10.12'
+            server = 'madhs01stu1.mlsd.net'
             main(server)
         elif selection == '3':
-            server = '10.14.10.11'
+            server = 'madhs01web1.mlsd.net'
             main(server)
         elif selection == '4':
-            server = '10.14.0.4'
+            server = 'madhs01idm.mlsd.net'
             main(server)
         elif selection == '5':
-            server = '10.14.0.5'
+            server = 'madhs01gw1.mlsd.net'
             main(server)
         elif selection == '6':
-            server = '10.14.0.22'
+            server = 'madms01fp1.mlsd.net'
             main(server)
         elif selection == '7':
-            server = '10.14.0.6'
+            server = 'madea01fp1.mlsd.net'
             main(server)
         elif selection == '8':
-            server = '10.14.48.10'
+            server = 'madmi01fp1.mlsd.net'
             main(server)
         elif selection == '9':
-            server = '10.14.16.10'
-            main(server)
-        elif selection == '10':
-            server = '10.14.40.10'
-            main(server)
-        elif selection == '11':
-            server = '10.14.32.10'
+            server = 'madso01fp1.mlsd.net'
             main(server)
         elif selection == '0':
             sys.exit()
         else:
-            print('Unknown Option Selected!')
+            print(Color.RED+'Unknown Option Selected!'+Color.END)
+            time.sleep(2)
+            menu()
 
 # Starts the script.
 
