@@ -3,7 +3,19 @@
 import ipaddress
 from subprocess import Popen, DEVNULL
 
-print("\n")
+class Color:
+    PURPLE = '\033[95m'
+    CYAN = '\033[96m'
+    DARKCYAN = '\033[36m'
+    BLUE = '\033[94m'
+    GREEN = '\033[92m'
+    YELLOW = '\033[93m'
+    RED = '\033[91m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+    END = '\033[0m'
+
+print(Color.DARKCYAN+"\n")
 print("*********************************")
 print("*      Pingsweep script         *")
 print("*                               *")
@@ -12,16 +24,16 @@ print("*        Luke Strohm            *")
 print("*    strohm.luke@gmail.com      *")
 print("*                               *")
 print("*********************************")
-print("\n")
+print("\n"+Color.END)
 
 
 # Prompt the user to input a network address
-net_addr = input("Enter a network address in CIDR format(ex.192.168.1.0/24):  ")
+net_addr = input(Color.BOLD+"Enter a network address in CIDR format(ex.192.168.1.0/24):  "+Color.END)
 net = net_addr.replace(".", "_")
 net = net.replace("/", "-")
 
 # Ask user if they want the list exported to a file
-file = input("Do you want to export the list to a text file? [y/N]:  ")
+file = input(Color.BOLD+"Do you want to export the list to a text file? [y/N]:  "+Color.END)
 
 # Create the network
 ip_net = ipaddress.ip_network(net_addr)
@@ -58,6 +70,6 @@ if file == "yes" or file == "y":
     fw = open('ActiveIps-'+net+'.txt', 'a')
     fw.write("Total Active Devices: %s" % total)
     fw.close()
-    print("Saved list to ActiveIps-"+net+".txt")
+    print(Color.CYAN+"Saved list to ActiveIps-"+net+".txt"+Color.END)
 elif file == "no" or file == "n" or file == "":
-    print("Total Active Devices: %s" % len(t))
+    print(Color.YELLOW+"Total Active Devices: %s" % len(t)+Color.END)
