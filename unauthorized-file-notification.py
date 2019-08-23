@@ -39,7 +39,7 @@ class Color:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
     END = '\033[0m'
-    
+
 
 def cred():
 
@@ -74,15 +74,15 @@ def main():
 			print(f'Sending email to '+Color.GREEN+f'{name}'+Color.END)
 			msg = MIMEMultipart()
 			msg['From'] = frAddr
-			msg['Subject'] = 'Unauthorized File Found on Your Google Drive'			
+			msg['Subject'] = 'Unauthorized File Found on Your Google Drive'
 			msg['To'] = email
 
-			body = """Hi {name}, 
+			body = """Hi {name},
 
 A file with the name of "{title}" was discovered during an audit of The Madison Local School District's Google domain.
 
 This file violates MLSD's Acceptible Use Policy that you signed at the beginning of the school year.  The file has been deleted,
-and your principal notified.  Do not store files of this nature on MLSD's Google Drive in the future.
+and your principal has been notified.  Do not store files of this nature on MLSD's Google Drive in the future.
 
 Continued violations to MLSD's Acceptible Use Policy could result in the loss of your technology privileges.
 
@@ -114,4 +114,3 @@ The Madison Technology Office"""
 
 cred()
 main()
-
