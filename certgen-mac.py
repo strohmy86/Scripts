@@ -8,10 +8,21 @@ import paramiko
 import subprocess
 import pipes
 
+class Color:
+    PURPLE = '\033[95m'
+    CYAN = '\033[96m'
+    DARKCYAN = '\033[36m'
+    BLUE = '\033[94m'
+    GREEN = '\033[92m'
+    YELLOW = '\033[93m'
+    RED = '\033[91m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+    END = '\033[0m'
 
 def cred():
 
-    print("\n")
+    print(Color.DARKCYAN+"\n")
     print("*********************************")
     print("*       CertGen Utility         *")
     print("*                               *")
@@ -20,7 +31,7 @@ def cred():
     print("*    strohm.luke@gmail.com      *")
     print("*                               *")
     print("*********************************")
-    print("\n")
+    print("\n"+Color.END)
 
 
 # Specify private key file
@@ -52,14 +63,14 @@ def close():
 def start():
     global name
     global path
-    name = input("What is the name of the machine?  ")
+    name = input(Color.BOLD+"What is the name of the machine?  "+Color.END)
     if name != '':  # Creates a certificate request if a PC name is given
-        print("Creating certificate request for " + name)
+        print(Color.YELLOW+"Creating certificate request for "+Color.BOLD + name + Color.END)
         stdin, stdout, stderr = fp.exec_command('touch ' + path + name)
         time.sleep(2)
         gen()
     elif name == '':  # If no name is given, start the function over
-        print('No machine name specified.')
+        print(Color.RED+'No machine name specified.'+Color.END)
         time.sleep(1)
         start()
     return
@@ -72,19 +83,19 @@ def gen():
     resp = subprocess.call(  # Checks for the request file
         ['ssh', '-q', '-i', '/Users/LStrohm/.ssh/Identityrsa', 'root@10.14.10.12', 'test -e ' + pipes.quote(path + name)])
     if resp  == 0:  # If the file is present, runs the cert-gen script
-        print('Request created successfully, awaiting certificate generation...')
+        print(Color.CYAN+'Request created successfully, awaiting certificate generation...'+Color.END)
         stdin, stdout, stderr = rad.exec_command('/root/certgen/cert-gen')
         time.sleep(3)
         certcheck()
     elif resp != 0:  # If request file is missing, prompts to try again
-        again = input('Certificate request failed! Would you like to try again? [Y/n]  ')
+        again = input(Color.RED+'Certificate request failed! Would you like to try again? [Y/n]  '+Color.END)
         if again == 'y' or again == 'yes' or again == '':  # If user wants to try again, the gen() function is restarted
             gen()
         elif again == 'n' or again == 'no':  # exits the script if user inputs n or no
-            print('Exiting...')
+            print(Color.GREEN+'Exiting...'+Color.END)
             close()
         else:  # If anything other than an input above is given, the script errors out and exits
-            print('Error!')
+            print(Color.RED+'Error!'+Color.END)
             close()
     return
 
@@ -97,18 +108,18 @@ def certcheck():
     gen1 = subprocess.call(  # Checks to see if the certificate file was generated correctly
         ['ssh', '-q', '-i', '/Users/LStrohm/.ssh/Identityrsa', 'root@10.14.10.12', 'test -e ' + pipes.quote(cert)])
     if gen1 == 0:  # If the certificate exists, prompts user if they want to generate another
-        again = input('Certificate generated successfully! Would you like to generate another certificate? [y/N]  ')
+        again = input(Color.GREEN+'Certificate generated successfully! Would you like to generate another certificate? [y/N]  '+Color.END)
         if again == 'y' or again == 'yes':  # If yes, the script starts from the beginning
             time.sleep(1)
             start()
         elif again == 'n' or again == 'no' or again == '':  # If no, the script exits
-            print('Exiting...')
+            print(Color.GREEN+'Exiting...'+Color.END)
             close()
         else:  # If anything other than an input above is given, the script errors out and exits
-            print('Error!')
+            print(Color.RED+'Error!'+Color.END)
             close()
     elif gen1 != 0:  # If certificate generation failed, prompts user to try again
-        tryagain = input('Certificate generation failed. Would you like to try again? [Y/n]  ')
+        tryagain = input(Color.RED+'Certificate generation failed. Would you like to try again? [Y/n]  '+Color.END)
         if tryagain == 'y' or tryagain == 'yes' or tryagain == '':  # If user inputs yes, checks for existing request
             time.sleep(1)
             resp = subprocess.call(
@@ -118,10 +129,10 @@ def certcheck():
             elif resp != 0:  # If the request does not exist, starts the script from the beginning
                 start()
         elif tryagain == 'n' or tryagain == 'no':  # If user inputs no, exits the program
-            print('Exiting...')
+            print(Color.GREEN+'Exiting...'+Color.END)
             close()
         else:  # If anything other than an input above is given, the script errors out and exits
-            print('Error!')
+            print(Color.RED+'Error!'+Color.END)
             close()
     return
 
