@@ -25,8 +25,34 @@
 import pandas as pd
 import hashlib
 
-df = pd.read_csv('AllStudents2.csv')
+class Color:
+    PURPLE = '\033[95m'
+    CYAN = '\033[96m'
+    DARKCYAN = '\033[36m'
+    BLUE = '\033[94m'
+    GREEN = '\033[92m'
+    YELLOW = '\033[93m'
+    RED = '\033[91m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+    END = '\033[0m'
+
+print("\n")
+print(Color.DARKCYAN)
+print("*********************************")
+print("*    Password Hash Utility      *")
+print("*                               *")
+print("*  Written and maintained by:   *")
+print("*        Luke Strohm            *")
+print("*    strohm.luke@gmail.com      *")
+print("*                               *")
+print("*********************************")
+print(Color.END)
+print("\n")
+
+fd = input(Color.BOLD+'CSV file to be hashed (Full Path):  '+Color.END)
+df = pd.read_csv(fd)
 
 df['userPassword'] = df['userPassword'].apply(lambda x: hashlib.sha1(str(x).encode('utf-8')).hexdigest())
 
-df.to_csv('AllStudents_Hashed.csv', index=False)
+df.to_csv(fd[:-4]+'_Hashed.csv', index=False)
