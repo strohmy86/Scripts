@@ -51,6 +51,7 @@ def cred():
     print("*  Written and maintained by:   *")
     print("*        Luke Strohm            *")
     print("*    strohm.luke@gmail.com      *")
+    print("*  https://github.com/strohmy86 *")
     print("*                               *")
     print("*********************************")
     print("\n"+Color.END)

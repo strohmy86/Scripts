@@ -34,6 +34,7 @@ echo "*                               *"
 echo "*   Written and maintained by:  *"
 echo "*         Luke Strohm           *"
 echo "*    strohm.luke@gmail.com      *"
+echo "*  https://github.com/strohmy86 *"
 echo "*                               *"
 echo "*********************************"
 

@@ -22,6 +22,18 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+echo ""
+echo "*********************************"
+echo "*      Pingsweep Utility        *"
+echo "*                               *"
+echo "*  Written and maintained by:   *"
+echo "*        Luke Strohm            *"
+echo "*    strohm.luke@gmail.com      *"
+echo "*  https://github.com/strohmy86 *"
+echo "*                               *"
+echo "*********************************"
+echo ""
+
 if [ "$1" == "" ]
 then
 echo "Usage: ./pingsweep.sh [network segment]"
