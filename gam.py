@@ -25,7 +25,7 @@
 # This program relies on GAM to function. You must install and configure it before using this program.
 # GAM can be found at: https://github.com/jay0lee/GAM
 
-# See lines 517, 614, 860, 869, 877, 907, and 915 for a domain specific setting that will need changed.
+# See lines 557, 654, 900, 909, 877, 917, 947 and 955 for a domain specific setting that will need changed.
 
 import os
 import time
