@@ -66,11 +66,12 @@ def main():
 	date = now.strftime("%Y-%m-%d")
 	frAddr = 'noreply@madisonrams.net'
 	server = smtplib.SMTP(host='relay.mlsd.net', port=25)
+	building = input('What building:  ')
 	file = input('What is the filename w/full path:  ')
 	with open(file, mode='r') as fh:
 		reader = csv.reader(fh)
 		next(reader)  # Skip header row
-		for email, ids, title, mime, name in reader:
+		for email, ids, title, created, mime, modified, name in reader:
 			print(f'Sending email to '+Color.GREEN+f'{name}'+Color.END)
 			msg = MIMEMultipart()
 			msg['From'] = frAddr
@@ -99,15 +100,15 @@ The Madison Technology Office"""
 				text.format(name=name,title=title),
 				)
 
-		with open('Unauthorized-Files-'+date+'.csv', mode='w', newline='') as fa:
+		with open(building+'-Unauthorized-Files-'+date+'.csv', mode='w', newline='') as fa:
 			writer = csv.writer(fa)
-			headers = ['Name', 'Email', 'File']
+			headers = ['Name', 'Email', 'File', 'Created Date', 'Modified Date']
 			writer.writerow(headers)
 			fs = open(file, mode='r')
 			reader2 = csv.reader(fs)
 			next(reader2) # Skip header row
-			for email, ids, title, mime, name in reader2:
-				data = [name, email, title]
+			for email, ids, title, created, mime, modified, name in reader2:
+				data = [name, email, title, created, modified]
 				writer.writerow(data)
 			fs.close()
 
