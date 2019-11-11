@@ -24,23 +24,66 @@
 
 import os
 import csv
+import sys
 
-building = input('What is the building:  ')
-file = input('What is the file:  ')
-basedir = '/home/lstrohm/Audit-Files/'+building+'/'
+class Color:
+    PURPLE = '\033[95m'
+    CYAN = '\033[96m'
+    DARKCYAN = '\033[36m'
+    BLUE = '\033[94m'
+    GREEN = '\033[92m'
+    YELLOW = '\033[93m'
+    RED = '\033[91m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+    END = '\033[0m'
 
-with open(file) as csvfile:
-    readcsv = csv.reader(csvfile)
-    next(readcsv)
-    for email in readcsv:
-        #print(str(email)[2:-2])
-        output = basedir+str(email)[2:-2]
-        user = str(email)[2:-2]
-        if os.path.isdir(output) == False:
-            os.mkdir(output)
+def cred():
 
-        query = 'query "mimeType contains *java* OR mimeType contains *download* OR mimeType contains *zip* OR mimeType contains *audio/* OR mimeType contains *image/* OR mimeType contains *video/*"'
-        query1 = query.replace("*", r"'")
-        cmd = '/home/lstrohm/bin/gam/gam user ' +user+' get drivefile ' + query1 + ' targetfolder ' + output + ' format microsoft'
-        os.system(cmd)
-csvfile.close()
+    print('\n')
+    print(Color.DARKCYAN)
+    print("*********************************")
+    print("*Python 3 Script For Downloading*")
+    print("*  Suspicious Files on Student  *")
+    print("*         Google Drives         *")
+    print("*                               *")
+    print("*   Written and maintained by   *")
+    print("*          Luke Strohm          *")
+    print("*     strohm.luke@gmail.com     *")
+    print("*  https://github.com/strohmy86 *")
+    print("*                               *")
+    print("*********************************")
+    print(Color.END)
+
+def download():
+    #file = input('What is the file:  ')
+    basedir = '/home/lstrohm/Audit-Files/'+building+'/'
+
+    with open(file) as csvfile:
+        readcsv = csv.reader(csvfile)
+        next(readcsv) #Skip header row
+        for email, id, title, created, mime, modified, owner in readcsv:
+            #print(str(email)[2:-2])
+            output = basedir+str(email)
+            user = str(email)
+            id = str(id)
+            if os.path.isdir(output) == False:
+                os.mkdir(output)
+
+            cmd = '/home/lstrohm/bin/gam/gam user ' +user+' get drivefile id ' + id + ' targetfolder ' + output + ' format microsoft'
+            os.system(cmd)
+    csvfile.close()
+
+cred()
+building = input(Color.BOLD+'What is the building:  '+Color.END)
+query = 'query "mimeType contains *java* OR mimeType contains *download* OR mimeType contains *zip* OR mimeType contains *audio/* OR mimeType contains *image/* OR mimeType contains *video/*"'
+query1 = query.replace("*", r"'")
+cmd = '/home/lstrohm/bin/gam/gam ou "/Student/' +building+ '" show filelist ' +query1+ ' allfields > /home/lstrohm/'+building+'-Filelist.csv'
+os.system(cmd)
+file = '/home/lstrohm/'+building+'-Filelist.csv'
+print('\n')
+print(Color.YELLOW+'File saved as '+building+'-Filelist.csv in "/home/lstrohm/"\n'+Color.END)
+input(Color.GREEN+'Press enter when CSV file is ready...\n'+Color.END)
+download()
+
+sys.exit()
