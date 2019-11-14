@@ -56,34 +56,41 @@ def cred():
     print(Color.END)
 
 def download():
-    #file = input('What is the file:  ')
+    global building
+    os.system('export GAM_THREADS=5')
     basedir = '/home/lstrohm/Audit-Files/'+building+'/'
+    file = '/home/lstrohm/'+building+'-Filelist.csv'
 
-    with open(file) as csvfile:
-        readcsv = csv.reader(csvfile)
-        next(readcsv) #Skip header row
-        for email, id, title, created, mime, modified, owner in readcsv:
-            #print(str(email)[2:-2])
-            output = basedir+str(email)
-            user = str(email)
-            id = str(id)
-            if os.path.isdir(output) == False:
-                os.mkdir(output)
+    with open(file[:-4]+'-Modded.csv', mode='w', newline='') as fa:
+        writer = csv.writer(fa)
+        headers = ['email', 'id', 'folder']
+        writer.writerow(headers)
+        fs = open(file, mode='r')
+        reader = csv.reader(fs)
+        next(reader)  # Skip header row
+        for email, ids, title, created, mime, modified, name in reader:
+            data = [email, ids, str(basedir+email)]
+            writer.writerow(data)
+        fs.close()
+    fa.close()
 
-            cmd = '/home/lstrohm/bin/gam/gam user ' +user+' get drivefile id ' + id + ' targetfolder ' + output + ' format microsoft'
-            os.system(cmd)
-    csvfile.close()
+    cmd = '/home/lstrohm/bin/gam/gam csv /home/lstrohm/'+building+'-Filelist-Modded.csv gam user ~email get drivefile id ~id targetfolder ~folder format microsoft'
+    os.system(cmd)
+    os.system('export GAM_THREADS=15')
+
+def makeCsv():
+    global building
+    query = 'query "mimeType contains *java* OR mimeType contains *download* OR mimeType contains *zip* OR mimeType contains *audio/* OR mimeType contains *image/* OR mimeType contains *video/*"'
+    query1 = query.replace("*", r"'")
+    cmd = '/home/lstrohm/bin/gam/gam ou "/Student/' +building+ '" show filelist ' +query1+ ' id name createddate mimetype modifieddate ownerNames > /home/lstrohm/'+building+'-Filelist.csv'
+    os.system(cmd)
+    file = '/home/lstrohm/'+building+'-Filelist.csv'
+    print('\n')
+    print(Color.YELLOW+'File saved as '+building+'-Filelist.csv in "/home/lstrohm/"\n'+Color.END)
 
 cred()
 building = input(Color.BOLD+'What is the building:  '+Color.END)
-query = 'query "mimeType contains *java* OR mimeType contains *download* OR mimeType contains *zip* OR mimeType contains *audio/* OR mimeType contains *image/* OR mimeType contains *video/*"'
-query1 = query.replace("*", r"'")
-cmd = '/home/lstrohm/bin/gam/gam ou "/Student/' +building+ '" show filelist ' +query1+ ' allfields > /home/lstrohm/'+building+'-Filelist.csv'
-os.system(cmd)
-file = '/home/lstrohm/'+building+'-Filelist.csv'
-print('\n')
-print(Color.YELLOW+'File saved as '+building+'-Filelist.csv in "/home/lstrohm/"\n'+Color.END)
-input(Color.GREEN+'Press enter when CSV file is ready...\n'+Color.END)
+makeCsv()
 download()
 
 sys.exit()
