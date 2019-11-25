@@ -56,7 +56,7 @@ print("\n" + Color.END)
 def main(server):
 
     # Specify private key file
-    k = paramiko.RSAKey.from_private_key_file('/home/lstrohm/.ssh/Identityrsa')
+    k = paramiko.RSAKey.from_private_key_file('/home/lstrohm/.ssh/id_rsa')
 
     # Configure SSH connection
     client = paramiko.SSHClient()
