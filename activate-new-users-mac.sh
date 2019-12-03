@@ -22,14 +22,15 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-PATH="$PATH:~/bin/gam"; export PATH
+PATH="$PATH:~/bin/gamadv-xtd3"; export PATH
 
 echo "*********************************"
 echo "*  GAM script to activate new   *"
 echo "*  users that are suspended at  *"
 echo "*     creation time by GCDS.    *"
 echo "*                               *"
-echo "*     Uses  GAM by jay0lee      *"
+echo "*      Uses GAMADV-XTD3         *"
+echo "*       by Ross Scroggs         *"
 echo "*                               *"
 echo "*   Written and maintained by:  *"
 echo "*         Luke Strohm           *"
