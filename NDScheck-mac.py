@@ -79,7 +79,7 @@ def main(server):
             print(line.strip('\n'))
         print('\n')
     elif e != 'y' or e != 'yes' or e != '':
-        print(COlor.GREEN+'Exiting.'+Color.END)
+        print(Color.GREEN+'Exiting.'+Color.END)
         client.close()
         menu()
 

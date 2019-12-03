@@ -24,6 +24,7 @@
 
 import os
 import csv
+import time
 
 class Color:
     PURPLE = '\033[95m'
@@ -89,7 +90,7 @@ def download():
     elif sel =='n' or sel == 'N' or sel == 'no' or sel == 'No' or sel == 'NO': # If no, the program exits
         exit()
     else: # If anything other than an input above is given, the script errors out and exits
-        print(color.RED + 'Error!' + color.END)
+        print(Color.RED + 'Error!' + Color.END)
         time.sleep(1)
         exit()
 
