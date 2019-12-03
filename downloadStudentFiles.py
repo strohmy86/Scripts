@@ -24,7 +24,6 @@
 
 import os
 import csv
-import sys
 
 class Color:
     PURPLE = '\033[95m'
@@ -57,7 +56,6 @@ def cred():
 
 def download():
     global building
-    os.system('export GAM_THREADS=5')
     basedir = '/home/lstrohm/Audit-Files/'+building+'/'
     file = '/home/lstrohm/'+building+'-Filelist.csv'
 
@@ -68,29 +66,46 @@ def download():
         fs = open(file, mode='r')
         reader = csv.reader(fs)
         next(reader)  # Skip header row
-        for email, ids, title, created, mime, modified, name in reader:
+        total = 0
+        power_labels = {0 : '', 1: 'kilo', 2: 'mega', 3: 'giga', 4: 'tera'}
+        for email, ids, title, created, mime, modified, owners, name, size in reader:
             data = [email, ids, str(basedir+email)]
             writer.writerow(data)
+            total += size
         fs.close()
     fa.close()
 
-    cmd = '/home/lstrohm/bin/gam/gam csv /home/lstrohm/'+building+'-Filelist-Modded.csv gam user ~email get drivefile id ~id targetfolder ~folder format microsoft'
-    os.system(cmd)
-    os.system('export GAM_THREADS=15')
+    cmd = '/home/lstrohm/bin/gamadv-xtd3/gam config num_threads = 5 csv /home/lstrohm/'+building+'-Filelist-Modded.csv gam user ~email get drivefile id ~id targetfolder ~folder format microsoft'
+    power = 2**10
+    n = 0
+    while total > power:
+        total /= power
+        n += 1
+    total = format(total, '.2f') # give 2 digits after the point
+
+    sel = input(Color.RED + str(total) + ' ' + power_labels[n]+'bytes is going to be downloaded. Do you wish to continue? [Y/n]  ' + Color.END)
+    if sel =='y' or sel == 'Y' or sel == 'yes' or sel == 'Yes' or sel == 'YES' or sel == '': # If yes, the function continues
+        os.system(cmd)
+    elif sel =='n' or sel == 'N' or sel == 'no' or sel == 'No' or sel == 'NO': # If no, the program exits
+        exit()
+    else: # If anything other than an input above is given, the script errors out and exits
+        print(color.RED + 'Error!' + color.END)
+        time.sleep(1)
+        exit()
 
 def makeCsv():
     global building
-    query = 'query "mimeType contains *java* OR mimeType contains *download* OR mimeType contains *zip* OR mimeType contains *audio/* OR mimeType contains *image/* OR mimeType contains *video/*"'
+    query = 'query "not mimeType contains *vnd.google* and mimeType!=*text/plain* and not mimeType contains *officedocument* and not name contains *Getting Started* and trashed!=True"'
     query1 = query.replace("*", r"'")
-    cmd = '/home/lstrohm/bin/gam/gam ou "/Student/' +building+ '" show filelist ' +query1+ ' id name createddate mimetype modifieddate ownerNames > /home/lstrohm/'+building+'-Filelist.csv'
+    cmd = '/home/lstrohm/bin/gamadv-xtd3/gam redirect csv /home/lstrohm/'+building+'-Filelist.csv multiprocess ou "/Student/' +building+ '" print filelist ' +query1+' fields id,name,createdtime,mimetype,modifiedtime,owners.displayname,size'
     os.system(cmd)
     file = '/home/lstrohm/'+building+'-Filelist.csv'
     print('\n')
-    print(Color.YELLOW+'File saved as '+building+'-Filelist.csv in "/home/lstrohm/"\n'+Color.END)
+    print(Color.YELLOW+'File saved as '+file+'\n'+Color.END)
 
 cred()
 building = input(Color.BOLD+'What is the building:  '+Color.END)
 makeCsv()
 download()
 
-sys.exit()
+exit()
