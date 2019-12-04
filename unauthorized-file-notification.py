@@ -29,35 +29,35 @@ from email.mime.text import MIMEText
 import datetime
 
 class Color:
-    PURPLE = '\033[95m'
-    CYAN = '\033[96m'
-    DARKCYAN = '\033[36m'
-    BLUE = '\033[94m'
-    GREEN = '\033[92m'
-    YELLOW = '\033[93m'
-    RED = '\033[91m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
-    END = '\033[0m'
+	PURPLE = '\033[95m'
+	CYAN = '\033[96m'
+	DARKCYAN = '\033[36m'
+	BLUE = '\033[94m'
+	GREEN = '\033[92m'
+	YELLOW = '\033[93m'
+	RED = '\033[91m'
+	BOLD = '\033[1m'
+	UNDERLINE = '\033[4m'
+	END = '\033[0m'
 
 
 def cred():
 
-    print('\n')
-    print(Color.DARKCYAN)
-    print("*********************************")
-    print("* Python 3 Script For Notifying *")
-    print("* Students When an Unauthorized *")
-    print("* File Is Found On Their Google *")
-    print("*            Drive              *")
-    print("*                               *")
-    print("*   Written and maintained by   *")
-    print("*          Luke Strohm          *")
-    print("*     strohm.luke@gmail.com     *")
-    print("*  https://github.com/strohmy86 *")
-    print("*                               *")
-    print("*********************************")
-    print(Color.END)
+	print('\n')
+	print(Color.DARKCYAN)
+	print("*********************************")
+	print("* Python 3 Script For Notifying *")
+	print("* Students When an Unauthorized *")
+	print("* File Is Found On Their Google *")
+	print("*            Drive              *")
+	print("*                               *")
+	print("*   Written and maintained by   *")
+	print("*          Luke Strohm          *")
+	print("*     strohm.luke@gmail.com     *")
+	print("*  https://github.com/strohmy86 *")
+	print("*                               *")
+	print("*********************************")
+	print(Color.END)
 
 
 def main():
@@ -66,19 +66,19 @@ def main():
 	date = now.strftime("%Y-%m-%d")
 	frAddr = 'noreply@madisonrams.net'
 	server = smtplib.SMTP(host='relay.mlsd.net', port=25)
-	building = input('What building:  ')
 	file = input('What is the filename w/full path:  ')
+	building = file[14:-13]
 	with open(file, mode='r') as fh:
 		reader = csv.reader(fh)
 		next(reader)  # Skip header row
 		for email, ids, title, created, mime, modified, owners, name, size in reader:
 			print(f'Sending email to '+Color.GREEN+f'{name}'+Color.END)
-			msg = MIMEMultipart()
+			msg = MIMEMultipart('alternative')
 			msg['From'] = frAddr
 			msg['Subject'] = 'Unauthorized File Found on Your Google Drive'
 			msg['To'] = email
 
-			body = """Hi {name},
+			text = """Hi {name},
 
 A file with the name of "{title}" was discovered during an audit of The Madison Local School District's Google domain.
 
@@ -90,14 +90,37 @@ Continued violations to MLSD's Acceptible Use Policy could result in the loss of
 Thank you for your cooperation,
 
 The Madison Technology Office"""
+			
+			html = """\
+<html>
+	<body>
+		<p>Hi {name},</p>
 
-			msg.attach(MIMEText(body,'plain'))
+		<p>A file with the name of <strong><em>{title}</strong></em> was discovered during an audit of The Madison Local School District's Google domain.</p>
 
-			text = msg.as_string()
+		<p>This file violates MLSD's Acceptible Use Policy that you signed at the beginning of the school year.  The file has been deleted,
+		and your principal has been notified.  Do not store files of this nature on MLSD's Google Drive in the future.</p>
+
+		<p>Continued violations to MLSD's Acceptible Use Policy could result in the loss of your technology privileges.</p>
+
+		<p>Thank you for your cooperation,</p>
+
+		<p>The Madison Technology Office</p>
+	</body>
+</html>
+"""
+
+			part1 = MIMEText(text, 'plain')
+			part2 = MIMEText(html, 'html')
+
+			msg.attach(part1)
+			msg.attach(part2)
+
+			message = msg.as_string()
 			server.sendmail(
 				frAddr,
 				email,
-				text.format(name=name,title=title),
+				message.format(name=name,title=title),
 				)
 
 		with open(building+'-Unauthorized-Files-'+date+'.csv', mode='w', newline='') as fa:
