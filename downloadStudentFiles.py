@@ -72,7 +72,9 @@ def download():
         for email, ids, title, created, mime, modified, owners, name, size in reader:
             data = [email, ids, str(basedir+email)]
             writer.writerow(data)
-            total += size
+            if size in (None, ""):
+                continue
+            total += int(size)
         fs.close()
     fa.close()
 
@@ -96,7 +98,7 @@ def download():
 
 def makeCsv():
     global building
-    query = 'query "not mimeType contains *vnd.google* and mimeType!=*text/plain* and not mimeType contains *officedocument* and not name contains *Getting Started* and trashed!=True"'
+    query = 'query "not mimeType contains *vnd.google* and mimeType!=*text/plain* and not mimeType contains *officedocument* and not name contains *Getting Started* and trashed!=True and not name contains *.hex* and mimeType!=*application/msword* and mimeType!=*application/pdf*"'
     query1 = query.replace("*", r"'")
     cmd = '/home/lstrohm/bin/gamadv-xtd3/gam redirect csv /home/lstrohm/'+building+'-Filelist.csv multiprocess ou "/Student/' +building+ '" print filelist ' +query1+' fields id,name,createdtime,mimetype,modifiedtime,owners.displayname,size'
     os.system(cmd)
