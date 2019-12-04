@@ -71,7 +71,7 @@ def main():
 	with open(file, mode='r') as fh:
 		reader = csv.reader(fh)
 		next(reader)  # Skip header row
-		for email, ids, title, created, mime, modified, name in reader:
+		for email, ids, title, created, mime, modified, owners, name, size in reader:
 			print(f'Sending email to '+Color.GREEN+f'{name}'+Color.END)
 			msg = MIMEMultipart()
 			msg['From'] = frAddr
@@ -107,7 +107,7 @@ The Madison Technology Office"""
 			fs = open(file, mode='r')
 			reader2 = csv.reader(fs)
 			next(reader2) # Skip header row
-			for email, ids, title, created, mime, modified, name in reader2:
+			for email, ids, title, created, mime, modified, owners, name, size in reader2:
 				data = [name, email, title, created, modified]
 				writer.writerow(data)
 			fs.close()
