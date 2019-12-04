@@ -38,8 +38,8 @@ class Color:
     UNDERLINE = '\033[4m'
     END = '\033[0m'
 
-def cred():
 
+def cred():
     print('\n')
     print(Color.DARKCYAN)
     print("*********************************")
@@ -54,6 +54,7 @@ def cred():
     print("*                               *")
     print("*********************************")
     print(Color.END)
+
 
 def download():
     global building
@@ -87,14 +88,15 @@ def download():
     total = format(total, '.2f') # give 2 digits after the point
 
     sel = input(Color.RED + str(total) + ' ' + power_labels[n]+'bytes is going to be downloaded. Do you wish to continue? [Y/n]  ' + Color.END)
-    if sel =='y' or sel == 'Y' or sel == 'yes' or sel == 'Yes' or sel == 'YES' or sel == '': # If yes, the function continues
+    if sel == 'y' or sel == 'Y' or sel == 'yes' or sel == 'Yes' or sel == 'YES' or sel == '': # If yes, the function continues
         os.system(cmd)
-    elif sel =='n' or sel == 'N' or sel == 'no' or sel == 'No' or sel == 'NO': # If no, the program exits
+    elif sel == 'n' or sel == 'N' or sel == 'no' or sel == 'No' or sel == 'NO': # If no, the program exits
         exit()
     else: # If anything other than an input above is given, the script errors out and exits
         print(Color.RED + 'Error!' + Color.END)
         time.sleep(1)
         exit()
+
 
 def makeCsv():
     global building
@@ -103,8 +105,7 @@ def makeCsv():
     cmd = '/home/lstrohm/bin/gamadv-xtd3/gam redirect csv /home/lstrohm/'+building+'-Filelist.csv multiprocess ou "/Student/' +building+ '" print filelist ' +query1+' fields id,name,createdtime,mimetype,modifiedtime,owners.displayname,size'
     os.system(cmd)
     file = '/home/lstrohm/'+building+'-Filelist.csv'
-    print('\n')
-    print(Color.YELLOW+'File saved as '+file+'\n'+Color.END)
+    print(Color.YELLOW+'\nFile saved as '+file+'\n'+Color.END)
 
 cred()
 building = input(Color.BOLD+'What is the building:  '+Color.END)
