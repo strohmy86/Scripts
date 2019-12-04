@@ -101,13 +101,13 @@ def main_menu():  # Main Menu
             input(Color.GREEN + Msgs.cont + Color.END)
 
 def toTftp():
-	# OID List
-	# Protocol = .1.3.6.1.4.1.9.9.96.1.1.1.1.2.<Random Number> i 1
-	# Src File Type = .1.3.6.1.4.1.9.9.96.1.1.1.1.3.<Random Number> i 4
-	# Dest File Type = .1.3.6.1.4.1.9.9.96.1.1.1.1.4.<Random Number> i 1
-	# Srv Address = .1.3.6.1.4.1.9.9.96.1.1.1.1.5.<Random Number> a <IP Address>
-	# Dest File Name = .1.3.6.1.4.1.9.9.96.1.1.1.1.6.<Random Number> s <File Name>
-	# Entry Row Stats = .1.3.6.1.4.1.9.9.96.1.1.1.1.14.<Random Number> i 4
+    # OID List
+    # Protocol = .1.3.6.1.4.1.9.9.96.1.1.1.1.2.<Random Number> i 1
+    # Src File Type = .1.3.6.1.4.1.9.9.96.1.1.1.1.3.<Random Number> i 4
+    # Dest File Type = .1.3.6.1.4.1.9.9.96.1.1.1.1.4.<Random Number> i 1
+    # Srv Address = .1.3.6.1.4.1.9.9.96.1.1.1.1.5.<Random Number> a <IP Address>
+    # Dest File Name = .1.3.6.1.4.1.9.9.96.1.1.1.1.6.<Random Number> s <File Name>
+    # Entry Row Stats = .1.3.6.1.4.1.9.9.96.1.1.1.1.14.<Random Number> i 4
 
     rand = str(random.randint(100,999))
     swAddr = input('What is the IP address of the switch?   ')
@@ -174,13 +174,13 @@ def toTftp():
                 main_menu()
 
 def frTftp():
-	# OID List
-	# Protocol = .1.3.6.1.4.1.9.9.96.1.1.1.1.2.<Random Number> i 1
-	# Src File Type = .1.3.6.1.4.1.9.9.96.1.1.1.1.3.<Random Number> i 1
-	# Dest File Type = .1.3.6.1.4.1.9.9.96.1.1.1.1.4.<Random Number> i 4
-	# Srv Address = .1.3.6.1.4.1.9.9.96.1.1.1.1.5.<Random Number> a <IP Address>
-	# Dest File Name = .1.3.6.1.4.1.9.9.96.1.1.1.1.6.<Random Number> s <File Name>
-	# Entry Row Stats = .1.3.6.1.4.1.9.9.96.1.1.1.1.14.<Random Number> i 4
+    # OID List
+    # Protocol = .1.3.6.1.4.1.9.9.96.1.1.1.1.2.<Random Number> i 1
+    # Src File Type = .1.3.6.1.4.1.9.9.96.1.1.1.1.3.<Random Number> i 1
+    # Dest File Type = .1.3.6.1.4.1.9.9.96.1.1.1.1.4.<Random Number> i 4
+    # Srv Address = .1.3.6.1.4.1.9.9.96.1.1.1.1.5.<Random Number> a <IP Address>
+    # Dest File Name = .1.3.6.1.4.1.9.9.96.1.1.1.1.6.<Random Number> s <File Name>
+    # Entry Row Stats = .1.3.6.1.4.1.9.9.96.1.1.1.1.14.<Random Number> i 4
 
     rand = str(random.randint(100,999))
     swAddr = input('What is the IP address of the switch?   ')
