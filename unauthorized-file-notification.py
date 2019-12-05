@@ -42,7 +42,6 @@ class Color:
 
 
 def cred():
-
     print('\n')
     print(Color.DARKCYAN)
     print("*********************************")
@@ -61,7 +60,6 @@ def cred():
 
 
 def main():
-
     now = datetime.datetime.now()
     date = now.strftime("%Y-%m-%d")
     frAddr = 'noreply@madisonrams.net'
