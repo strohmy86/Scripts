@@ -22,7 +22,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# This is a python script to create a certificate request and then process it using the radius server.
+# This is a python script to create a certificate request 
+# and then process it using the radius server.
 
 import sys
 import time
@@ -43,7 +44,6 @@ class Color:
     END = '\033[0m'
 
 def cred():
-
     print(Color.DARKCYAN+"\n")
     print("*********************************")
     print("*       CertGen Utility         *")
@@ -57,9 +57,18 @@ def cred():
     print("\n"+Color.END)
 
 
+# Define global variables
+path = '/media/nss/VOL1/shared/madhs01rad1/requests/'
+parser = argparse.ArgumentParser(description='This is a python script\
+                                 to create a certificate request and\
+                                 then process it using the radius server.')
+parser.add_argument('name', metavar='Name', default='',
+                    type=str, help='Name of the PC that a certificate\
+                     is being generated for.')
+args = parser.parse_args()
+
 # Specify private key file
 k = paramiko.RSAKey.from_private_key_file('/Users/LStrohm/.ssh/Identityrsa')
-
 # Configure SSH connections
 fp = paramiko.SSHClient()
 fp.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -68,11 +77,6 @@ fp.connect('10.14.10.12', username='root', pkey=k)
 rad = paramiko.SSHClient()
 rad.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 rad.connect('10.14.0.26', username='root', pkey=k)
-
-# Define global variables
-path = '/media/nss/VOL1/shared/madhs01rad1/requests/'
-name = ''
-
 
 # Function to close all SSH connections and exit the script
 def close():
@@ -84,11 +88,13 @@ def close():
 
 # Gathers PC name and initiates certificate request
 def start():
-    global name
     global path
-    name = input(Color.BOLD+"What is the name of the machine?  "+Color.END)
+    global args
+    name = args.name
+    # name = input(Color.BOLD+"What is the name of the machine?  "+Color.END)
     if name != '':  # Creates a certificate request if a PC name is given
-        print(Color.YELLOW+"Creating certificate request for "+Color.BOLD + name + Color.END)
+        print(Color.YELLOW+"Creating certificate request for "+Color.BOLD
+             + name + Color.END)
         stdin, stdout, stderr = fp.exec_command('touch ' + path + name)
         time.sleep(2)
         gen()
@@ -102,63 +108,41 @@ def start():
 # Checks to make sure the request was successful, then runs the cert-gen script
 def gen():
     global path
-    global name
+    global args
+    name = args.name
     resp = subprocess.call(  # Checks for the request file
-        ['ssh', '-q', '-i', '/Users/LStrohm/.ssh/Identityrsa', 'root@10.14.10.12', 'test -e ' + pipes.quote(path + name)])
+        ['ssh', '-q', '-i', '/home/lstrohm/.ssh/id_rsa', 'root@10.14.10.12',
+        'test -e ' + pipes.quote(path + name)])
     if resp  == 0:  # If the file is present, runs the cert-gen script
-        print(Color.CYAN+'Request created successfully, awaiting certificate generation...'+Color.END)
+        print(Color.CYAN+'Request created successfully, awaiting certificate\
+              generation...'+Color.END)
         stdin, stdout, stderr = rad.exec_command('/root/certgen/cert-gen')
         time.sleep(3)
         certcheck()
-    elif resp != 0:  # If request file is missing, prompts to try again
-        again = input(Color.RED+'Certificate request failed! Would you like to try again? [Y/n]  '+Color.END)
-        if again == 'y' or again == 'yes' or again == '':  # If user wants to try again, the gen() function is restarted
-            gen()
-        elif again == 'n' or again == 'no':  # exits the script if user inputs n or no
-            print(Color.GREEN+'Exiting...'+Color.END)
-            close()
-        else:  # If anything other than an input above is given, the script errors out and exits
-            print(Color.RED+'Error!'+Color.END)
-            close()
-    return
+    elif resp != 0:  # If request file is missing, recommends trying again
+        print(Color.RED+'Certificate request failed! Please try again.'
+             +Color.END)
+        close()
+        sys.exit(1)
 
 
 # Checks to see if the certificate was generated correctly
 def certcheck():
     global path
-    global name
+    global args
+    name = args.name
     cert = '/media/nss/VOL1/shared/madhs01rad1/certs/' + name + '_cert.p12'
     gen1 = subprocess.call(  # Checks to see if the certificate file was generated correctly
-        ['ssh', '-q', '-i', '/Users/LStrohm/.ssh/Identityrsa', 'root@10.14.10.12', 'test -e ' + pipes.quote(cert)])
-    if gen1 == 0:  # If the certificate exists, prompts user if they want to generate another
-        again = input(Color.GREEN+'Certificate generated successfully! Would you like to generate another certificate? [y/N]  '+Color.END)
-        if again == 'y' or again == 'yes':  # If yes, the script starts from the beginning
-            time.sleep(1)
-            start()
-        elif again == 'n' or again == 'no' or again == '':  # If no, the script exits
-            print(Color.GREEN+'Exiting...'+Color.END)
-            close()
-        else:  # If anything other than an input above is given, the script errors out and exits
-            print(Color.RED+'Error!'+Color.END)
-            close()
+        ['ssh', '-q', '-i', '/home/lstrohm/.ssh/id_rsa', 'root@10.14.10.12',
+        'test -e ' + pipes.quote(cert)])
+    if gen1 == 0:  # If the certificate exists, exits cleanly
+        print(Color.GREEN+'Certificate generated successfully!'+Color.END)
+        close()
+        sys.exit(0)
     elif gen1 != 0:  # If certificate generation failed, prompts user to try again
-        tryagain = input(Color.RED+'Certificate generation failed. Would you like to try again? [Y/n]  '+Color.END)
-        if tryagain == 'y' or tryagain == 'yes' or tryagain == '':  # If user inputs yes, checks for existing request
-            time.sleep(1)
-            resp = subprocess.call(
-                ['ssh', '-q', '-i', '/Users/LStrohm/.ssh/Identityrsa', 'root@10.14.10.12', 'test -e ' + pipes.quote(path + name)])
-            if resp == 0:  # If request file exists, runs the gen() function
-                gen()
-            elif resp != 0:  # If the request does not exist, starts the script from the beginning
-                start()
-        elif tryagain == 'n' or tryagain == 'no':  # If user inputs no, exits the program
-            print(Color.GREEN+'Exiting...'+Color.END)
-            close()
-        else:  # If anything other than an input above is given, the script errors out and exits
-            print(Color.RED+'Error!'+Color.END)
-            close()
-    return
-
+        print(Color.RED+'Certificate generation failed!'+Color.END)
+        close()
+        sys.exit(1)
 
 cred()
 start()  # Initiates the script

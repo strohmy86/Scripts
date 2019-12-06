@@ -24,6 +24,7 @@
 
 import socket
 
+
 class Color:
     PURPLE = '\033[95m'
     CYAN = '\033[96m'
@@ -35,6 +36,7 @@ class Color:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
     END = '\033[0m'
+
 
 print(Color.DARKCYAN+"\n")
 print("*********************************")

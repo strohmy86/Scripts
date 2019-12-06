@@ -22,7 +22,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-name = 'cisco-config-tftp'
 import easysnmp
 import sys
 import time
@@ -31,6 +30,7 @@ import socket
 import tftpy
 import threading
 import ctypes, os
+
 
 class Color:
     PURPLE = '\033[95m'
@@ -43,6 +43,7 @@ class Color:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
     END = '\033[0m'
+
     
 class Msgs:  # Various repeated messages
     cont = 'Press ENTER to Continue...'
@@ -50,9 +51,7 @@ class Msgs:  # Various repeated messages
     choose = 'Please Choose an Option:'  
 
 def cred():
-
-    print('\n')
-    print(Color.DARKCYAN)
+    print(Color.DARKCYAN + '\n')
     print("*********************************")
     print("*  Python 3 Script For Copying  *")
     print("* Cisco Configs To/From A TFTP  *")
@@ -64,31 +63,28 @@ def cred():
     print("*  https://github.com/strohmy86 *")
     print("*                               *")
     print("*********************************")
-    print(Color.END)
+    print('\n' + Color.END)
+
  
 def admin_check():
     try:
         is_admin = os.getuid() == 0
     except AttributeError:
         is_admin = ctypes.windll.shell32.IsUserAnAdmin() != 0
-
     if is_admin == True:
         main_menu()
     else:
-        print(Color.RED+Color.BOLD+'This program requires Admin privileges. Please rerun as an administrator.'+ Color.END)
+        print(Color.RED+Color.BOLD+'This program requires Admin privileges.'+\
+             ' Please rerun as an administrator.'+ Color.END)
         sys.exit()
     
  
 def main_menu():  # Main Menu
     while True:
-        print('\n')
-        print(Color.PURPLE + 'Main Menu:' + Color.END)
-        print('\n')
+        print(Color.PURPLE + '\nMain Menu:\n' + Color.END)
         print('1)   Copy Config FROM Cisco Device TO a TFTP Server')
         print('2)   Copy Config TO Cisco Device FROM a TFTP Server')
-        print('0)   Exit')
-        print('\n')
-
+        print('\n0)   Exit\n')
         selection1 = input(Color.BOLD + Msgs.choose + Color.END)
         if selection1 == '0':
             sys.exit()
@@ -102,6 +98,7 @@ def main_menu():  # Main Menu
             time.sleep(2)
             input(Color.GREEN + Msgs.cont + Color.END)       
 
+
 def toTftp():
     # OID List
     # Protocol = .1.3.6.1.4.1.9.9.96.1.1.1.1.2.<Random Number> i 1
@@ -110,7 +107,6 @@ def toTftp():
     # Srv Address = .1.3.6.1.4.1.9.9.96.1.1.1.1.5.<Random Number> a <IP Address>
     # Dest File Name = .1.3.6.1.4.1.9.9.96.1.1.1.1.6.<Random Number> s <File Name>
     # Entry Row Stats = .1.3.6.1.4.1.9.9.96.1.1.1.1.14.<Random Number> i 4
-    
     rand = str(random.randint(100,999))
     swAddr = input('What is the IP address of the switch?   ')
     comm = input('What is the SNMP Community?   ')
@@ -119,7 +115,6 @@ def toTftp():
     tftpAddr = str(input('IP address:   ') or '127.0.0.1')
     fileName = input('Enter the filename (Optional: w/Path ):   ')
     nameOnly = fileName.split('/')[-1]
-    
     if tftpAddr != '127.0.0.1':
         tup = [
             ('.1.3.6.1.4.1.9.9.96.1.1.1.1.2.'+rand, '1', 'i'),
@@ -129,7 +124,6 @@ def toTftp():
             ('.1.3.6.1.4.1.9.9.96.1.1.1.1.6.'+rand, fileName, 's'),
             ('.1.3.6.1.4.1.9.9.96.1.1.1.1.14.'+rand, '4', 'i')
             ]
-
         session = easysnmp.Session(hostname=swAddr, community=comm, version=2)
         session.set_multiple(tup)
         time.sleep(2)
@@ -138,7 +132,8 @@ def toTftp():
     else:
         print('Starting TFTP Server....')
         server = tftpy.TftpServer(os.getcwd())
-        server_thread = threading.Thread(target=server.listen, kwargs={'listenip': '0.0.0.0', 'listenport': 69})
+        server_thread = threading.Thread(target=server.listen,
+                        kwargs={'listenip': '0.0.0.0', 'listenport': 69})
         server_thread.start()
         time.sleep(2)
         print('TFTP Server started in current working directory.')
@@ -146,7 +141,6 @@ def toTftp():
         if not ip.startswith("127.")][:1], [[(s.connect(('8.8.8.8', 53)), 
         s.getsockname()[0], s.close()) for s in [socket.socket(socket.AF_INET, 
         socket.SOCK_DGRAM)]][0][1]]) if l][0][0])
-        
         tup = [
             ('.1.3.6.1.4.1.9.9.96.1.1.1.1.2.'+rand, '1', 'i'),
             ('.1.3.6.1.4.1.9.9.96.1.1.1.1.3.'+rand, '4', 'i'),
@@ -155,7 +149,6 @@ def toTftp():
             ('.1.3.6.1.4.1.9.9.96.1.1.1.1.6.'+rand, nameOnly, 's'),
             ('.1.3.6.1.4.1.9.9.96.1.1.1.1.14.'+rand, '4', 'i')
             ]
-
         session = easysnmp.Session(hostname=swAddr, community=comm, version=2)
         session.set_multiple(tup)
         time.sleep(2)
@@ -176,6 +169,7 @@ def toTftp():
             else:
                 main_menu()
                 
+
 def frTftp():
     # OID List
     # Protocol = .1.3.6.1.4.1.9.9.96.1.1.1.1.2.<Random Number> i 1
@@ -184,7 +178,6 @@ def frTftp():
     # Srv Address = .1.3.6.1.4.1.9.9.96.1.1.1.1.5.<Random Number> a <IP Address>
     # Dest File Name = .1.3.6.1.4.1.9.9.96.1.1.1.1.6.<Random Number> s <File Name>
     # Entry Row Stats = .1.3.6.1.4.1.9.9.96.1.1.1.1.14.<Random Number> i 4
-    
     rand = str(random.randint(100,999))
     swAddr = input('What is the IP address of the switch?   ')
     comm = input('What is the SNMP Community?   ')
@@ -194,9 +187,7 @@ def frTftp():
     if tftpAddr == '127.0.0.1':
         print(Color.YELLOW+'The default file path is the current working directory.')
         print('Your file MUST be inside or below this directory'+Color.END)
-        
     fileName = input('Enter the filename (w/path if below default directory):   ')
-    
     if tftpAddr != '127.0.0.1':
         tup = [
             ('.1.3.6.1.4.1.9.9.96.1.1.1.1.2.'+rand, '1', 'i'),
@@ -206,7 +197,6 @@ def frTftp():
             ('.1.3.6.1.4.1.9.9.96.1.1.1.1.6.'+rand, fileName, 's'),
             ('.1.3.6.1.4.1.9.9.96.1.1.1.1.14.'+rand, '4', 'i')
             ]
-
         session = easysnmp.Session(hostname=swAddr, community=comm, version=2)
         session.set_multiple(tup)
         time.sleep(2)
@@ -215,7 +205,8 @@ def frTftp():
     else:
         print('Starting TFTP Server....')
         server = tftpy.TftpServer(os.getcwd())
-        server_thread = threading.Thread(target=server.listen, kwargs={'listenip': '0.0.0.0', 'listenport': 69})
+        server_thread = threading.Thread(target=server.listen,
+                        kwargs={'listenip': '0.0.0.0', 'listenport': 69})
         server_thread.start()
         time.sleep(2)
         print('TFTP Server started in current working directory.')
@@ -223,7 +214,6 @@ def frTftp():
         if not ip.startswith("127.")][:1], [[(s.connect(('8.8.8.8', 53)), 
         s.getsockname()[0], s.close()) for s in [socket.socket(socket.AF_INET, 
         socket.SOCK_DGRAM)]][0][1]]) if l][0][0])
-        
         tup = [
             ('.1.3.6.1.4.1.9.9.96.1.1.1.1.2.'+rand, '1', 'i'),
             ('.1.3.6.1.4.1.9.9.96.1.1.1.1.3.'+rand, '1', 'i'),
@@ -232,7 +222,6 @@ def frTftp():
             ('.1.3.6.1.4.1.9.9.96.1.1.1.1.6.'+rand, fileName, 's'),
             ('.1.3.6.1.4.1.9.9.96.1.1.1.1.14.'+rand, '4', 'i')
             ]
-
         session = easysnmp.Session(hostname=swAddr, community=comm, version=2)
         session.set_multiple(tup)
         time.sleep(10)
@@ -241,5 +230,6 @@ def frTftp():
         input(Color.GREEN + Msgs.cont + Color.END)
         main_menu() 
     
+
 cred()
 admin_check()

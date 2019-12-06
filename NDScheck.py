@@ -40,6 +40,7 @@ class Color:
     UNDERLINE = '\033[4m'
     END = '\033[0m'
 
+
 print(Color.DARKCYAN + '\n')
 print("*********************************")
 print("*      NDScheck Utility         *")
@@ -54,24 +55,21 @@ print("\n" + Color.END)
 
 
 def main(server):
-
     # Specify private key file
     k = paramiko.RSAKey.from_private_key_file('/home/lstrohm/.ssh/id_rsa')
-
     # Configure SSH connection
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     client.connect(server, username='root', pkey=k)
-
     # Checks NDS time sync
     print(Color.YELLOW+'Checking NDS time sync...'+Color.END)
     stdin, stdout, stderr = client.exec_command('ndsrepair -T')
     for line in stdout:
         print(line.strip('\n'))
     print('\n')
-
     # Prompts user to run more tests
-    e = input(Color.CYAN+'Would you like to continue checks? [Y/n]:  '+Color.END)
+    e = input(Color.CYAN+'Would you like to continue checks? [Y/n]:  '+\
+              Color.END)
     if e == 'y' or e == 'yes' or e == '':
         print(Color.YELLOW+'Checking NDS replication status...'+Color.END)
         stdin, stdout, stderr = client.exec_command('ndsrepair -E')
@@ -82,9 +80,9 @@ def main(server):
         print(Color.GREEN+'Exiting.'+Color.END)
         client.close()
         menu()
-
     # Prompts user to run the last test
-    n = input(Color.CYAN+'Would you like to run the last check? [Y/n]:  '+Color.END)
+    n = input(Color.CYAN+'Would you like to run the last check? [Y/n]:  '+\
+              Color.END)
     if n == 'y' or n == 'yes' or n == '':
         print(Color.YELLOW+'Checking NDS server status...'+Color.END)
         stdin, stdout, stderr = client.exec_command('ndsrepair -N')
@@ -105,12 +103,9 @@ def main(server):
 
 
 def menu():
-
     # Generate the menu.
     while True:
-        print('\n')
-        print(Color.PURPLE + 'Menu:' + Color.END)
-        print('\n')
+        print(Color.PURPLE + '\nMenu:\n' + Color.END)
         print('1)  MADHS01STAFF1')
         print('2)  MADHS01STU1')
         print('3)  MADHS01WEB1')
@@ -120,12 +115,9 @@ def menu():
         print('7)  MADEA01FP1')
         print('8)  MADMI01FP1')
         print('9)  MADSO01FP1')
-        print('0)  Exit')
-        print('\n')
-
+        print('\n0)  Exit\n')
         # Prompts user to select a menu item.
         selection = input(Color.BOLD+'Please Choose a Server: '+Color.END)
-
         # Sets the server variable based on menu selection then executes the main function.
         if selection == '1':
             server = 'madhs01staff1.mlsd.net'
@@ -161,7 +153,6 @@ def menu():
             time.sleep(2)
             menu()
 
+
 # Starts the script.
-
-
 menu()

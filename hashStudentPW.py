@@ -37,8 +37,7 @@ class Color:
     UNDERLINE = '\033[4m'
     END = '\033[0m'
 
-print("\n")
-print(Color.DARKCYAN)
+print(Color.DARKCYAN + '\n')
 print("*********************************")
 print("*    Password Hash Utility      *")
 print("*                               *")
@@ -48,12 +47,12 @@ print("*    strohm.luke@gmail.com      *")
 print("*  https://github.com/strohmy86 *")
 print("*                               *")
 print("*********************************")
-print(Color.END)
-print("\n")
+print('\n' + Color.END)
 
 fd = input(Color.BOLD+'CSV file to be hashed (Full Path):  '+Color.END)
 df = pd.read_csv(fd)
 
-df['userPassword'] = df['userPassword'].apply(lambda x: hashlib.sha1(str(x).encode('utf-8')).hexdigest())
+df['userPassword'] = df['userPassword'].apply(lambda x: \
+    hashlib.sha1(str(x).encode('utf-8')).hexdigest())
 
 df.to_csv(fd[:-4]+'_Hashed.csv', index=False)

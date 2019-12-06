@@ -40,8 +40,7 @@ class Color:
     UNDERLINE = '\033[4m'
     END = '\033[0m'
 
-print("\n")
-print(Color.DARKCYAN)
+print(Color.DARKCYAN + '\n')
 print("*********************************")
 print("*      Hash Tool Utility        *")
 print("*                               *")
@@ -51,69 +50,60 @@ print("*    strohm.luke@gmail.com      *")
 print("*  https://github.com/strohmy86 *")
 print("*                               *")
 print("*********************************")
-print(Color.END)
-print("\n")
+print('\n' + Color.END)
+
 
 while True:
-    print('\n')
-    print(Color.PURPLE + 'Menu:' + Color.END)
-    print('\n')
+    print(Color.PURPLE + '\nMenu:\n' + Color.END)
     print('1)  Create MD5 Hash')
     print('2)  Create SHA1 Hash')
     print('3)  Create SHA256 Hash')
     print('4)  Create SHA512 Hash')
     print('5)  Encode a String in base64')
     print('6)  Decode a base64 String')
-    print('0)  Exit')
-    print('\n')
+    print('\n0)  Exit\n')
 
     selection = input(Color.BOLD + 'Please Choose an Option: ' + Color.END)
     if selection == '1':
-        string = input(Color.BOLD + 'Please input a string you would like to hash:  ' + Color.END)
-        print('\n')
-        print(Color.CYAN + 'Your hashed string is:  \n' + Color.END)
-        print(hashlib.md5(str(string).encode('utf-8')).hexdigest())
-        print('\n')
+        string = input(Color.BOLD + 'Please input a string you would like to'+\
+                ' hash:  ' + Color.END)
+        print(Color.CYAN + '\nYour hashed string is:  \n' + Color.END)
+        print(hashlib.md5(str(string).encode('utf-8')).hexdigest(), '\n')
         time.sleep(1)
         input(Color.GREEN + 'Press Enter to continue...' + Color.END)
     elif selection == '2':
-        string = input(Color.BOLD + 'Please input a string you would like to hash:  ' + Color.END)
-        print('\n')
-        print(Color.CYAN + 'Your hashed string is:  \n' + Color.END)
-        print(hashlib.sha1(str(string).encode('utf-8')).hexdigest())
-        print('\n')
+        string = input(Color.BOLD + 'Please input a string you would like to'+\
+                ' hash:  ' + Color.END)
+        print(Color.CYAN + '\nYour hashed string is:  \n' + Color.END)
+        print(hashlib.sha1(str(string).encode('utf-8')).hexdigest(), '\n')
         time.sleep(1)
         input(Color.GREEN + 'Press Enter to continue...' + Color.END)
     elif selection == '3':
-        string = input(Color.BOLD + 'Please input a string you would like to hash:  ' + Color.END)
-        print('\n')
-        print(Color.CYAN + 'Your hashed string is:  \n' + Color.END)
-        print(hashlib.sha256(str(string).encode('utf-8')).hexdigest())
-        print('\n')
+        string = input(Color.BOLD + 'Please input a string you would like to'+\
+                ' hash:  ' + Color.END)
+        print(Color.CYAN + '\nYour hashed string is:  \n' + Color.END)
+        print(hashlib.sha256(str(string).encode('utf-8')).hexdigest(), '\n')
         time.sleep(1)
         input(Color.GREEN + 'Press Enter to continue...' + Color.END)
     elif selection == '4':
-        string = input(Color.BOLD + 'Please input a string you would like to hash:  ' + Color.END)
-        print('\n')
-        print(Color.CYAN + 'Your hashed string is:  \n' + Color.END)
-        print(hashlib.sha512(str(string).encode('utf-8')).hexdigest())
-        print('\n')
+        string = input(Color.BOLD + 'Please input a string you would like to'+\
+                ' hash:  ' + Color.END)
+        print(Color.CYAN + '\nYour hashed string is:  \n' + Color.END)
+        print(hashlib.sha512(str(string).encode('utf-8')).hexdigest(), '\n')
         time.sleep(1)
         input(Color.GREEN + 'Press Enter to continue...' + Color.END)
     elif selection == '5':
-        string = input(Color.BOLD + 'Please input a string you would like to encode:  ' + Color.END)
-        print('\n')
-        print(Color.CYAN + 'Your encoded string is:  \n' + Color.END)
-        print(str(base64.standard_b64encode(string.encode()))[2:-1])
-        print('\n')
+        string = input(Color.BOLD + 'Please input a string you would like to'+\
+                ' hash:  ' + Color.END)
+        print(Color.CYAN + '\nYour encoded string is:  \n' + Color.END)
+        print(str(base64.standard_b64encode(string.encode()))[2:-1], '\n')
         time.sleep(1)
         input(Color.GREEN + 'Press Enter to continue...' + Color.END)
     elif selection == '6':
-        string = input(Color.BOLD + 'Please input a base64 string you would like to decode:  ' + Color.END)
-        print('\n')
-        print(Color.CYAN + 'Your decoded string is:  \n' + Color.END)
-        print(str(base64.standard_b64decode(string.encode()))[2:-1])
-        print('\n')
+        string = input(Color.BOLD + 'Please input a string you would like to'+\
+                ' hash:  ' + Color.END)
+        print(Color.CYAN + '\nYour decoded string is:  \n' + Color.END)
+        print(str(base64.standard_b64decode(string.encode()))[2:-1], '\n')
         time.sleep(1)
         input(Color.GREEN + 'Press Enter to continue...' + Color.END)
     elif selection == '0':
