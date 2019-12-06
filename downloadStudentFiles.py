@@ -25,6 +25,8 @@
 import os
 import csv
 import time
+import argparse
+
 
 class Color:
     PURPLE = '\033[95m'
@@ -102,22 +104,29 @@ def download():
 
 def makeCsv():
     global building
-    query = 'query "not mimeType contains *vnd.google* and mimeType!=\
-            *text/plain* and not mimeType contains *officedocument* and not \
-            name contains *Getting Started* and trashed!=True and not name \
-            contains *.hex* and mimeType!=*application/msword* and \
-            mimeType!=*application/pdf*"'
+    query = 'query "not mimeType contains *vnd.google* and mimeType!='+\
+            '*text/plain* and not mimeType contains *officedocument* '+\
+            'and not name contains *Getting Started* and trashed!=True '+\
+            'and not name contains *.hex* and mimeType!=*application/'+\
+            'msword* and mimeType!=*application/pdf*"'
     query1 = query.replace("*", r"'")
     cmd = '/home/lstrohm/bin/gamadv-xtd3/gam redirect csv /home/lstrohm/'+\
-        building+'-Filelist.csv multiprocess ou "/Student/' +building+ \
-        '" print filelist ' +query1+' fields id,name,createdtime,mimetype,\
-        modifiedtime,owners.displayname,size'
+        building+'-Filelist.csv multiprocess ou "/Student/' +building+\
+        '" print filelist ' +query1+' fields id,name,createdtime,mimetype,'+\
+        'modifiedtime,owners.displayname,size'
     os.system(cmd)
     file = '/home/lstrohm/'+building+'-Filelist.csv'
     print(Color.YELLOW+'\nFile saved as '+file+'\n'+Color.END)
 
 
+parser = argparse.ArgumentParser(description='Script to search for and\
+                                download suspicious files on student\
+                                Google Drives')
+parser.add_argument('bldg', metavar='Building', default='',
+                   type=str, help='2 digit building code')
+args = parser.parse_args()
+building = args.bldg
+
 cred()
-building = input(Color.BOLD+'What is the building:  '+Color.END)
 makeCsv()
 download()
