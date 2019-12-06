@@ -40,8 +40,7 @@ class Color:
 
 
 def cred():
-    print('\n')
-    print(Color.DARKCYAN)
+    print(Color.DARKCYAN + '\n')
     print("*********************************")
     print("*Python 3 Script For Downloading*")
     print("*  Suspicious Files on Student  *")
@@ -53,14 +52,13 @@ def cred():
     print("*  https://github.com/strohmy86 *")
     print("*                               *")
     print("*********************************")
-    print(Color.END)
+    print('\n' + Color.END)
 
 
 def download():
     global building
     basedir = '/home/lstrohm/Audit-Files/'+building+'/'
     file = '/home/lstrohm/'+building+'-Filelist.csv'
-
     with open(file[:-4]+'-Modded.csv', mode='w', newline='') as fa:
         writer = csv.writer(fa)
         headers = ['email', 'id', 'folder']
@@ -78,19 +76,23 @@ def download():
             total += int(size)
         fs.close()
     fa.close()
-
-    cmd = '/home/lstrohm/bin/gamadv-xtd3/gam config num_threads = 5 csv /home/lstrohm/'+building+'-Filelist-Modded.csv gam user ~email get drivefile id ~id targetfolder ~folder format microsoft'
+    cmd = '/home/lstrohm/bin/gamadv-xtd3/gam config num_threads = 5 csv \
+        /home/lstrohm/'+building+'-Filelist-Modded.csv gam user ~email \
+        get drivefile id ~id targetfolder ~folder format microsoft'
     power = 2**10
     n = 0
     while total > power:
         total /= power
         n += 1
     total = format(total, '.2f') # give 2 digits after the point
-
-    sel = input(Color.RED + str(total) + ' ' + power_labels[n]+'bytes is going to be downloaded. Do you wish to continue? [Y/n]  ' + Color.END)
-    if sel == 'y' or sel == 'Y' or sel == 'yes' or sel == 'Yes' or sel == 'YES' or sel == '': # If yes, the function continues
+    sel = input(Color.RED + str(total) + ' ' + power_labels[n]+
+        'bytes is going to be downloaded. Do you wish to continue? [Y/n]  ' +\
+        Color.END)
+    if sel == 'y' or sel == 'Y' or sel == 'yes' or sel == 'Yes' or \
+        sel == 'YES' or sel == '': # If yes, the function continues
         os.system(cmd)
-    elif sel == 'n' or sel == 'N' or sel == 'no' or sel == 'No' or sel == 'NO': # If no, the program exits
+    elif sel == 'n' or sel == 'N' or sel == 'no' or sel == 'No' or \
+        sel == 'NO': # If no, the program exits
         exit()
     else: # If anything other than an input above is given, the script errors out and exits
         print(Color.RED + 'Error!' + Color.END)
@@ -100,16 +102,22 @@ def download():
 
 def makeCsv():
     global building
-    query = 'query "not mimeType contains *vnd.google* and mimeType!=*text/plain* and not mimeType contains *officedocument* and not name contains *Getting Started* and trashed!=True and not name contains *.hex* and mimeType!=*application/msword* and mimeType!=*application/pdf*"'
+    query = 'query "not mimeType contains *vnd.google* and mimeType!=\
+            *text/plain* and not mimeType contains *officedocument* and not \
+            name contains *Getting Started* and trashed!=True and not name \
+            contains *.hex* and mimeType!=*application/msword* and \
+            mimeType!=*application/pdf*"'
     query1 = query.replace("*", r"'")
-    cmd = '/home/lstrohm/bin/gamadv-xtd3/gam redirect csv /home/lstrohm/'+building+'-Filelist.csv multiprocess ou "/Student/' +building+ '" print filelist ' +query1+' fields id,name,createdtime,mimetype,modifiedtime,owners.displayname,size'
+    cmd = '/home/lstrohm/bin/gamadv-xtd3/gam redirect csv /home/lstrohm/'+\
+        building+'-Filelist.csv multiprocess ou "/Student/' +building+ \
+        '" print filelist ' +query1+' fields id,name,createdtime,mimetype,\
+        modifiedtime,owners.displayname,size'
     os.system(cmd)
     file = '/home/lstrohm/'+building+'-Filelist.csv'
     print(Color.YELLOW+'\nFile saved as '+file+'\n'+Color.END)
+
 
 cred()
 building = input(Color.BOLD+'What is the building:  '+Color.END)
 makeCsv()
 download()
-
-exit()
