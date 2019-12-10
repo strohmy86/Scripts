@@ -11,8 +11,8 @@
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
 
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
 
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -24,9 +24,11 @@
 
 # This script will run NDSrepair on a selected server and report any errors
 
+
 import sys
 import time
 import paramiko
+
 
 class Color:
     PURPLE = '\033[95m'
@@ -68,7 +70,7 @@ def main(server):
         print(line.strip('\n'))
     print('\n')
     # Prompts user to run more tests
-    e = input(Color.CYAN+'Would you like to continue checks? [Y/n]:  '+\
+    e = input(Color.CYAN+'Would you like to continue checks? [Y/n]:  ' +
               Color.END)
     if e == 'y' or e == 'yes' or e == '':
         print(Color.YELLOW+'Checking NDS replication status...'+Color.END)
@@ -81,7 +83,7 @@ def main(server):
         client.close()
         menu()
     # Prompts user to run the last test
-    n = input(Color.CYAN+'Would you like to run the last check? [Y/n]:  '+\
+    n = input(Color.CYAN+'Would you like to run the last check? [Y/n]:  ' +
               Color.END)
     if n == 'y' or n == 'yes' or n == '':
         print(Color.YELLOW+'Checking NDS server status...'+Color.END)
@@ -118,7 +120,7 @@ def menu():
         print('\n0)  Exit\n')
         # Prompts user to select a menu item.
         selection = input(Color.BOLD+'Please Choose a Server: '+Color.END)
-        # Sets the server variable based on menu selection then executes the main function.
+        # Sets the server variable based on menu selection.
         if selection == '1':
             server = 'madhs01staff1.mlsd.net'
             main(server)

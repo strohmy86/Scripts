@@ -11,8 +11,8 @@
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
 
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
 
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -24,9 +24,11 @@
 
 # Just a simple script to create different types of hashes for a string.
 
+
 import base64
 import hashlib
 import time
+
 
 class Color:
     PURPLE = '\033[95m'
@@ -39,6 +41,7 @@ class Color:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
     END = '\033[0m'
+
 
 print(Color.DARKCYAN + '\n')
 print("*********************************")
@@ -62,46 +65,45 @@ while True:
     print('5)  Encode a String in base64')
     print('6)  Decode a base64 String')
     print('\n0)  Exit\n')
-
     selection = input(Color.BOLD + 'Please Choose an Option: ' + Color.END)
     if selection == '1':
-        string = input(Color.BOLD + 'Please input a string you would like to'+\
-                ' hash:  ' + Color.END)
+        string = input(Color.BOLD + 'Please input a string you would like to' +
+                       ' hash:  ' + Color.END)
         print(Color.CYAN + '\nYour hashed string is:  \n' + Color.END)
         print(hashlib.md5(str(string).encode('utf-8')).hexdigest(), '\n')
         time.sleep(1)
         input(Color.GREEN + 'Press Enter to continue...' + Color.END)
     elif selection == '2':
-        string = input(Color.BOLD + 'Please input a string you would like to'+\
-                ' hash:  ' + Color.END)
+        string = input(Color.BOLD + 'Please input a string you would like to' +
+                       ' hash:  ' + Color.END)
         print(Color.CYAN + '\nYour hashed string is:  \n' + Color.END)
         print(hashlib.sha1(str(string).encode('utf-8')).hexdigest(), '\n')
         time.sleep(1)
         input(Color.GREEN + 'Press Enter to continue...' + Color.END)
     elif selection == '3':
-        string = input(Color.BOLD + 'Please input a string you would like to'+\
-                ' hash:  ' + Color.END)
+        string = input(Color.BOLD + 'Please input a string you would like to' +
+                       ' hash:  ' + Color.END)
         print(Color.CYAN + '\nYour hashed string is:  \n' + Color.END)
         print(hashlib.sha256(str(string).encode('utf-8')).hexdigest(), '\n')
         time.sleep(1)
         input(Color.GREEN + 'Press Enter to continue...' + Color.END)
     elif selection == '4':
-        string = input(Color.BOLD + 'Please input a string you would like to'+\
-                ' hash:  ' + Color.END)
+        string = input(Color.BOLD + 'Please input a string you would like to' +
+                       ' hash:  ' + Color.END)
         print(Color.CYAN + '\nYour hashed string is:  \n' + Color.END)
         print(hashlib.sha512(str(string).encode('utf-8')).hexdigest(), '\n')
         time.sleep(1)
         input(Color.GREEN + 'Press Enter to continue...' + Color.END)
     elif selection == '5':
-        string = input(Color.BOLD + 'Please input a string you would like to'+\
-                ' hash:  ' + Color.END)
+        string = input(Color.BOLD + 'Please input a string you would like to' +
+                       ' hash:  ' + Color.END)
         print(Color.CYAN + '\nYour encoded string is:  \n' + Color.END)
         print(str(base64.standard_b64encode(string.encode()))[2:-1], '\n')
         time.sleep(1)
         input(Color.GREEN + 'Press Enter to continue...' + Color.END)
     elif selection == '6':
-        string = input(Color.BOLD + 'Please input a string you would like to'+\
-                ' hash:  ' + Color.END)
+        string = input(Color.BOLD + 'Please input a string you would like to' +
+                       ' hash:  ' + Color.END)
         print(Color.CYAN + '\nYour decoded string is:  \n' + Color.END)
         print(str(base64.standard_b64decode(string.encode()))[2:-1], '\n')
         time.sleep(1)

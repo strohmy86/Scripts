@@ -11,8 +11,8 @@
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
 
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
 
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -22,8 +22,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+
 import pandas as pd
 import hashlib
+
 
 class Color:
     PURPLE = '\033[95m'
@@ -37,22 +39,31 @@ class Color:
     UNDERLINE = '\033[4m'
     END = '\033[0m'
 
-print(Color.DARKCYAN + '\n')
-print("*********************************")
-print("*    Password Hash Utility      *")
-print("*                               *")
-print("*  Written and maintained by:   *")
-print("*        Luke Strohm            *")
-print("*    strohm.luke@gmail.com      *")
-print("*  https://github.com/strohmy86 *")
-print("*                               *")
-print("*********************************")
-print('\n' + Color.END)
 
-fd = input(Color.BOLD+'CSV file to be hashed (Full Path):  '+Color.END)
-df = pd.read_csv(fd)
+def cred():
+    print(Color.DARKCYAN + '\n')
+    print("*********************************")
+    print("*    Password Hash Utility      *")
+    print("*                               *")
+    print("*  Written and maintained by:   *")
+    print("*        Luke Strohm            *")
+    print("*    strohm.luke@gmail.com      *")
+    print("*  https://github.com/strohmy86 *")
+    print("*                               *")
+    print("*********************************")
+    print('\n' + Color.END)
 
-df['userPassword'] = df['userPassword'].apply(lambda x: \
-    hashlib.sha1(str(x).encode('utf-8')).hexdigest())
 
-df.to_csv(fd[:-4]+'_Hashed.csv', index=False)
+def main():
+    fd = input(Color.BOLD+'CSV file to be hashed (Full Path):  '+Color.END)
+    df = pd.read_csv(fd)
+
+    df['userPassword'] = df['userPassword'].apply(lambda x:
+                                                  hashlib.sha1(str(x).encode(
+                                                    'utf-8')).hexdigest())
+
+    df.to_csv(fd[:-4]+'_Hashed.csv', index=False)
+
+
+cred()
+main()

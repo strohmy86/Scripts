@@ -1,4 +1,4 @@
-#!/bin/env python3
+#!/usr/bin/env python3
 
 # MIT License
 
@@ -11,8 +11,8 @@
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
 
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
 
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -21,6 +21,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+
 
 import os
 import csv
@@ -69,8 +70,9 @@ def download():
         reader = csv.reader(fs)
         next(reader)  # Skip header row
         total = 0
-        power_labels = {0 : '', 1: 'kilo', 2: 'mega', 3: 'giga', 4: 'tera'}
-        for email, ids, title, created, mime, modified, owners, name, size in reader:
+        power_labels = {0: '', 1: 'kilo', 2: 'mega', 3: 'giga', 4: 'tera'}
+        for email, ids, title, created, mime, modified, owners, name, size\
+                in reader:
             data = [email, ids, str(basedir+email)]
             writer.writerow(data)
             if size in (None, ""):
@@ -86,17 +88,17 @@ def download():
     while total > power:
         total /= power
         n += 1
-    total = format(total, '.2f') # give 2 digits after the point
-    sel = input(Color.RED + str(total) + ' ' + power_labels[n]+
-        'bytes is going to be downloaded. Do you wish to continue? [Y/n]  ' +\
-        Color.END)
-    if sel == 'y' or sel == 'Y' or sel == 'yes' or sel == 'Yes' or \
-        sel == 'YES' or sel == '': # If yes, the function continues
+    total = format(total, '.2f')  # give 2 digits after the point
+    sel = input(Color.RED + str(total) + ' ' + power_labels[n] +
+                'bytes is going to be downloaded. Do you wish to continue? ' +
+                '[Y/n]  '+Color.END)
+    if sel == 'y' or sel == 'Y' or sel == 'yes' or sel == 'Yes' or\
+            sel == 'YES' or sel == '':  # If yes, the function continues
         os.system(cmd)
-    elif sel == 'n' or sel == 'N' or sel == 'no' or sel == 'No' or \
-        sel == 'NO': # If no, the program exits
+    elif sel == 'n' or sel == 'N' or sel == 'no' or sel == 'No' or\
+            sel == 'NO':  # If no, the program exits
         exit()
-    else: # If anything other than an input above is given, the script errors out and exits
+    else:  # If yes or no is not given, the script errors out and exits
         print(Color.RED + 'Error!' + Color.END)
         time.sleep(1)
         exit()
@@ -104,15 +106,15 @@ def download():
 
 def makeCsv():
     global building
-    query = 'query "not mimeType contains *vnd.google* and mimeType!='+\
-            '*text/plain* and not mimeType contains *officedocument* '+\
-            'and not name contains *Getting Started* and trashed!=True '+\
-            'and not name contains *.hex* and mimeType!=*application/'+\
-            'msword* and mimeType!=*application/pdf*"'
+    query = 'query "not mimeType contains *vnd.google* and mimeType!=' +\
+        '*text/plain* and not mimeType contains *officedocument* ' +\
+        'and not name contains *Getting Started* and trashed!=True ' +\
+        'and not name contains *.hex* and mimeType!=*application/' +\
+        'msword* and mimeType!=*application/pdf*"'
     query1 = query.replace("*", r"'")
-    cmd = '/home/lstrohm/bin/gamadv-xtd3/gam redirect csv /home/lstrohm/'+\
-        building+'-Filelist.csv multiprocess ou "/Student/' +building+\
-        '" print filelist ' +query1+' fields id,name,createdtime,mimetype,'+\
+    cmd = '/home/lstrohm/bin/gamadv-xtd3/gam redirect csv /home/lstrohm/' +\
+        building+'-Filelist.csv multiprocess ou "/Student/'+building +\
+        '" print filelist '+query1+' fields id,name,createdtime,mimetype,' +\
         'modifiedtime,owners.displayname,size'
     os.system(cmd)
     file = '/home/lstrohm/'+building+'-Filelist.csv'
@@ -123,9 +125,10 @@ parser = argparse.ArgumentParser(description='Script to search for and\
                                 download suspicious files on student\
                                 Google Drives')
 parser.add_argument('bldg', metavar='Building', default='',
-                   type=str, help='2 digit building code')
+                    type=str, help='2 digit building code')
 args = parser.parse_args()
 building = args.bldg
+
 
 cred()
 makeCsv()

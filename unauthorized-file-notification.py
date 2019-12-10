@@ -11,8 +11,8 @@
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
 
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
 
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -79,7 +79,7 @@ def main():
         reader = csv.reader(fh)
         next(reader)  # Skip header row
         for email, ids, title, created, mime, modified, owners, name, size\
-            in reader:
+                in reader:
             print(f'Sending email to '+Color.GREEN+f'{name}'+Color.END)
             msg = MIMEMultipart('alternative')
             msg['From'] = frAddr
@@ -87,14 +87,19 @@ def main():
             msg['To'] = email
             text = """Hi {name},
 
-A file with the name of "{title}" was discovered during an audit of The Madison Local School District's Google domain.
+A file with the name of "{title}" was discovered during an audit of the
+Madison Local School District's Google domain.
 
-This file violates MLSD's Acceptible Use Policy that you signed at the beginning of the school year.  The file has been deleted,
-and your principal has been notified.  Do not store files of this nature on MLSD's Google Drive in the future.
+This file violates MLSD's Acceptible Use Policy that you signed at the
+beginning of the school year.  The file has been deleted,and your principal
+has been notified.  Do not store files of this nature on MLSD's Google Drive
+in the future.
 
-Continued violations to MLSD's Acceptible Use Policy could result in the loss of your technology privileges.
+Continued violations to MLSD's Acceptible Use Policy could result in the loss
+of your technology privileges.
 
 Thank you for your cooperation,
+
 
 The Madison Technology Office"""
             html = """\
@@ -102,16 +107,21 @@ The Madison Technology Office"""
     <body>
         <p>Hi {name},</p>
 
-        <p>A file with the name of <strong><em>{title}</strong></em> was discovered during an audit of The Madison Local School District's Google domain.</p>
+        <p>A file with the name of <strong><em>{title}</strong></em> was
+         discovered during an audit of the Madison Local School District's
+         Google domain.</p>
 
-        <p>This file violates MLSD's Acceptible Use Policy that you signed at the beginning of the school year.  The file has been deleted,
-        and your principal has been notified.  Do not store files of this nature on MLSD's Google Drive in the future.</p>
+        <p>This file violates MLSD's Acceptible Use Policy that you signed
+         at the beginning of the school year.  The file has been deleted,
+         and your principal has been notified.  Do not store files of this
+         nature on MLSD's Google Drive in the future.</p>
 
-        <p>Continued violations to MLSD's Acceptible Use Policy could result in the loss of your technology privileges.</p>
+        <p>Continued violations to MLSD's Acceptible Use Policy could result
+         in the loss of your technology privileges.</p>
 
         <p>Thank you for your cooperation,</p>
-
-        <p>The Madison Technology Office</p>
+        <p><br></p>
+        <p><em>The Madison Technology Office</em></p>
     </body>
 </html>
 """
@@ -123,19 +133,19 @@ The Madison Technology Office"""
             server.sendmail(
                 frAddr,
                 email,
-                message.format(name=name,title=title),
+                message.format(name=name, title=title),
                 )
-        with open('/home/lstrohm/'+building+'-Unauthorized-Files-'+date+\
-                 '.csv', mode='w', newline='') as fa:
+        with open('/home/lstrohm/'+building+'-Unauthorized-Files-'+date +
+                  '.csv', mode='w', newline='') as fa:
             writer = csv.writer(fa)
-            headers = ['Name', 'Email', 'File', 'Created Date', 
+            headers = ['Name', 'Email', 'File', 'Created Date',
                        'Modified Date']
             writer.writerow(headers)
             fs = open(file, mode='r')
             reader2 = csv.reader(fs)
-            next(reader2) # Skip header row
+            next(reader2)  # Skip header row
             for email, ids, title, created, mime, modified, owners, name,\
-                size in reader2:
+                    size in reader2:
                 data = [name, email, title, created, modified]
                 writer.writerow(data)
             fs.close()

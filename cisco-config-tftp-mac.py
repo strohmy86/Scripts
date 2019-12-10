@@ -11,8 +11,8 @@
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
 
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
 
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -27,7 +27,9 @@ import sys
 import time
 import random
 import socket
-import ctypes, os
+import ctypes
+import os
+
 
 class Color:
     PURPLE = '\033[95m'
@@ -69,11 +71,11 @@ def admin_check():
         is_admin = os.getuid() == 0
     except AttributeError:
         is_admin = ctypes.windll.shell32.IsUserAnAdmin() != 0
-    if is_admin == True:
+    if is_admin is True:
         main_menu()
     else:
-        print(Color.RED+Color.BOLD+'This program requires Admin privileges.'+\
-             ' Please rerun as an administrator.'+ Color.END)
+        print(Color.RED+Color.BOLD+'This program requires Admin privileges.' +
+              ' Please rerun as an administrator.'+Color.END)
         sys.exit()
 
 
@@ -99,12 +101,12 @@ def main_menu():  # Main Menu
 def toTftp():
     # OID List
     # Protocol = .1.3.6.1.4.1.9.9.96.1.1.1.1.2.<Random Number> i 1
-    # Src File Type = .1.3.6.1.4.1.9.9.96.1.1.1.1.3.<Random Number> i 4
+    # Src File Type= .1.3.6.1.4.1.9.9.96.1.1.1.1.3.<Random Number> i 4
     # Dest File Type = .1.3.6.1.4.1.9.9.96.1.1.1.1.4.<Random Number> i 1
-    # Srv Address = .1.3.6.1.4.1.9.9.96.1.1.1.1.5.<Random Number> a <IP Address>
-    # Dest File Name = .1.3.6.1.4.1.9.9.96.1.1.1.1.6.<Random Number> s <File Name>
-    # Entry Row Stats = .1.3.6.1.4.1.9.9.96.1.1.1.1.14.<Random Number> i 4
-    rand = str(random.randint(100,999))
+    # Srv Address=.1.3.6.1.4.1.9.9.96.1.1.1.1.5.<Random Number> a <IP Address>
+    # DestFileName=.1.3.6.1.4.1.9.9.96.1.1.1.1.6.<Random Number> s <File Name>
+    # Entry Row Stats=.1.3.6.1.4.1.9.9.96.1.1.1.1.14.<Random Number> i 4
+    rand = str(random.randint(100, 999))
     swAddr = input('What is the IP address of the switch?   ')
     comm = input('What is the SNMP Community?   ')
     print(Color.YELLOW+'What is the IP address of the TFTP server?')
@@ -113,21 +115,13 @@ def toTftp():
     fileName = input('Enter the filename ( w/Path ):   ')
     nameOnly = fileName.split('/')[-1]
     if tftpAddr != '127.0.0.1':
-        tup = [
-            ('.1.3.6.1.4.1.9.9.96.1.1.1.1.2.'+rand, '1', 'i'),
-            ('.1.3.6.1.4.1.9.9.96.1.1.1.1.3.'+rand, '4', 'i'),
-            ('.1.3.6.1.4.1.9.9.96.1.1.1.1.4.'+rand, '1', 'i'),
-            ('.1.3.6.1.4.1.9.9.96.1.1.1.1.5.'+rand, tftpAddr, 'a'),
-            ('.1.3.6.1.4.1.9.9.96.1.1.1.1.6.'+rand, fileName, 's'),
-            ('.1.3.6.1.4.1.9.9.96.1.1.1.1.14.'+rand, '4', 'i')
-            ]
-        session = 'snmpset -v 2c -c '+comm+' '+swAddr+\
-        ' .1.3.6.1.4.1.9.9.96.1.1.1.1.2.'+rand+\
-        ' i 1 .1.3.6.1.4.1.9.9.96.1.1.1.1.3.'+rand+\
-        ' i 4 .1.3.6.1.4.1.9.9.96.1.1.1.1.4.'+rand+\
-        ' i 1 .1.3.6.1.4.1.9.9.96.1.1.1.1.5.'+rand+\
-        ' a '+tftpAddr+' .1.3.6.1.4.1.9.9.96.1.1.1.1.6.'+rand+\
-        ' s '+fileName+' .1.3.6.1.4.1.9.9.96.1.1.1.1.14.'+rand+' i 4'
+        session = 'snmpset -v 2c -c '+comm+' '+swAddr +\
+            ' .1.3.6.1.4.1.9.9.96.1.1.1.1.2.'+rand +\
+            ' i 1 .1.3.6.1.4.1.9.9.96.1.1.1.1.3.'+rand +\
+            ' i 4 .1.3.6.1.4.1.9.9.96.1.1.1.1.4.'+rand +\
+            ' i 1 .1.3.6.1.4.1.9.9.96.1.1.1.1.5.'+rand +\
+            ' a '+tftpAddr+' .1.3.6.1.4.1.9.9.96.1.1.1.1.6.'+rand +\
+            ' s '+fileName+' .1.3.6.1.4.1.9.9.96.1.1.1.1.14.'+rand+' i 4'
         os.system(session)
         time.sleep(10)
         input(Color.GREEN + Msgs.cont + Color.END)
@@ -141,29 +135,25 @@ def toTftp():
         os.system(filetouch)
         time.sleep(2)
         print('TFTP Server started at "/private/tftpboot/".')
-        ipAddr = ([l for l in ([ip for ip in socket.gethostbyname_ex(socket.gethostname())[2]
-        if not ip.startswith("127.")][:1], [[(s.connect(('8.8.8.8', 53)),
-        s.getsockname()[0], s.close()) for s in [socket.socket(socket.AF_INET,
-        socket.SOCK_DGRAM)]][0][1]]) if l][0][0])
-        tup = [
-            ('.1.3.6.1.4.1.9.9.96.1.1.1.1.2.'+rand, '1', 'i'),
-            ('.1.3.6.1.4.1.9.9.96.1.1.1.1.3.'+rand, '4', 'i'),
-            ('.1.3.6.1.4.1.9.9.96.1.1.1.1.4.'+rand, '1', 'i'),
-            ('.1.3.6.1.4.1.9.9.96.1.1.1.1.5.'+rand, ipAddr, 'a'),
-            ('.1.3.6.1.4.1.9.9.96.1.1.1.1.6.'+rand, fileName, 's'),
-            ('.1.3.6.1.4.1.9.9.96.1.1.1.1.14.'+rand, '4', 'i')
-            ]
-        session = 'snmpset -v 2c -c '+comm+' '+swAddr+\
-        ' .1.3.6.1.4.1.9.9.96.1.1.1.1.2.'+rand+\
-        ' i 1 .1.3.6.1.4.1.9.9.96.1.1.1.1.3.'+rand+\
-        ' i 4 .1.3.6.1.4.1.9.9.96.1.1.1.1.4.'+rand+\
-        ' i 1 .1.3.6.1.4.1.9.9.96.1.1.1.1.5.'+rand+\
-        ' a '+ipAddr+' .1.3.6.1.4.1.9.9.96.1.1.1.1.6.'+rand+\
-        ' s '+fileName+' .1.3.6.1.4.1.9.9.96.1.1.1.1.14.'+rand+' i 4'
+        ipAddr = ([l for l in ([ip for ip in
+                  socket.gethostbyname_ex(socket.gethostname())[2]
+                  if not ip.startswith("127.")][:1],
+                  [[(s.connect(('8.8.8.8', 53)),
+                     s.getsockname()[0], s.close()) for s in
+                    [socket.socket(socket.AF_INET,
+                                   socket.SOCK_DGRAM)]][0][1]])
+                  if l][0][0])
+        session = 'snmpset -v 2c -c '+comm+' '+swAddr +\
+            ' .1.3.6.1.4.1.9.9.96.1.1.1.1.2.'+rand +\
+            ' i 1 .1.3.6.1.4.1.9.9.96.1.1.1.1.3.'+rand +\
+            ' i 4 .1.3.6.1.4.1.9.9.96.1.1.1.1.4.'+rand +\
+            ' i 1 .1.3.6.1.4.1.9.9.96.1.1.1.1.5.'+rand +\
+            ' a '+ipAddr+' .1.3.6.1.4.1.9.9.96.1.1.1.1.6.'+rand +\
+            ' s '+fileName+' .1.3.6.1.4.1.9.9.96.1.1.1.1.14.'+rand+' i 4'
         os.system(session)
         time.sleep(10)
         success = os.path.isfile('/private/tftpboot/'+fileName)
-        if success == True:
+        if success is True:
             print(Color.GREEN+'Success!'+Color.END)
             os.system('launchctl stop com.apple.tftpd')
             input(Color.GREEN + Msgs.cont + Color.END)
@@ -183,35 +173,29 @@ def frTftp():
     # Protocol = .1.3.6.1.4.1.9.9.96.1.1.1.1.2.<Random Number> i 1
     # Src File Type = .1.3.6.1.4.1.9.9.96.1.1.1.1.3.<Random Number> i 1
     # Dest File Type = .1.3.6.1.4.1.9.9.96.1.1.1.1.4.<Random Number> i 4
-    # Srv Address = .1.3.6.1.4.1.9.9.96.1.1.1.1.5.<Random Number> a <IP Address>
-    # Dest File Name = .1.3.6.1.4.1.9.9.96.1.1.1.1.6.<Random Number> s <File Name>
+    # Srv Address=.1.3.6.1.4.1.9.9.96.1.1.1.1.5.<Random Number> a <IP Address>
+    # DestFileName=.1.3.6.1.4.1.9.9.96.1.1.1.1.6.<Random Number> s <File Name>
     # Entry Row Stats = .1.3.6.1.4.1.9.9.96.1.1.1.1.14.<Random Number> i 4
-    rand = str(random.randint(100,999))
+    rand = str(random.randint(100, 999))
     swAddr = input('What is the IP address of the switch?   ')
     comm = input('What is the SNMP Community?   ')
     print(Color.YELLOW+'What is the IP address of the TFTP server?')
-    print('Leave blank to use the built-in TFTP server and a local file. '+Color.END)
+    print('Leave blank to use the built-in TFTP server and a local file. ' +
+          Color.END)
     tftpAddr = str(input('IP address:   ') or '127.0.0.1')
     if tftpAddr == '127.0.0.1':
         print(Color.YELLOW+'The default file path is "/private/tftpboot".')
         print('Your file MUST be inside or below this directory'+Color.END)
-    fileName = input('Enter the filename (w/path if below default directory):   ')
+    fileName = input('Enter the filename (w/path if below default ' +
+                     'directory): ')
     if tftpAddr != '127.0.0.1':
-        tup = [
-            ('.1.3.6.1.4.1.9.9.96.1.1.1.1.2.'+rand, '1', 'i'),
-            ('.1.3.6.1.4.1.9.9.96.1.1.1.1.3.'+rand, '1', 'i'),
-            ('.1.3.6.1.4.1.9.9.96.1.1.1.1.4.'+rand, '4', 'i'),
-            ('.1.3.6.1.4.1.9.9.96.1.1.1.1.5.'+rand, tftpAddr, 'a'),
-            ('.1.3.6.1.4.1.9.9.96.1.1.1.1.6.'+rand, fileName, 's'),
-            ('.1.3.6.1.4.1.9.9.96.1.1.1.1.14.'+rand, '4', 'i')
-            ]
-        session = 'snmpset -v 2c -c '+comm+' '+swAddr+\
-        ' .1.3.6.1.4.1.9.9.96.1.1.1.1.2.'+rand+\
-        ' i 1 .1.3.6.1.4.1.9.9.96.1.1.1.1.3.'+rand+\
-        ' i 1 .1.3.6.1.4.1.9.9.96.1.1.1.1.4.'+rand+\
-        ' i 4 .1.3.6.1.4.1.9.9.96.1.1.1.1.5.'+rand+\
-        ' a '+tftpAddr+' .1.3.6.1.4.1.9.9.96.1.1.1.1.6.'+rand+\
-        ' s '+fileName+' .1.3.6.1.4.1.9.9.96.1.1.1.1.14.'+rand+' i 4'
+        session = 'snmpset -v 2c -c '+comm+' '+swAddr +\
+            ' .1.3.6.1.4.1.9.9.96.1.1.1.1.2.'+rand +\
+            ' i 1 .1.3.6.1.4.1.9.9.96.1.1.1.1.3.'+rand +\
+            ' i 1 .1.3.6.1.4.1.9.9.96.1.1.1.1.4.'+rand +\
+            ' i 4 .1.3.6.1.4.1.9.9.96.1.1.1.1.5.'+rand +\
+            ' a '+tftpAddr+' .1.3.6.1.4.1.9.9.96.1.1.1.1.6.'+rand +\
+            ' s '+fileName+' .1.3.6.1.4.1.9.9.96.1.1.1.1.14.'+rand+' i 4'
         os.system(session)
         time.sleep(10)
         input(Color.GREEN + Msgs.cont + Color.END)
@@ -223,26 +207,21 @@ def frTftp():
         os.system('chmod -R 777 /private/tftpboot')
         time.sleep(2)
         print('TFTP Server started at "/private/tftpboot/".')
-        ipAddr = ([l for l in ([ip for ip in socket.gethostbyname_ex(socket.gethostname())[2]
-        if not ip.startswith("127.")][:1], [[(s.connect(('8.8.8.8', 53)),
-        s.getsockname()[0], s.close()) for s in [socket.socket(socket.AF_INET,
-        socket.SOCK_DGRAM)]][0][1]]) if l][0][0])
-        tup = [
-            ('.1.3.6.1.4.1.9.9.96.1.1.1.1.2.'+rand, '1', 'i'),
-            ('.1.3.6.1.4.1.9.9.96.1.1.1.1.3.'+rand, '1', 'i'),
-            ('.1.3.6.1.4.1.9.9.96.1.1.1.1.4.'+rand, '4', 'i'),
-            ('.1.3.6.1.4.1.9.9.96.1.1.1.1.5.'+rand, ipAddr, 'a'),
-            ('.1.3.6.1.4.1.9.9.96.1.1.1.1.6.'+rand, fileName, 's'),
-            ('.1.3.6.1.4.1.9.9.96.1.1.1.1.14.'+rand, '4', 'i')
-            ]
-        session = 'snmpset -v 2c -c '+comm+' '+swAddr+\
-        ' .1.3.6.1.4.1.9.9.96.1.1.1.1.2.'+rand+\
-        ' i 1 .1.3.6.1.4.1.9.9.96.1.1.1.1.3.'+rand+\
-        ' i 1 .1.3.6.1.4.1.9.9.96.1.1.1.1.4.'+rand+\
-        ' i 4 .1.3.6.1.4.1.9.9.96.1.1.1.1.5.'+rand+\
-        ' a '+ipAddr+' .1.3.6.1.4.1.9.9.96.1.1.1.1.6.'+rand+\
-        ' s /private/tftpboot/'+fileName+' .1.3.6.1.4.1.9.9.96.1.1.1.1.14.'+\
-        rand+' i 4'
+        ipAddr = ([l for l in ([ip for ip in
+                  socket.gethostbyname_ex(socket.gethostname())[2]
+                  if not ip.startswith("127.")][:1],
+                  [[(s.connect(('8.8.8.8', 53)),
+                     s.getsockname()[0], s.close()) for s in
+                    [socket.socket(socket.AF_INET,
+                     socket.SOCK_DGRAM)]][0][1]]) if l][0][0])
+        session = 'snmpset -v 2c -c '+comm+' '+swAddr +\
+            ' .1.3.6.1.4.1.9.9.96.1.1.1.1.2.'+rand +\
+            ' i 1 .1.3.6.1.4.1.9.9.96.1.1.1.1.3.'+rand +\
+            ' i 1 .1.3.6.1.4.1.9.9.96.1.1.1.1.4.'+rand +\
+            ' i 4 .1.3.6.1.4.1.9.9.96.1.1.1.1.5.'+rand +\
+            ' a '+ipAddr+' .1.3.6.1.4.1.9.9.96.1.1.1.1.6.'+rand +\
+            ' s /private/tftpboot/'+fileName +\
+            ' .1.3.6.1.4.1.9.9.96.1.1.1.1.14.'+rand+' i 4'
         os.system(session)
         time.sleep(10)
         os.system('launchctl stop com.apple.tftpd')

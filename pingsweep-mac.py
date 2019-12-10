@@ -11,8 +11,8 @@
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
 
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
 
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -21,6 +21,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+
 
 import ipaddress
 from subprocess import Popen, DEVNULL
@@ -53,13 +54,13 @@ print("\n"+Color.END)
 
 
 # Prompt the user to input a network address
-net_addr = input(Color.BOLD+"Enter a network address in CIDR format"+\
-                "(ex.192.168.1.0/24):  "+Color.END)
+net_addr = input(Color.BOLD+"Enter a network address in CIDR format" +
+                 "(ex.192.168.1.0/24):  "+Color.END)
 net = net_addr.replace(".", "_")
 net = net.replace("/", "-")
 # Ask user if they want the list exported to a file
-file = input(Color.BOLD+"Do you want to export the list to a text file? "+\
-            "[y/N]:  "+Color.END)
+file = input(Color.BOLD+"Do you want to export the list to a text file? " +
+             "[y/N]:  "+Color.END)
 # Create the network
 ip_net = ipaddress.ip_network(net_addr)
 # Get all hosts on that network
@@ -73,8 +74,8 @@ while p:
     for ip, proc in p.items():
         if proc.poll() is not None:  # ping finished
             del p[ip]  # remove from the process list
-            if proc.returncode == 0 and (file == "no" or file == "n" or\
-                file == ""):
+            if proc.returncode == 0 and (file == "no" or file == "n" or
+                                         file == ""):
                 print('%s active' % ip)
                 t.append(ip)
             elif proc.returncode == 0 and (file == "yes" or file == "y"):

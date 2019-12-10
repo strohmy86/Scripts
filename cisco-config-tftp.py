@@ -11,8 +11,8 @@
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
 
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
 
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -29,7 +29,8 @@ import random
 import socket
 import tftpy
 import threading
-import ctypes, os
+import ctypes
+import os
 
 
 class Color:
@@ -44,11 +45,12 @@ class Color:
     UNDERLINE = '\033[4m'
     END = '\033[0m'
 
-    
+
 class Msgs:  # Various repeated messages
     cont = 'Press ENTER to Continue...'
     err = 'Invalid Option Selected!'
-    choose = 'Please Choose an Option:'  
+    choose = 'Please Choose an Option:'
+
 
 def cred():
     print(Color.DARKCYAN + '\n')
@@ -65,20 +67,20 @@ def cred():
     print("*********************************")
     print('\n' + Color.END)
 
- 
+
 def admin_check():
     try:
         is_admin = os.getuid() == 0
     except AttributeError:
         is_admin = ctypes.windll.shell32.IsUserAnAdmin() != 0
-    if is_admin == True:
+    if is_admin is True:
         main_menu()
     else:
-        print(Color.RED+Color.BOLD+'This program requires Admin privileges.'+\
-             ' Please rerun as an administrator.'+ Color.END)
+        print(Color.RED+Color.BOLD+'This program requires Admin privileges.' +
+              ' Please rerun as an administrator.'+Color.END)
         sys.exit()
-    
- 
+
+
 def main_menu():  # Main Menu
     while True:
         print(Color.PURPLE + '\nMain Menu:\n' + Color.END)
@@ -96,7 +98,7 @@ def main_menu():  # Main Menu
             print(Color.RED + Msgs.err + Color.END)
             print('\n')
             time.sleep(2)
-            input(Color.GREEN + Msgs.cont + Color.END)       
+            input(Color.GREEN + Msgs.cont + Color.END)
 
 
 def toTftp():
@@ -104,10 +106,10 @@ def toTftp():
     # Protocol = .1.3.6.1.4.1.9.9.96.1.1.1.1.2.<Random Number> i 1
     # Src File Type = .1.3.6.1.4.1.9.9.96.1.1.1.1.3.<Random Number> i 4
     # Dest File Type = .1.3.6.1.4.1.9.9.96.1.1.1.1.4.<Random Number> i 1
-    # Srv Address = .1.3.6.1.4.1.9.9.96.1.1.1.1.5.<Random Number> a <IP Address>
-    # Dest File Name = .1.3.6.1.4.1.9.9.96.1.1.1.1.6.<Random Number> s <File Name>
+    # Srv Address=.1.3.6.1.4.1.9.9.96.1.1.1.1.5.<Random Number> a <IP Address>
+    # DestFileName=.1.3.6.1.4.1.9.9.96.1.1.1.1.6.<Random Number> s <File Name>
     # Entry Row Stats = .1.3.6.1.4.1.9.9.96.1.1.1.1.14.<Random Number> i 4
-    rand = str(random.randint(100,999))
+    rand = str(random.randint(100, 999))
     swAddr = input('What is the IP address of the switch?   ')
     comm = input('What is the SNMP Community?   ')
     print(Color.YELLOW+'What is the IP address of the TFTP server?')
@@ -128,19 +130,23 @@ def toTftp():
         session.set_multiple(tup)
         time.sleep(2)
         input(Color.GREEN + Msgs.cont + Color.END)
-        main_menu() 
+        main_menu()
     else:
         print('Starting TFTP Server....')
         server = tftpy.TftpServer(os.getcwd())
         server_thread = threading.Thread(target=server.listen,
-                        kwargs={'listenip': '0.0.0.0', 'listenport': 69})
+                                         kwargs={'listenip': '0.0.0.0',
+                                                 'listenport': 69})
         server_thread.start()
         time.sleep(2)
         print('TFTP Server started in current working directory.')
-        ipAddr = ([l for l in ([ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] 
-        if not ip.startswith("127.")][:1], [[(s.connect(('8.8.8.8', 53)), 
-        s.getsockname()[0], s.close()) for s in [socket.socket(socket.AF_INET, 
-        socket.SOCK_DGRAM)]][0][1]]) if l][0][0])
+        ipAddr = ([l for l in ([ip for ip in
+                   socket.gethostbyname_ex(socket.gethostname())[2]
+                   if not ip.startswith("127.")][:1],
+                   [[(s.connect(('8.8.8.8', 53)),
+                      s.getsockname()[0], s.close()) for s in
+                    [socket.socket(socket.AF_INET, socket.SOCK_DGRAM)]][0][1]])
+                   if l][0][0])
         tup = [
             ('.1.3.6.1.4.1.9.9.96.1.1.1.1.2.'+rand, '1', 'i'),
             ('.1.3.6.1.4.1.9.9.96.1.1.1.1.3.'+rand, '4', 'i'),
@@ -153,7 +159,7 @@ def toTftp():
         session.set_multiple(tup)
         time.sleep(2)
         success = os.path.isfile(os.getcwd()+'/'+nameOnly)
-        if success == True:
+        if success is True:
             print(Color.GREEN+'Success!'+Color.END)
             server.stop(now=False)
             server_thread.join()
@@ -168,26 +174,29 @@ def toTftp():
                 toTftp()
             else:
                 main_menu()
-                
+
 
 def frTftp():
     # OID List
     # Protocol = .1.3.6.1.4.1.9.9.96.1.1.1.1.2.<Random Number> i 1
     # Src File Type = .1.3.6.1.4.1.9.9.96.1.1.1.1.3.<Random Number> i 1
     # Dest File Type = .1.3.6.1.4.1.9.9.96.1.1.1.1.4.<Random Number> i 4
-    # Srv Address = .1.3.6.1.4.1.9.9.96.1.1.1.1.5.<Random Number> a <IP Address>
-    # Dest File Name = .1.3.6.1.4.1.9.9.96.1.1.1.1.6.<Random Number> s <File Name>
+    # Srv Address=.1.3.6.1.4.1.9.9.96.1.1.1.1.5.<Random Number> a <IP Address>
+    # DestFileName=.1.3.6.1.4.1.9.9.96.1.1.1.1.6.<Random Number> s <File Name>
     # Entry Row Stats = .1.3.6.1.4.1.9.9.96.1.1.1.1.14.<Random Number> i 4
-    rand = str(random.randint(100,999))
+    rand = str(random.randint(100, 999))
     swAddr = input('What is the IP address of the switch?   ')
     comm = input('What is the SNMP Community?   ')
     print(Color.YELLOW+'What is the IP address of the TFTP server?')
-    print('Leave blank to use the built-in TFTP server and a local file. '+Color.END)
+    print('Leave blank to use the built-in TFTP server and a local file. ' +
+          Color.END)
     tftpAddr = str(input('IP address:   ') or '127.0.0.1')
     if tftpAddr == '127.0.0.1':
-        print(Color.YELLOW+'The default file path is the current working directory.')
+        print(Color.YELLOW+'The default file path is the current working ' +
+              'directory.')
         print('Your file MUST be inside or below this directory'+Color.END)
-    fileName = input('Enter the filename (w/path if below default directory):   ')
+    fileName = input('Enter the filename (w/path if below default ' +
+                     'directory):   ')
     if tftpAddr != '127.0.0.1':
         tup = [
             ('.1.3.6.1.4.1.9.9.96.1.1.1.1.2.'+rand, '1', 'i'),
@@ -201,19 +210,23 @@ def frTftp():
         session.set_multiple(tup)
         time.sleep(2)
         input(Color.GREEN + Msgs.cont + Color.END)
-        main_menu() 
+        main_menu()
     else:
         print('Starting TFTP Server....')
         server = tftpy.TftpServer(os.getcwd())
         server_thread = threading.Thread(target=server.listen,
-                        kwargs={'listenip': '0.0.0.0', 'listenport': 69})
+                                         kwargs={'listenip': '0.0.0.0',
+                                                 'listenport': 69})
         server_thread.start()
         time.sleep(2)
         print('TFTP Server started in current working directory.')
-        ipAddr = ([l for l in ([ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] 
-        if not ip.startswith("127.")][:1], [[(s.connect(('8.8.8.8', 53)), 
-        s.getsockname()[0], s.close()) for s in [socket.socket(socket.AF_INET, 
-        socket.SOCK_DGRAM)]][0][1]]) if l][0][0])
+        ipAddr = ([l for l in ([ip for ip in
+                  socket.gethostbyname_ex(socket.gethostname())[2]
+                  if not ip.startswith("127.")][:1],
+                   [[(s.connect(('8.8.8.8', 53)),
+                     s.getsockname()[0], s.close()) for s in
+                    [socket.socket(socket.AF_INET, socket.SOCK_DGRAM)]][0][1]])
+                  if l][0][0])
         tup = [
             ('.1.3.6.1.4.1.9.9.96.1.1.1.1.2.'+rand, '1', 'i'),
             ('.1.3.6.1.4.1.9.9.96.1.1.1.1.3.'+rand, '1', 'i'),
@@ -228,8 +241,8 @@ def frTftp():
         server.stop(now=False)
         server_thread.join()
         input(Color.GREEN + Msgs.cont + Color.END)
-        main_menu() 
-    
+        main_menu()
+
 
 cred()
 admin_check()

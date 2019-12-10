@@ -11,8 +11,8 @@
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
 
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
 
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -28,7 +28,6 @@ try:
 except ImportError:
     import Image
 import pytesseract
-import sys
 import argparse
 import glob
 import csv
@@ -69,16 +68,15 @@ def main():
     parser.add_argument('-b', '--batch', metavar='directory', type=str,
                         help='Base directory to be parsed', default=False)
     args = parser.parse_args()
-
-    if args.file == False and args.batch == False:
+    if args.file is False and args.batch is False:
         parser.print_help()
         parser.exit(2)
-    elif args.batch == False and args.file != False:
+    elif args.batch is False and args.file is not False:
         text = pytesseract.image_to_string(Image.open(args.file), lang='eng')
-        print(Color.BOLD + 'The text detected in ' + Color.END + Color.YELLOW + args.file
-             + Color.END + Color.BOLD + ' is:\n')
+        print(Color.BOLD + 'The text detected in ' + Color.END + Color.YELLOW +
+              args.file + Color.END + Color.BOLD + ' is:\n')
         print(Color.CYAN + text + Color.END)
-    elif args.batch != False and args.file ==False:
+    elif args.batch is not False and args.file is False:
         print('Searching ' + args.batch + ' for picture files...')
         with open(args.batch+'OCR-Text.csv', mode='w', newline='') as fa:
             writer = csv.writer(fa)
@@ -101,14 +99,10 @@ def main():
                 data = [pic, txt]
                 writer.writerow(data)
         fa.close()
-        print(Color.GREEN + '\nResults saved to ' + args.batch+'OCR-Text.csv' + Color.END)
-
-        
-
-
-
+        print(Color.GREEN + '\nResults saved to ' + args.batch+'OCR-Text.csv' +
+              Color.END)
 
 
 if __name__ == "__main__":
-   cred()
-   main()
+    cred()
+    main()
