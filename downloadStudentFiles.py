@@ -58,8 +58,7 @@ def cred():
     print('\n' + Color.END)
 
 
-def download():
-    global building
+def download(building):
     basedir = '/home/lstrohm/Audit-Files/'+building+'/'
     file = '/home/lstrohm/'+building+'-Filelist.csv'
     with open(file[:-4]+'-Modded.csv', mode='w', newline='') as fa:
@@ -104,8 +103,7 @@ def download():
         exit()
 
 
-def makeCsv():
-    global building
+def makeCsv(building):
     query = 'query "not mimeType contains *vnd.google* and mimeType!=' +\
         '*text/plain* and not mimeType contains *officedocument* ' +\
         'and not name contains *Getting Started* and trashed!=True ' +\
@@ -131,5 +129,5 @@ building = args.bldg
 
 
 cred()
-makeCsv()
-download()
+makeCsv(building)
+download(building)

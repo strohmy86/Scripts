@@ -68,7 +68,7 @@ def cred():
     print('\n' + Color.END)
 
 
-def admin_check():
+def admin_check():  # Checks to see if current user is admin
     try:
         is_admin = os.getuid() == 0
     except AttributeError:
@@ -76,9 +76,9 @@ def admin_check():
     if is_admin is True:
         main_menu()
     else:
-        print(Color.RED+Color.BOLD+'This program requires Admin privileges.' +
-              ' Please rerun as an administrator.'+Color.END)
-        sys.exit()
+        print(Color.RED+Color.BOLD+'This program requires Admin privileges.',
+              'Please rerun as an administrator.'+Color.END)
+        sys.exit(1)
 
 
 def main_menu():  # Main Menu

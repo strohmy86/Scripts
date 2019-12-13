@@ -22,8 +22,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# This is a python script to create a certificate request
-# and then process it using the radius server.
+# This is a python script to create a certificate request and then process it
+# using the radius server.
 
 
 import sys
@@ -70,6 +70,7 @@ parser.add_argument('name', metavar='Name', default='',
                     type=str, help='Name of the PC that a certificate\
                      is being generated for.')
 args = parser.parse_args()
+name = args.name
 # Specify private key file
 k = paramiko.RSAKey.from_private_key_file('/home/lstrohm/.ssh/id_rsa')
 # Configure SSH connections
@@ -92,9 +93,7 @@ def close():
 # Initiates certificate request
 def start():
     global path
-    global args
-    name = args.name
-    # name = input(Color.BOLD+"What is the name of the machine?  "+Color.END)
+    global name
     if name != '':  # Creates a certificate request if a PC name is given
         print(Color.YELLOW+"Creating certificate request for "+Color.BOLD
               + name + Color.END)
@@ -104,7 +103,7 @@ def start():
     elif name == '':  # If no name is given, start the function over
         print(Color.RED+'No machine name specified.'+Color.END)
         time.sleep(1)
-        start()
+        sys.exit(1)
     return
 
 
@@ -112,13 +111,12 @@ def start():
 def gen():
     global path
     global args
-    name = args.name
     resp = subprocess.call(  # Checks for the request file
         ['ssh', '-q', '-i', '/home/lstrohm/.ssh/id_rsa', 'root@10.14.10.12',
          'test -e ' + pipes.quote(path + name)])
     if resp == 0:  # If the file is present, runs the cert-gen script
-        print(Color.CYAN+'Request created successfully, awaiting certificate\
-              generation...'+Color.END)
+        print(Color.CYAN+'Request created successfully, awaiting certificate',
+              'generation...'+Color.END)
         stdin, stdout, stderr = rad.exec_command('/root/certgen/cert-gen')
         time.sleep(3)
         certcheck()
@@ -133,7 +131,6 @@ def gen():
 def certcheck():
     global path
     global args
-    name = args.name
     cert = '/media/nss/VOL1/shared/madhs01rad1/certs/' + name + '_cert.p12'
     # Checks to see if the certificate file was generated correctly
     gen1 = subprocess.call(
