@@ -65,7 +65,8 @@ def main(net_addr, file):
     p = {}  # ip -> process
     for n in range(len(all_hosts)):  # start ping process
         ip = str(all_hosts[n])
-        p[ip] = Popen(['ping', '-n', '-c', '1', '-w', '2', ip], stdout=DEVNULL, stderr=DEVNULL)
+        p[ip] = Popen(['ping', '-n', '-c', '1', '-w', '2', ip],
+                      stdout=DEVNULL, stderr=DEVNULL)
     t = []  # List for active IP addresses
     if file is True:
         f = open('/home/lstrohm/ActiveIps-'+net+'.txt', 'w')
