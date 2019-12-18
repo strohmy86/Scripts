@@ -69,7 +69,7 @@ def download(building):
         reader = csv.reader(fs)
         next(reader)  # Skip header row
         total = 0
-        power_labels = {0: '', 1: 'kilo', 2: 'mega', 3: 'giga', 4: 'tera'}
+        power_labels = {0: '', 1: 'Kilo', 2: 'Mega', 3: 'Giga', 4: 'Tera'}
         for email, ids, title, created, mime, modified, owners, name, size\
                 in reader:
             data = [email, ids, str(basedir+email)]
