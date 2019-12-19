@@ -25,6 +25,7 @@
 
 import pandas as pd
 import hashlib
+import argparse
 
 
 class Color:
@@ -54,16 +55,21 @@ def cred():
     print('\n' + Color.END)
 
 
-def main():
-    fd = input(Color.BOLD+'CSV file to be hashed (Full Path):  '+Color.END)
-    df = pd.read_csv(fd)
-
+def main(csv_file):
+    df = pd.read_csv(csv_file)
     df['userPassword'] = df['userPassword'].apply(lambda x:
                                                   hashlib.sha1(str(x).encode(
                                                     'utf-8')).hexdigest())
+    df.to_csv(csv_file[:-4]+'_Hashed.csv', index=False)
 
-    df.to_csv(fd[:-4]+'_Hashed.csv', index=False)
+
+parser = argparse.ArgumentParser(description='Script to parse a CSV file \
+                                 and hash the plaintext passwords')
+parser.add_argument('csvfile', metavar='CSV file', default='',
+                    type=str, help='Filename with path')
+args = parser.parse_args()
+csv_file = args.csvfile
 
 
 cred()
-main()
+main(csv_file)

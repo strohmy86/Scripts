@@ -80,9 +80,9 @@ fp.connect('10.14.10.12', username='root', pkey=k)
 rad = paramiko.SSHClient()
 rad.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 rad.connect('10.14.0.26', username='root', pkey=k)
+
+
 # Function to close all SSH connections and exit the script
-
-
 def close():
     time.sleep(1)
     fp.close()
@@ -91,15 +91,13 @@ def close():
 
 
 # Initiates certificate request
-def start():
-    global path
-    global name
+def start(path, name):
     if name != '':  # Creates a certificate request if a PC name is given
         print(Color.YELLOW+"Creating certificate request for "+Color.BOLD
               + name + Color.END)
         stdin, stdout, stderr = fp.exec_command('touch ' + path + name)
         time.sleep(2)
-        gen()
+        gen(path, name)
     elif name == '':  # If no name is given, start the function over
         print(Color.RED+'No machine name specified.'+Color.END)
         time.sleep(1)
@@ -108,9 +106,7 @@ def start():
 
 
 # Checks to make sure the request was successful, then runs the cert-gen script
-def gen():
-    global path
-    global args
+def gen(path, name):
     resp = subprocess.call(  # Checks for the request file
         ['ssh', '-q', '-i', '/home/lstrohm/.ssh/id_rsa', 'root@10.14.10.12',
          'test -e ' + pipes.quote(path + name)])
@@ -119,7 +115,7 @@ def gen():
               'generation...'+Color.END)
         stdin, stdout, stderr = rad.exec_command('/root/certgen/cert-gen')
         time.sleep(3)
-        certcheck()
+        certcheck(path, name)
     elif resp != 0:  # If request file is missing, recommends trying again
         print(Color.RED+'Certificate request failed! Please try again.'
               + Color.END)
@@ -128,9 +124,7 @@ def gen():
 
 
 # Checks to see if the certificate was generated correctly
-def certcheck():
-    global path
-    global args
+def certcheck(path, name):
     cert = '/media/nss/VOL1/shared/madhs01rad1/certs/' + name + '_cert.p12'
     # Checks to see if the certificate file was generated correctly
     gen1 = subprocess.call(
@@ -148,4 +142,4 @@ def certcheck():
 
 
 cred()
-start()  # Initiates the script
+start(path, name)  # Initiates the script
