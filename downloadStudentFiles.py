@@ -109,7 +109,7 @@ def makeCsv(building):
     # Get the last day of last month by taking the first day of this month
     # and subtracting 1 day.
     last = datetime.date(now.tm_year, now.tm_mon, 1) - \
-         datetime.timedelta(days=1)
+        datetime.timedelta(days=1)
     last2 = last.strftime('%Y-%m-%d')
     # Set the day to 1 gives us the start of last month
     first = last.replace(day=1)

@@ -63,7 +63,7 @@ def main(filename, source):
     c = Connection(s)
     c.bind()
     filename2 = filename.split('/')[-1]
-    # Open file2 for writing 
+    # Open file2 for writing
     with open('/home/lstrohm/'+filename2[:-4]+'-renamed.csv', mode='w') as fh:
         writer = csv.writer(fh)
         headers = ['Student ID', 'Email', 'New Image', 'Old Image', 'Grade',

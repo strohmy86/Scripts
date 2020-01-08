@@ -90,7 +90,7 @@ def main(username):
         grace = str(user.loginGraceRemaining.value)
         expstr = str(user.passwordExpirationTime.value)[:-15]
         expdate = datetime.datetime.strptime(expstr, '%Y-%m-%d')
-        chgDate = expdate - datetime.timedelta(days=90)  # Checks last PW change
+        chgDate = expdate - datetime.timedelta(days=90)  # Checks PW change
         dateStr = chgDate.strftime('%m-%d-%Y')  # Pretty date
         expStr = expdate.strftime('%m-%d-%Y')  # Pretty date
         if today2 > expdate:  # If PW is expired
@@ -98,7 +98,7 @@ def main(username):
                   Color.END)
             print(Color.YELLOW+'They have '+grace+' grace logins remaining' +
                   Color.END)
-        else:  # PW not expired 
+        else:  # PW not expired
             print(Color.GREEN+name+'\'s' + Color.END+' password expires on ' +
                   Color.CYAN+expStr+Color.END)
             print(Color.GREEN+name+Color.END+' changed their password on ' +
@@ -107,6 +107,7 @@ def main(username):
         c.unbind()
     except IndexError:  # Error received if empty search result
         print(Color.RED + 'No username found! Try again.\n' + Color.END)
+
 
 # Sets up parser and adds arguement
 parser = argparse.ArgumentParser(description='Script to check the password\
