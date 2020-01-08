@@ -34,8 +34,8 @@ from email.mime.text import MIMEText
 
 frAddr = 'helpdesk@mlsd.net'
 server = smtplib.SMTP(host='relay.mlsd.net', port=25)
-today = time.localtime()
-today2 = datetime.date(today.tm_year, today.tm_mon, today.tm_mday)
+today = str(datetime.datetime.today())[:-16]
+today2 = datetime.datetime.strptime(today, '%Y-%m-%d')
 today3 = today2.strftime('%Y%m%d')
 today3 = str(today3+'000000Z')
 today4 = today2.strftime('%m/%d/%Y')
@@ -72,18 +72,21 @@ for x in users:
     expStr = expdate.strftime('%m/%d/%Y')  # Pretty date
     msg = MIMEMultipart('alternative')
     msg['From'] = frAddr
-    msg['Subject'] = 'Madison Password Expiration Notice'+today4
+    msg['Subject'] = 'Madison Password Expiration Notice '+today4
     msg['To'] = mail
     if today2 > expdate:
         data = str(fname+' '+lname+', username='+uid+', '+mail +
                    ', expiration='+expStr+', '+days_remaining_str[1:]+' ago' +
                    ', grace logins='+grace)
         text = """Hello {fname},
-Your Madison OES(Novell) account password for {uid} expired {days_ago} ago on {expStr}.
+Your Madison OES(Novell) account password for {uid} expired {days_ago} """ +\
+"""ago on {expStr}.
 
-You have {grace} grace logins remaining until you are locked out of your account.
+You have {grace} grace logins remaining until you are locked out of """ +\
+"""your account.
 
-For information on changing your password, please visit the Madison Tech Office Helpdesk Webpage:
+For information on changing your password, please visit the Madison """ +\
+"""Tech Office Helpdesk Webpage:
 
 https://helpdesk.mlsd.net/index.php/2018/02/06/change-password/
 
@@ -91,25 +94,35 @@ Thank you,
 The Madison Tech Office staff
 
 
-Raise Expectations, Increase Achievement, Prepare for Tomorrow... Make it Happen!
+Raise Expectations, Increase Achievement, Prepare for Tomorrow... """ +\
+"""Make it Happen!
 """
         html = """\
 <html>
     <body>
         <p>Hello {fname},</p>
 
-        <p>Your Madison OES(Novell) account password for <strong><em>{uid}</strong></em> expired <strong><em>{days_ago}</strong></em> ago on <strong><em>{expStr}</strong></em>.</p>
+        <p>Your Madison OES(Novell) account password for <strong><em>""" +\
+"""{uid}</strong></em> expired <strong><em>{days_ago}</strong></em> ago """ +\
+"""on <strong><em>{expStr}</strong></em>.</p>
 
-        <p>You have <strong>{grace}</strong> grace logins remaining until you are locked out of your account.</p>
+        <p>You have <strong>{grace}</strong> grace logins remaining until """ +\
+"""you are locked out of your account.</p>
 
-        <p>For information on changing your password, please visit the <a href="https://helpdesk.mlsd.net/index.php/2018/02/06/change-password/">Madison Tech Office Helpdesk Webpage</a>.</p>
+        <p>For information on changing your password, please visit the """ +\
+"""<a href="https://helpdesk.mlsd.net/index.php/2018/02/06/""" +\
+"""change-password/">Madison Tech Office Helpdesk Webpage</a>.</p>
 
-        <p>To change your password now, click <a href="https://password.mlsd.net/sspr/private/login">HERE</a>.</p>
+        <p>To change your password now, click <a href="https://password.""" +\
+"""mlsd.net/sspr/private/login">HERE</a>.</p>
 
         <p>Thank you,</p>
         <p>The Madison Tech Office staff</p>
         
-        <p><em><small>Raise Expectations, Increase Achievement, Prepare for Tomorrow... Make it Happen!</small></em></p>
+        <p><em><small>Raise Expectations, Increase Achievement, Prepare """ +\
+"""for Tomorrow... Make it Happen!</small></em></p>
+
+        <p><small>Please do not reply to this message.</small></p>
     </body>
 </html>
 """
@@ -117,9 +130,11 @@ Raise Expectations, Increase Achievement, Prepare for Tomorrow... Make it Happen
         data = str(fname+' '+lname+', username='+uid+', '+mail +
                    ', expiration='+expStr+', '+days_remaining_str)
         text = """Hello {fname},
-This is a courtesy notice to let you know that your Madison OES(Novell) account password for {uid} will expire in {days_until} on {expStr}.
+This is a courtesy notice to let you know that your Madison OES(Novell)""" +\
+""" account password for {uid} will expire in {days_until} on {expStr}.
 
-For information on changing your password, please visit the Madison Tech Office Helpdesk Webpage:
+For information on changing your password, please visit the Madison Tech """ +\
+"""Office Helpdesk Webpage:
 
 https://helpdesk.mlsd.net/index.php/2018/02/06/change-password/
 
@@ -127,23 +142,33 @@ Thank you,
 The Madison Tech Office staff
 
 
-Raise Expectations, Increase Achievement, Prepare for Tomorrow... Make it Happen!
+Raise Expectations, Increase Achievement, Prepare for Tomorrow... Make """ +\
+"""it Happen!
 """
         html = """\
 <html>
     <body>
         <p>Hello {fname},</p>
 
-        <p>This is a courtesy notice to let you know that your Madison OES(Novell) account password for <strong><em>{uid}</strong></em> will expire in <strong><em>{days_until}</strong></em> on <strong><em>{expStr}</strong></em>.</p>
+        <p>This is a courtesy notice to let you know that your Madison """ +\
+"""OES(Novell) account password for <strong><em>{uid}</strong></em> will """ +\
+"""expire in <strong><em>{days_until}</strong></em> on <strong><em>""" +\
+"""{expStr}</strong></em>.</p>
 
-        <p>For information on changing your password, please visit the <a href="https://helpdesk.mlsd.net/index.php/2018/02/06/change-password/">Madison Tech Office Helpdesk Webpage</a>.</p>
+        <p>For information on changing your password, please visit the """ +\
+"""<a href="https://helpdesk.mlsd.net/index.php/2018/02/06/change-""" +\
+"""password/">Madison Tech Office Helpdesk Webpage</a>.</p>
 
-        <p>To change your password now, click <a href="https://password.mlsd.net/sspr/private/login">HERE</a>.</p>
+        <p>To change your password now, click <a href="https://password.""" +\
+"""mlsd.net/sspr/private/login">HERE</a>.</p>
 
         <p>Thank you,</p>
         <p>The Madison Tech Office staff</p>
 
-        <p><em><small>Raise Expectations, Increase Achievement, Prepare for Tomorrow... Make it Happen!</em></small></p>
+        <p><em><small>Raise Expectations, Increase Achievement, Prepare """ +\
+"""for Tomorrow... Make it Happen!</em></small></p>
+        
+        <p><small>Please do not reply to this message.</small></p>
     </body>
 </html>
 """
@@ -184,7 +209,7 @@ html2 = """\
 
         <p>Thank you.</p>
 
-        <p>Please do not reply to this message.</p>
+        <p><small>Please do not reply to this message.</small></p>
     </body>
 </html>
 """
