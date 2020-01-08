@@ -24,7 +24,6 @@
 
 # This script is designed to be run automatically, so no pretty text display.
 
-import time
 import datetime
 from ldap3 import Server, Connection, ALL
 import smtplib
@@ -69,6 +68,7 @@ for x in users:
     grace = str(x.loginGraceRemaining.value)
     days_remaining = expdate - today2
     days_remaining_str = str(days_remaining)[:-9]
+    days_ago = days_remaining_str[1:]
     expStr = expdate.strftime('%m/%d/%Y')  # Pretty date
     msg = MIMEMultipart('alternative')
     msg['From'] = frAddr
@@ -76,17 +76,17 @@ for x in users:
     msg['To'] = mail
     if today2 > expdate:
         data = str(fname+' '+lname+', username='+uid+', '+mail +
-                   ', expiration='+expStr+', '+days_remaining_str[1:]+' ago' +
+                   ', expiration='+expStr+', '+days_ago+' ago' +
                    ', grace logins='+grace)
         text = """Hello {fname},
 Your Madison OES(Novell) account password for {uid} expired {days_ago} """ +\
-"""ago on {expStr}.
+            """ago on {expStr}.
 
 You have {grace} grace logins remaining until you are locked out of """ +\
-"""your account.
+            """your account.
 
 For information on changing your password, please visit the Madison """ +\
-"""Tech Office Helpdesk Webpage:
+            """Tech Office Helpdesk Webpage:
 
 https://helpdesk.mlsd.net/index.php/2018/02/06/change-password/
 
@@ -95,7 +95,7 @@ The Madison Tech Office staff
 
 
 Raise Expectations, Increase Achievement, Prepare for Tomorrow... """ +\
-"""Make it Happen!
+            """Make it Happen!
 """
         html = """\
 <html>
@@ -103,24 +103,24 @@ Raise Expectations, Increase Achievement, Prepare for Tomorrow... """ +\
         <p>Hello {fname},</p>
 
         <p>Your Madison OES(Novell) account password for <strong><em>""" +\
-"""{uid}</strong></em> expired <strong><em>{days_ago}</strong></em> ago """ +\
-"""on <strong><em>{expStr}</strong></em>.</p>
+            """{uid}</strong></em> expired <strong><em>{days_ago}""" +\
+            """</strong></em> ago on <strong><em>{expStr}</strong></em>.</p>
 
-        <p>You have <strong>{grace}</strong> grace logins remaining until """ +\
-"""you are locked out of your account.</p>
+        <p>You have <strong>{grace}</strong> grace logins remaining """ +\
+            """until you are locked out of your account.</p>
 
         <p>For information on changing your password, please visit the """ +\
-"""<a href="https://helpdesk.mlsd.net/index.php/2018/02/06/""" +\
-"""change-password/">Madison Tech Office Helpdesk Webpage</a>.</p>
+            """<a href="https://helpdesk.mlsd.net/index.php/2018/02/06/""" +\
+            """change-password/">Madison Tech Office Helpdesk Webpage</a>.</p>
 
         <p>To change your password now, click <a href="https://password.""" +\
-"""mlsd.net/sspr/private/login">HERE</a>.</p>
+            """mlsd.net/sspr/private/login">HERE</a>.</p>
 
         <p>Thank you,</p>
         <p>The Madison Tech Office staff</p>
-        
+
         <p><em><small>Raise Expectations, Increase Achievement, Prepare """ +\
-"""for Tomorrow... Make it Happen!</small></em></p>
+            """for Tomorrow... Make it Happen!</small></em></p>
 
         <p><small>Please do not reply to this message.</small></p>
     </body>
@@ -131,10 +131,11 @@ Raise Expectations, Increase Achievement, Prepare for Tomorrow... """ +\
                    ', expiration='+expStr+', '+days_remaining_str)
         text = """Hello {fname},
 This is a courtesy notice to let you know that your Madison OES(Novell)""" +\
-""" account password for {uid} will expire in {days_until} on {expStr}.
+            """ account password for {uid} will expire in {days_until}""" +\
+            """ on {expStr}.
 
-For information on changing your password, please visit the Madison Tech """ +\
-"""Office Helpdesk Webpage:
+For information on changing your password, please visit the Madison Tech""" +\
+            """ Office Helpdesk Webpage:
 
 https://helpdesk.mlsd.net/index.php/2018/02/06/change-password/
 
@@ -143,7 +144,7 @@ The Madison Tech Office staff
 
 
 Raise Expectations, Increase Achievement, Prepare for Tomorrow... Make """ +\
-"""it Happen!
+            """it Happen!
 """
         html = """\
 <html>
@@ -151,23 +152,23 @@ Raise Expectations, Increase Achievement, Prepare for Tomorrow... Make """ +\
         <p>Hello {fname},</p>
 
         <p>This is a courtesy notice to let you know that your Madison """ +\
-"""OES(Novell) account password for <strong><em>{uid}</strong></em> will """ +\
-"""expire in <strong><em>{days_until}</strong></em> on <strong><em>""" +\
-"""{expStr}</strong></em>.</p>
+            """OES(Novell) account password for <strong><em>{uid}""" +\
+            """</strong></em> will expire in <strong><em>{days_until}""" +\
+            """</strong></em> on <strong><em>{expStr}</strong></em>.</p>
 
         <p>For information on changing your password, please visit the """ +\
-"""<a href="https://helpdesk.mlsd.net/index.php/2018/02/06/change-""" +\
-"""password/">Madison Tech Office Helpdesk Webpage</a>.</p>
+            """<a href="https://helpdesk.mlsd.net/index.php/2018/02/06""" +\
+            """/change-password/">Madison Tech Office Helpdesk Webpage</a>.</p>
 
         <p>To change your password now, click <a href="https://password.""" +\
-"""mlsd.net/sspr/private/login">HERE</a>.</p>
+            """mlsd.net/sspr/private/login">HERE</a>.</p>
 
         <p>Thank you,</p>
         <p>The Madison Tech Office staff</p>
 
         <p><em><small>Raise Expectations, Increase Achievement, Prepare """ +\
-"""for Tomorrow... Make it Happen!</em></small></p>
-        
+            """for Tomorrow... Make it Happen!</em></small></p>
+
         <p><small>Please do not reply to this message.</small></p>
     </body>
 </html>
@@ -179,7 +180,7 @@ Raise Expectations, Increase Achievement, Prepare for Tomorrow... Make """ +\
     message = msg.as_string()
     server.sendmail(frAddr, mail, message.format(fname=fname, uid=uid,
                                                  days_until=days_remaining_str,
-                                                 days_ago=days_remaining_str[1:],
+                                                 days_ago=days_ago,
                                                  grace=grace, expStr=expStr))
     report.append(data)
 
@@ -190,7 +191,8 @@ msg2['Subject'] = 'Password Expiration Report For '+today4
 msg2['To'] = ', '.join(to_addr)
 text2 = """Hello,
 
-The following users have an upcoming password expiration, or a recently expired password:
+The following users have an upcoming password expiration, or a recently """ +\
+    """expired password:
 
 """ + '\n'.join(report) + """
 
@@ -203,7 +205,8 @@ html2 = """\
     <body>
         <p>Hello,</p>
 
-        <p>The following users have an upcoming password expiration, or a recently expired password:</p>
+        <p>The following users have an upcoming password expiration, or """ +\
+        """a recently expired password:</p>
 
         <p>""" + '<br>'.join(report) + """</p>
 
