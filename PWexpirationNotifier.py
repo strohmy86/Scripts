@@ -24,6 +24,7 @@
 
 # This script is designed to be run automatically, so no pretty text display.
 
+import time
 import datetime
 from ldap3 import Server, Connection, ALL
 import smtplib
@@ -33,8 +34,8 @@ from email.mime.text import MIMEText
 
 frAddr = 'helpdesk@mlsd.net'
 server = smtplib.SMTP(host='relay.mlsd.net', port=25)
-today = str(datetime.datetime.today())[:-16]
-today2 = datetime.datetime.strptime(today, '%Y-%m-%d')
+today = time.localtime()
+today2 = datetime.date(today.tm_year, today.tm_mon, today.tm_mday)
 today3 = today2.strftime('%Y%m%d')
 today3 = str(today3+'000000Z')
 today4 = today2.strftime('%m/%d/%Y')
@@ -107,8 +108,8 @@ Raise Expectations, Increase Achievement, Prepare for Tomorrow... Make it Happen
 
         <p>Thank you,</p>
         <p>The Madison Tech Office staff</p>
-        <p><br></p>
-        <p><em>Raise Expectations, Increase Achievement, Prepare for Tomorrow... Make it Happen!</em></p>
+        
+        <p><em><small>Raise Expectations, Increase Achievement, Prepare for Tomorrow... Make it Happen!</small></em></p>
     </body>
 </html>
 """
@@ -142,7 +143,7 @@ Raise Expectations, Increase Achievement, Prepare for Tomorrow... Make it Happen
         <p>Thank you,</p>
         <p>The Madison Tech Office staff</p>
 
-        <p><em>Raise Expectations, Increase Achievement, Prepare for Tomorrow... Make it Happen!</em></p>
+        <p><em><small>Raise Expectations, Increase Achievement, Prepare for Tomorrow... Make it Happen!</em></small></p>
     </body>
 </html>
 """
