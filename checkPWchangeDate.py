@@ -43,18 +43,17 @@ class Color:
 
 
 def cred():
-    print(Color.DARKCYAN + '\n')
-    print('*********************************')
-    print('*    Utility to Check When      *')
-    print('*    A Password Was Changed     *')
-    print('*                               *')
-    print('*  Written and maintained by:   *')
-    print('*        Luke Strohm            *')
-    print('*    strohm.luke@gmail.com      *')
-    print('*  https://github.com/strohmy86 *')
-    print('*                               *')
-    print('*********************************')
-    print('\n' + Color.END)
+    print(Color.DARKCYAN + '\n' +
+          '*********************************\n' +
+          '*    Utility to Check When      *\n' +
+          '*    A Password Was Changed     *\n' +
+          '*                               *\n' +
+          '*  Written and maintained by:   *\n' +
+          '*        Luke Strohm            *\n' +
+          '*    strohm.luke@gmail.com      *\n' +
+          '*  https://github.com/strohmy86 *\n' +
+          '*********************************\n' +
+          '\n' + Color.END)
 
 
 def main(username):
@@ -107,6 +106,9 @@ def main(username):
         c.unbind()
     except IndexError:  # Error received if empty search result
         print(Color.RED + 'No username found! Try again.\n' + Color.END)
+    except KeyboardInterrupt:  # User exited script with CTRL + C
+        print(Color.CYAN+'\nExiting...'+Color.END)
+        exit()
 
 
 # Sets up parser and adds arguement
