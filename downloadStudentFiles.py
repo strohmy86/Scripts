@@ -80,8 +80,8 @@ def download(building, all_stu):
             if all_stu is True:
                 basedir = '/home/lstrohm/Audit-Files/'
                 cmd2 = "/home/lstrohm/bin/gamadv-xtd3/gam user "+email +\
-                     " print fields orgunitpath | grep 'Student' | " +\
-                     "cut -d '/' -f3"
+                    " print fields orgunitpath | grep 'Student' | " +\
+                    "cut -d '/' -f3"
                 bldg = os.popen(cmd2).read()
                 basedir = basedir+bldg+'/'
             if all_stu is False:
@@ -122,7 +122,7 @@ def makeCsv(building, all_stu):
     # Get the last day of last month by taking the first day of this month
     # and subtracting 1 day.
     last = datetime.date(now.tm_year, now.tm_mon, 1) - \
-         datetime.timedelta(days=1)
+        datetime.timedelta(days=1)
     last2 = last.strftime('%Y-%m-%d')
     # Set the day to 1 gives us the start of last month
     first = last.replace(day=1)
@@ -130,12 +130,12 @@ def makeCsv(building, all_stu):
     first = str(first2+'T00:00:00')  # Format that Google recognizes
     last = str(last2+'T23:59:59')  # Format that Google recognizes
     query = 'query "not mimeType contains *vnd.google* and mimeType!=' +\
-          '*text/plain* and not mimeType contains *officedocument* ' +\
-          'and not name contains *Getting Started* and trashed!=True ' +\
-          'and not name contains *.hex* and mimeType!=*application/' +\
-          'msword* and mimeType!=*application/pdf* and (modifiedTime ' +\
-          '> *'+first+'* or createdTime > *'+first+'*) and ' +\
-          '(modifiedTime < *'+last+'* or createdTime < *'+last+'*)"'
+        '*text/plain* and not mimeType contains *officedocument* ' +\
+        'and not name contains *Getting Started* and trashed!=True ' +\
+        'and not name contains *.hex* and mimeType!=*application/' +\
+        'msword* and mimeType!=*application/pdf* and (modifiedTime ' +\
+        '> *'+first+'* or createdTime > *'+first+'*) and ' +\
+        '(modifiedTime < *'+last+'* or createdTime < *'+last+'*)"'
     query1 = query.replace("*", r"'")
     if all_stu is True:
         cmd = '/home/lstrohm/bin/gamadv-xtd3/gam redirect csv /home/' +\
