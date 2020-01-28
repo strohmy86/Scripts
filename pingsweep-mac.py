@@ -42,21 +42,21 @@ class Color:
 
 
 def cred():
-    print(Color.DARKCYAN+'\n')
-    print('*********************************')
-    print('*      Pingsweep script         *')
-    print('*                               *')
-    print('*  Written and maintained by:   *')
-    print('*        Luke Strohm            *')
-    print('*    strohm.luke@gmail.com      *')
-    print('*  https://github.com/strohmy86 *')
-    print('*                               *')
-    print('*********************************')
-    print('\n'+Color.END)
+    print(Color.DARKCYAN+'\n' +
+          '*********************************\n' +
+          '*      Pingsweep script         *\n' +
+          '*                               *\n' +
+          '*  Written and maintained by:   *\n' +
+          '*        Luke Strohm            *\n' +
+          '*    strohm.luke@gmail.com      *\n' +
+          '*  https://github.com/strohmy86 *\n' +
+          '*                               *\n' +
+          '*********************************\n' +
+          '\n'+Color.END)
 
 
 def main(net_addr, file):
-    net = net_addr.replace('.', '_')
+    net = net_addr.replace('.', '_\n' +
     net = net.replace('/', '-')
     # Create the network
     ip_net = ipaddress.ip_network(net_addr)

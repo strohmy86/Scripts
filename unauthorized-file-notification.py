@@ -45,20 +45,20 @@ class Color:
 
 
 def cred():
-    print(Color.DARKCYAN+'\n')
-    print("*********************************")
-    print("* Python 3 Script For Notifying *")
-    print("* Students When an Unauthorized *")
-    print("* File Is Found On Their Google *")
-    print("*            Drive              *")
-    print("*                               *")
-    print("*   Written and maintained by   *")
-    print("*          Luke Strohm          *")
-    print("*     strohm.luke@gmail.com     *")
-    print("*  https://github.com/strohmy86 *")
-    print("*                               *")
-    print("*********************************")
-    print('\n'+Color.END)
+    print(Color.DARKCYAN+'\n' +
+          '*********************************\n' +
+          '* Python 3 Script For Notifying *\n' +
+          '* Students When an Unauthorized *\n' +
+          '* File Is Found On Their Google *\n' +
+          '*            Drive              *\n' +
+          '*                               *\n' +
+          '*   Written and maintained by   *\n' +
+          '*          Luke Strohm          *\n' +
+          '*     strohm.luke@gmail.com     *\n' +
+          '*  https://github.com/strohmy86 *\n' +
+          '*                               *\n' +
+          '*********************************\n' +
+          '\n'+Color.END)
 
 
 def main():

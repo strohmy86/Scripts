@@ -48,17 +48,17 @@ class Color:
 
 
 def cred():
-    print(Color.DARKCYAN+"\n")
-    print("*********************************")
-    print("*       CertGen Utility         *")
-    print("*                               *")
-    print("*  Written and maintained by:   *")
-    print("*        Luke Strohm            *")
-    print("*    strohm.luke@gmail.com      *")
-    print("*  https://github.com/strohmy86 *")
-    print("*                               *")
-    print("*********************************")
-    print("\n"+Color.END)
+    rint(Color.DARKCYAN+'\n' +
+          '*********************************\n' +
+          '*       CertGen Utility         *\n' +
+          '*                               *\n' +
+          '*  Written and maintained by:   *\n' +
+          '*        Luke Strohm            *\n' +
+          '*    strohm.luke@gmail.com      *\n' +
+          '*  https://github.com/strohmy86 *\n' +
+          '*                               *\n' +
+          '*********************************\n' +
+          '\n'+Color.END)
 
 
 # Define global variables
@@ -93,7 +93,7 @@ def close():
 # Initiates certificate request
 def start(path, name):
     if name != '':  # Creates a certificate request if a PC name is given
-        print(Color.YELLOW+"Creating certificate request for "+Color.BOLD
+        print(Color.YELLOW+'Creating certificate request for '+Color.BOLD
               + name + Color.END)
         stdin, stdout, stderr = fp.exec_command('touch ' + path + name)
         time.sleep(2)

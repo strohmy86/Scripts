@@ -44,17 +44,17 @@ class Color:
 
 
 def cred():
-    print(Color.DARKCYAN+'\n')
-    print('*********************************')
-    print('*     Photo Renaming Script     *')
-    print('*                               *')
-    print('*  Written and maintained by:   *')
-    print('*        Luke Strohm            *')
-    print('*    strohm.luke@gmail.com      *')
-    print('*  https://github.com/strohmy86 *')
-    print('*                               *')
-    print('*********************************')
-    print('\n'+Color.END)
+    print(Color.DARKCYAN+'\n' +
+          '*********************************\n' +
+          '*     Photo Renaming Script     *\n' +
+          '*                               *\n' +
+          '*  Written and maintained by:   *\n' +
+          '*        Luke Strohm            *\n' +
+          '*    strohm.luke@gmail.com      *\n' +
+          '*  https://github.com/strohmy86 *\n' +
+          '*                               *\n' +
+          '*********************************\n' +
+          '\n'+Color.END)
 
 
 def main(filename, source):

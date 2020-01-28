@@ -47,18 +47,18 @@ class Color:
 
 
 def cred():
-    print('\n' + Color.DARKCYAN)
-    print("*********************************")
-    print("* Python 3 Script for Detecting *")
-    print("*        Text in Images         *")
-    print("*                               *")
-    print("*   Written and maintained by   *")
-    print("*          Luke Strohm          *")
-    print("*     strohm.luke@gmail.com     *")
-    print("*  https://github.com/strohmy86 *")
-    print("*                               *")
-    print("*********************************")
-    print(Color.END + '\n')
+    print('\n' + Color.DARKCYAN +
+          '*********************************\n' +
+          '* Python 3 Script for Detecting *\n' +
+          '*        Text in Images         *\n' +
+          '*                               *\n' +
+          '*   Written and maintained by   *\n' +
+          '*          Luke Strohm          *\n' +
+          '*     strohm.luke@gmail.com     *\n' +
+          '*  https://github.com/strohmy86 *\n' +
+          '*                               *\n' +
+          '*********************************\n' +
+          Color.END + '\n')
 
 
 def main():
