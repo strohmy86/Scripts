@@ -48,7 +48,7 @@ class Color:
 
 
 def cred():
-    rint(Color.DARKCYAN+'\n' +
+    print(Color.DARKCYAN+'\n' +
           '*********************************\n' +
           '*       CertGen Utility         *\n' +
           '*                               *\n' +

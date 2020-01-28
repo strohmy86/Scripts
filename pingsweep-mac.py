@@ -56,7 +56,7 @@ def cred():
 
 
 def main(net_addr, file):
-    net = net_addr.replace('.', '_\n' +
+    net = net_addr.replace('.', '_')
     net = net.replace('/', '-')
     # Create the network
     ip_net = ipaddress.ip_network(net_addr)
