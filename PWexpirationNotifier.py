@@ -51,10 +51,10 @@ c.bind()
 # Searches for all active staff accounts with passwords expiring soon
 c.search('o=Madison', '(&(objectClass=inetOrgPerson)' +
          '(passwordExpirationTime>='+week_ago2+')' +
-         '(passwordExpirationTime<='+one_week2+')(mail=*@mlsd.net)' +
-         '(!(loginDisabled=TRUE)))', attributes=['givenName', 'mail', 'uid',
-                                                 'passwordExpirationTime',
-                                                 'loginGraceRemaining', 'sn'])
+         '(passwordExpirationTime<='+one_week2+')(|(mail=*@mlsd.net)' +
+         '(mail=*madisonadultcc.org))(!(loginDisabled=TRUE)))',
+         attributes=['givenName', 'mail', 'uid', 'passwordExpirationTime',
+                     'loginGraceRemaining', 'sn'])
 users = c.entries
 c.unbind()
 report = []
