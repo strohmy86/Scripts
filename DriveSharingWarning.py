@@ -90,7 +90,7 @@ def main():
             print(f'Sending email to '+Color.GREEN+f'{email}'+Color.END)
             msg = MIMEMultipart('alternative')
             msg['From'] = frAddr
-            msg['Subject']='Risky Sharing Settings Found on your Google Drive'
+            msg['Subject'] = 'Risky Sharing Settings Found on your Google Drive'
             msg['To'] = email
             text = """Hello,
 
