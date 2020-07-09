@@ -23,12 +23,12 @@
 # SOFTWARE.
 
 
+import argparse
 import csv
+import datetime
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-import datetime
-import argparse
 
 
 class Color:

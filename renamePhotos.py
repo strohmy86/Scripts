@@ -23,11 +23,12 @@
 # SOFTWARE.
 
 
-import csv
-from ldap3 import Server, Connection, ALL
 import argparse
+import csv
 import os
 import shutil
+
+from ldap3 import ALL, Connection, Server
 
 
 class Color:

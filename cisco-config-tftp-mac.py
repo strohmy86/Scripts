@@ -23,12 +23,12 @@
 # SOFTWARE.
 
 
-import sys
-import time
-import random
-import socket
 import ctypes
 import os
+import random
+import socket
+import sys
+import time
 
 
 class Color:

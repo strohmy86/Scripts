@@ -23,9 +23,10 @@
 # SOFTWARE.
 
 
-import pandas as pd
-import hashlib
 import argparse
+import hashlib
+
+import pandas as pd
 
 
 class Color:

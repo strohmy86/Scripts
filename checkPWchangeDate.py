@@ -23,10 +23,11 @@
 # SOFTWARE.
 
 
+import argparse
 import datetime
 import time
-from ldap3 import Server, Connection, ALL
-import argparse
+
+from ldap3 import ALL, Connection, Server
 
 
 class Color:

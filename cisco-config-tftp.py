@@ -22,15 +22,16 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import easysnmp
-import sys
-import time
-import random
-import socket
-import tftpy
-import threading
 import ctypes
 import os
+import random
+import socket
+import sys
+import threading
+import time
+
+import easysnmp
+import tftpy
 
 
 class Color:

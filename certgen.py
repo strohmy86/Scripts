@@ -26,12 +26,13 @@
 # using the radius server.
 
 
+import argparse
+import pipes
+import subprocess
 import sys
 import time
+
 import paramiko
-import subprocess
-import pipes
-import argparse
 
 
 class Color:

@@ -27,10 +27,11 @@ try:
     from PIL import Image
 except ImportError:
     import Image
-import pytesseract
 import argparse
-import glob
 import csv
+import glob
+
+import pytesseract
 
 
 class Color:

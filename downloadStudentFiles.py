@@ -23,12 +23,12 @@
 # SOFTWARE.
 
 
-import os
-import csv
-import time
-import sys
 import argparse
+import csv
 import datetime
+import os
+import sys
+import time
 
 
 class Color:

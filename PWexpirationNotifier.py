@@ -25,11 +25,11 @@
 # This script is designed to be run automatically, so no pretty text display.
 
 import datetime
-from ldap3 import Server, Connection, ALL
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
+from ldap3 import ALL, Connection, Server
 
 frAddr = 'helpdesk@mlsd.net'
 server = smtplib.SMTP(host='relay.mlsd.net', port=25)

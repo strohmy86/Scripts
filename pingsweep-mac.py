@@ -23,9 +23,9 @@
 # SOFTWARE.
 
 
-import ipaddress
-from subprocess import Popen, DEVNULL
 import argparse
+import ipaddress
+from subprocess import DEVNULL, Popen
 
 
 class Color:

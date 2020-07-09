@@ -25,10 +25,11 @@
 # This script will run NDSrepair on a selected server and report any errors
 
 
+import argparse
 import sys
 import time
+
 import paramiko
-import argparse
 
 
 class Color:
