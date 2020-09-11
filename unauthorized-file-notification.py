@@ -32,59 +32,79 @@ from email.mime.text import MIMEText
 
 
 class Color:
-    PURPLE = '\033[95m'
-    CYAN = '\033[96m'
-    DARKCYAN = '\033[36m'
-    BLUE = '\033[94m'
-    GREEN = '\033[92m'
-    YELLOW = '\033[93m'
-    RED = '\033[91m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
-    END = '\033[0m'
+    PURPLE = "\033[95m"
+    CYAN = "\033[96m"
+    DARKCYAN = "\033[36m"
+    BLUE = "\033[94m"
+    GREEN = "\033[92m"
+    YELLOW = "\033[93m"
+    RED = "\033[91m"
+    BOLD = "\033[1m"
+    UNDERLINE = "\033[4m"
+    END = "\033[0m"
 
 
 def cred():
-    print(Color.DARKCYAN+'\n' +
-          '*********************************\n' +
-          '* Python 3 Script For Notifying *\n' +
-          '* Students When an Unauthorized *\n' +
-          '* File Is Found On Their Google *\n' +
-          '*            Drive              *\n' +
-          '*                               *\n' +
-          '*   Written and maintained by   *\n' +
-          '*          Luke Strohm          *\n' +
-          '*     strohm.luke@gmail.com     *\n' +
-          '*  https://github.com/strohmy86 *\n' +
-          '*                               *\n' +
-          '*********************************\n' +
-          '\n'+Color.END)
+    print(
+        Color.DARKCYAN
+        + "\n"
+        + "*********************************\n"
+        + "* Python 3 Script For Notifying *\n"
+        + "* Students When an Unauthorized *\n"
+        + "* File Is Found On Their Google *\n"
+        + "*            Drive              *\n"
+        + "*                               *\n"
+        + "*   Written and maintained by   *\n"
+        + "*          Luke Strohm          *\n"
+        + "*     strohm.luke@gmail.com     *\n"
+        + "*  https://github.com/strohmy86 *\n"
+        + "*                               *\n"
+        + "*********************************\n"
+        + "\n"
+        + Color.END
+    )
 
 
 def main():
-    parser = argparse.ArgumentParser(description='This is a python script\
+    parser = argparse.ArgumentParser(
+        description="This is a python script\
                                  send emails to students that have\
-                                 unauthorized files on their Google Drive.')
-    parser.add_argument('file', metavar='File', default='',
-                        type=str, help='CSV file containing unauthorized\
-                        file info.')
+                                 unauthorized files on their Google Drive."
+    )
+    parser.add_argument(
+        "file",
+        metavar="File",
+        default="",
+        type=str,
+        help="CSV file containing unauthorized\
+                        file info.",
+    )
     args = parser.parse_args()
     now = datetime.datetime.now()
     date = now.strftime("%Y-%m-%d")
-    frAddr = 'noreply@madisonrams.net'
-    server = smtplib.SMTP(host='relay.mlsd.net', port=25)
+    frAddr = "noreply@madisonrams.net"
+    server = smtplib.SMTP(host="relay.mlsd.net", port=25)
     file = args.file
     building = file[14:-13]
-    with open(file, mode='r') as fh:
+    with open(file, mode="r") as fh:
         reader = csv.reader(fh)
         next(reader)  # Skip header row
-        for email, ids, title, created, mime, modified, owners, name, size\
-                in reader:
-            print(f'Sending email to '+Color.GREEN+f'{name}'+Color.END)
-            msg = MIMEMultipart('alternative')
-            msg['From'] = frAddr
-            msg['Subject'] = 'Unauthorized File Found on Your Google Drive'
-            msg['To'] = email
+        for (
+            email,
+            ids,
+            title,
+            created,
+            mime,
+            modified,
+            owners,
+            name,
+            size,
+        ) in reader:
+            print(f"Sending email to " + Color.GREEN + f"{name}" + Color.END)
+            msg = MIMEMultipart("alternative")
+            msg["From"] = frAddr
+            msg["Subject"] = "Unauthorized File Found on Your Google Drive"
+            msg["To"] = email
             text = """Hi {name},
 
 A file with the name of "{title}" was discovered during an audit of the
@@ -125,8 +145,8 @@ The Madison Technology Office"""
     </body>
 </html>
 """
-            part1 = MIMEText(text, 'plain')
-            part2 = MIMEText(html, 'html')
+            part1 = MIMEText(text, "plain")
+            part2 = MIMEText(html, "html")
             msg.attach(part1)
             msg.attach(part2)
             message = msg.as_string()
@@ -134,18 +154,39 @@ The Madison Technology Office"""
                 frAddr,
                 email,
                 message.format(name=name, title=title),
-                )
-        with open('/home/lstrohm/'+building+'-Unauthorized-Files-'+date +
-                  '.csv', mode='w', newline='') as fa:
+            )
+        with open(
+            "/home/lstrohm/"
+            + building
+            + "-Unauthorized-Files-"
+            + date
+            + ".csv",
+            mode="w",
+            newline="",
+        ) as fa:
             writer = csv.writer(fa)
-            headers = ['Name', 'Email', 'File', 'Created Date',
-                       'Modified Date']
+            headers = [
+                "Name",
+                "Email",
+                "File",
+                "Created Date",
+                "Modified Date",
+            ]
             writer.writerow(headers)
-            fs = open(file, mode='r')
+            fs = open(file, mode="r")
             reader2 = csv.reader(fs)
             next(reader2)  # Skip header row
-            for email, ids, title, created, mime, modified, owners, name,\
-                    size in reader2:
+            for (
+                email,
+                ids,
+                title,
+                created,
+                mime,
+                modified,
+                owners,
+                name,
+                size,
+            ) in reader2:
                 data = [name, email, title, created, modified]
                 writer.writerow(data)
             fs.close()

@@ -33,96 +33,139 @@ import paramiko
 
 
 class Color:
-    PURPLE = '\033[95m'
-    CYAN = '\033[96m'
-    DARKCYAN = '\033[36m'
-    BLUE = '\033[94m'
-    GREEN = '\033[92m'
-    YELLOW = '\033[93m'
-    RED = '\033[91m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
-    END = '\033[0m'
+    PURPLE = "\033[95m"
+    CYAN = "\033[96m"
+    DARKCYAN = "\033[36m"
+    BLUE = "\033[94m"
+    GREEN = "\033[92m"
+    YELLOW = "\033[93m"
+    RED = "\033[91m"
+    BOLD = "\033[1m"
+    UNDERLINE = "\033[4m"
+    END = "\033[0m"
 
 
 def cred():
-    print(Color.DARKCYAN + '\n' +
-          '*********************************\n' +
-          '*      NDScheck Utility         *\n' +
-          '*                               *\n' +
-          '*  Written and maintained by:   *\n' +
-          '*        Luke Strohm            *\n' +
-          '*    strohm.luke@gmail.com      *\n' +
-          '*  https://github.com/strohmy86 *\n' +
-          '*********************************\n' +
-          '\n' + Color.END)
+    print(
+        Color.DARKCYAN
+        + "\n"
+        + "*********************************\n"
+        + "*      NDScheck Utility         *\n"
+        + "*                               *\n"
+        + "*  Written and maintained by:   *\n"
+        + "*        Luke Strohm            *\n"
+        + "*    strohm.luke@gmail.com      *\n"
+        + "*  https://github.com/strohmy86 *\n"
+        + "*********************************\n"
+        + "\n"
+        + Color.END
+    )
 
 
 def main(server, all_checks):
     # Specify private key file
-    k = paramiko.RSAKey.from_private_key_file('/home/lstrohm/.ssh/id_rsa')
+    k = paramiko.RSAKey.from_private_key_file("/home/lstrohm/.ssh/id_rsa")
     # Configure SSH connection
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    client.connect(server, username='root', pkey=k)
+    client.connect(server, username="root", pkey=k)
     # Checks NDS time sync
-    print(Color.YELLOW+'Checking NDS time sync on '+server+'...'+Color.END)
-    stdin, stdout, stderr = client.exec_command('ndsrepair -T')
+    print(
+        Color.YELLOW
+        + "Checking NDS time sync on "
+        + server
+        + "..."
+        + Color.END
+    )
+    stdin, stdout, stderr = client.exec_command("ndsrepair -T")
     for line in stdout:
-        print(line.strip('\n'))
-    print('\n')
+        print(line.strip("\n"))
+    print("\n")
+    e = ""
+    n = ""
     if all_checks is True:
-        e = 'yes'
+        e = "yes"
         time.sleep(5)
     elif all_checks is False:
         # Prompts user to run more tests
-        e = input(Color.CYAN+'Would you like to continue checks? [Y/n]:  ' +
-                  Color.END)
-    if e == 'y' or e == 'yes' or e == '':
-        print(Color.YELLOW+'Checking NDS replication status on '+server +
-              '...'+Color.END)
-        stdin, stdout, stderr = client.exec_command('ndsrepair -E')
+        e = input(
+            Color.CYAN
+            + "Would you like to continue checks? [Y/n]:  "
+            + Color.END
+        )
+    if e == "y" or e == "yes" or e == "":
+        print(
+            Color.YELLOW
+            + "Checking NDS replication status on "
+            + server
+            + "..."
+            + Color.END
+        )
+        stdin, stdout, stderr = client.exec_command("ndsrepair -E")
         for line in stdout:
-            print(line.strip('\n'))
-        print('\n')
-    elif e != 'y' or e != 'yes' or e != '':
-        print(Color.GREEN+'Exiting.'+Color.END)
+            print(line.strip("\n"))
+        print("\n")
+    elif e != "y" or e != "yes" or e != "":
+        print(Color.GREEN + "Exiting." + Color.END)
         client.close()
         sys.exit(0)
     if all_checks is True:
-        n = 'yes'
+        n = "yes"
         time.sleep(3)
     elif all_checks is False:
         # Prompts user to run the last test
-        n = input(Color.CYAN+'Would you like to run the last check? [Y/n]:  ' +
-                  Color.END)
-    if n == 'y' or n == 'yes' or n == '':
-        print(Color.YELLOW+'Checking NDS server status on '+server+'...' +
-              Color.END)
-        stdin, stdout, stderr = client.exec_command('ndsrepair -N')
+        n = input(
+            Color.CYAN
+            + "Would you like to run the last check? [Y/n]:  "
+            + Color.END
+        )
+    if n == "y" or n == "yes" or n == "":
+        print(
+            Color.YELLOW
+            + "Checking NDS server status on "
+            + server
+            + "..."
+            + Color.END
+        )
+        stdin, stdout, stderr = client.exec_command("ndsrepair -N")
         time.sleep(1)
-        stdin.write('\n')
+        stdin.write("\n")
         time.sleep(1)
-        stdin.write('q\n')
+        stdin.write("q\n")
         stdin.flush()
         data = stdout.read().splitlines()
         for line in data:
             print(line)
-        print('\n')
+        print("\n")
         sys.exit(0)
-    elif n != 'y' or n != 'yes' or n != '':
-        print(Color.GREEN+'Exiting.'+Color.END)
+    elif n != "y" or n != "yes" or n != "":
+        print(Color.GREEN + "Exiting." + Color.END)
         client.close()
         sys.exit(0)
+    else:
+        print(Color.RED + "Error")
 
 
 # Starts the script.
-parser = argparse.ArgumentParser(description='Script to check the NDS\
-                                 status of a server.')
-parser.add_argument('-a', '--all', default=False, action='store_const',
-                    const=True, help='Run all checks without asking.')
-parser.add_argument('server', metavar='Server', default='', type=str,
-                    help='IP address or FQDN of server to run checks on')
+parser = argparse.ArgumentParser(
+    description="Script to check the NDS\
+                                 status of a server."
+)
+parser.add_argument(
+    "-a",
+    "--all",
+    default=False,
+    action="store_const",
+    const=True,
+    help="Run all checks without asking.",
+)
+parser.add_argument(
+    "server",
+    metavar="Server",
+    default="",
+    type=str,
+    help="IP address or FQDN of server to run checks on",
+)
 args = parser.parse_args()
 server = args.server
 all_checks = args.all

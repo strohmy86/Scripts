@@ -32,66 +32,84 @@ from email.mime.text import MIMEText
 
 
 class Color:
-    PURPLE = '\033[95m'
-    CYAN = '\033[96m'
-    DARKCYAN = '\033[36m'
-    BLUE = '\033[94m'
-    GREEN = '\033[92m'
-    YELLOW = '\033[93m'
-    RED = '\033[91m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
-    END = '\033[0m'
+    PURPLE = "\033[95m"
+    CYAN = "\033[96m"
+    DARKCYAN = "\033[36m"
+    BLUE = "\033[94m"
+    GREEN = "\033[92m"
+    YELLOW = "\033[93m"
+    RED = "\033[91m"
+    BOLD = "\033[1m"
+    UNDERLINE = "\033[4m"
+    END = "\033[0m"
 
 
 def cred():
-    print(Color.DARKCYAN+'\n' +
-          '*********************************\n' +
-          '* Python 3 Script For Notifying *\n' +
-          '*   Users When a Drive File is  *\n' +
-          '*       Shared With Anyone      *\n' +
-          '*                               *\n' +
-          '*   Written and maintained by   *\n' +
-          '*          Luke Strohm          *\n' +
-          '*     strohm.luke@gmail.com     *\n' +
-          '*  https://github.com/strohmy86 *\n' +
-          '*                               *\n' +
-          '*********************************\n' +
-          '\n'+Color.END)
+    print(
+        Color.DARKCYAN
+        + "\n"
+        + "*********************************\n"
+        + "* Python 3 Script For Notifying *\n"
+        + "*   Users When a Drive File is  *\n"
+        + "*       Shared With Anyone      *\n"
+        + "*                               *\n"
+        + "*   Written and maintained by   *\n"
+        + "*          Luke Strohm          *\n"
+        + "*     strohm.luke@gmail.com     *\n"
+        + "*  https://github.com/strohmy86 *\n"
+        + "*                               *\n"
+        + "*********************************\n"
+        + "\n"
+        + Color.END
+    )
 
 
 def main():
-    parser = argparse.ArgumentParser(description='This is a python script to\
+    parser = argparse.ArgumentParser(
+        description="This is a python script to\
                                      send emails to users that have a file\
-                                     shared with anyone.')
-    parser.add_argument('file', metavar='File', default='',
-                        type=str, help='CSV file containing Drive file info.')
+                                     shared with anyone."
+    )
+    parser.add_argument(
+        "file",
+        metavar="File",
+        default="",
+        type=str,
+        help="CSV file containing Drive file info.",
+    )
     args = parser.parse_args()
     now = datetime.datetime.now()
     date = now.strftime("%Y-%m-%d")
-    frAddr = 'noreply@madisonrams.net'
-    server = smtplib.SMTP(host='relay.mlsd.net', port=25)
+    frAddr = "noreply@madisonrams.net"
+    server = smtplib.SMTP(host="relay.mlsd.net", port=25)
     file = args.file
-    with open(file, mode='r') as fh:
+    with open(file, mode="r") as fh:
         reader = csv.reader(fh)
         next(reader)  # Skip header row
         for email, ids, title, permissionid, role, discoverable in reader:
-            if permissionid == 'id:anyone':
-                permission = 'anyone'
-                explanation = 'everyone in the world has access to the file'
-            elif permissionid == 'id:anyoneWithLink':
-                permission = 'anyone with the link'
-                explanation = 'everyone in the world with the link has ' +\
-                            'access to the file'
-            if role == 'writer':
-                edit = ', and can edit said file'
+            if permissionid == "id:anyone":
+                permission = "anyone"
+                explanation = "everyone in the world has access to the file"
+            elif permissionid == "id:anyoneWithLink":
+                permission = "anyone with the link"
+                explanation = (
+                    "everyone in the world with the link has "
+                    + "access to the file"
+                )
             else:
-                edit = ''
-            print(f'Sending email to '+Color.GREEN+f'{email}'+Color.END)
-            msg = MIMEMultipart('alternative')
-            msg['From'] = frAddr
-            msg['Subject'] = 'Risky Sharing Settings Found on your Google Drive'
-            msg['To'] = email
+                permission = None
+                explanation = None
+            if role == "writer":
+                edit = ", and can edit said file"
+            else:
+                edit = ""
+            print(f"Sending email to " + Color.GREEN + f"{email}" + Color.END)
+            msg = MIMEMultipart("alternative")
+            msg["From"] = frAddr
+            msg[
+                "Subject"
+            ] = "Risky Sharing Settings Found on your Google Drive"
+            msg["To"] = email
             text = """Hello,
 
 A file with the name of "{title}" was discovered during a file sharing audit 
@@ -141,31 +159,41 @@ The Madison Technology Office"""
     </body>
 </html>
 """
-            part1 = MIMEText(text, 'plain')
-            part2 = MIMEText(html, 'html')
+            part1 = MIMEText(text, "plain")
+            part2 = MIMEText(html, "html")
             msg.attach(part1)
             msg.attach(part2)
             message = msg.as_string()
             server.sendmail(
                 frAddr,
                 email,
-                message.format(title=title, permission=permission, role=role,
-                               explanation=explanation, edit=edit),
-                )
+                message.format(
+                    title=title,
+                    permission=permission,
+                    role=role,
+                    explanation=explanation,
+                    edit=edit,
+                ),
+            )
     fh.close()
-    with open('/home/lstrohm/DriveSharingAudit-'+date+'.csv', mode='w',
-              newline='') as fa:
+    with open(
+        "/home/lstrohm/DriveSharingAudit-" + date + ".csv",
+        mode="w",
+        newline="",
+    ) as fa:
         writer = csv.writer(fa)
-        headers = ['Email', 'File', 'Permission', 'Role', 'Discoverable']
+        headers = ["Email", "File", "Permission", "Role", "Discoverable"]
         writer.writerow(headers)
-        fs = open(file, mode='r')
+        fs = open(file, mode="r")
         reader2 = csv.reader(fs)
         next(reader2)  # Skip header row
         for email, ids, title, permissionid, role, discoverable in reader2:
-            if permissionid == 'id:anyone':
-                permission = 'Anyone'
-            elif permissionid == 'id:anyoneWithLink':
-                permission = 'Anyone with the link'
+            if permissionid == "id:anyone":
+                permission = "Anyone"
+            elif permissionid == "id:anyoneWithLink":
+                permission = "Anyone with the link"
+            else:
+                permission = None
             data = [email, title, permission, role, discoverable]
             writer.writerow(data)
         fs.close()

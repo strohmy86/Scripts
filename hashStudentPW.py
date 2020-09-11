@@ -30,44 +30,55 @@ import pandas as pd
 
 
 class Color:
-    PURPLE = '\033[95m'
-    CYAN = '\033[96m'
-    DARKCYAN = '\033[36m'
-    BLUE = '\033[94m'
-    GREEN = '\033[92m'
-    YELLOW = '\033[93m'
-    RED = '\033[91m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
-    END = '\033[0m'
+    PURPLE = "\033[95m"
+    CYAN = "\033[96m"
+    DARKCYAN = "\033[36m"
+    BLUE = "\033[94m"
+    GREEN = "\033[92m"
+    YELLOW = "\033[93m"
+    RED = "\033[91m"
+    BOLD = "\033[1m"
+    UNDERLINE = "\033[4m"
+    END = "\033[0m"
 
 
 def cred():
-    print(Color.DARKCYAN + '\n' +
-          '*********************************\n' +
-          '*    Password Hash Utility      *\n' +
-          '*                               *\n' +
-          '*  Written and maintained by:   *\n' +
-          '*        Luke Strohm            *\n' +
-          '*    strohm.luke@gmail.com      *\n' +
-          '*  https://github.com/strohmy86 *\n' +
-          '*                               *\n' +
-          '*********************************\n' +
-          '\n' + Color.END)
+    print(
+        Color.DARKCYAN
+        + "\n"
+        + "*********************************\n"
+        + "*    Password Hash Utility      *\n"
+        + "*                               *\n"
+        + "*  Written and maintained by:   *\n"
+        + "*        Luke Strohm            *\n"
+        + "*    strohm.luke@gmail.com      *\n"
+        + "*  https://github.com/strohmy86 *\n"
+        + "*                               *\n"
+        + "*********************************\n"
+        + "\n"
+        + Color.END
+    )
 
 
 def main(csv_file):
     df = pd.read_csv(csv_file)
-    df['userPassword'] = df['userPassword'].apply(lambda x:
-                                                  hashlib.sha1(str(x).encode(
-                                                    'utf-8')).hexdigest())
-    df.to_csv(csv_file[:-4]+'_Hashed.csv', index=False)
+    df["userPassword"] = df["userPassword"].apply(
+        lambda x: hashlib.sha1(str(x).encode("utf-8")).hexdigest()
+    )
+    df.to_csv(csv_file[:-4] + "_Hashed.csv", index=False)
 
 
-parser = argparse.ArgumentParser(description='Script to parse a CSV file \
-                                 and hash the plaintext passwords')
-parser.add_argument('csvfile', metavar='CSV file', default='',
-                    type=str, help='Filename with path')
+parser = argparse.ArgumentParser(
+    description="Script to parse a CSV file \
+                                 and hash the plaintext passwords"
+)
+parser.add_argument(
+    "csvfile",
+    metavar="CSV file",
+    default="",
+    type=str,
+    help="Filename with path",
+)
 args = parser.parse_args()
 csv_file = args.csvfile
 

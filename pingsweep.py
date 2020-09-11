@@ -29,35 +29,39 @@ from subprocess import DEVNULL, Popen
 
 
 class Color:
-    PURPLE = '\033[95m'
-    CYAN = '\033[96m'
-    DARKCYAN = '\033[36m'
-    BLUE = '\033[94m'
-    GREEN = '\033[92m'
-    YELLOW = '\033[93m'
-    RED = '\033[91m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
-    END = '\033[0m'
+    PURPLE = "\033[95m"
+    CYAN = "\033[96m"
+    DARKCYAN = "\033[36m"
+    BLUE = "\033[94m"
+    GREEN = "\033[92m"
+    YELLOW = "\033[93m"
+    RED = "\033[91m"
+    BOLD = "\033[1m"
+    UNDERLINE = "\033[4m"
+    END = "\033[0m"
 
 
 def cred():
-    print(Color.DARKCYAN+'\n' +
-          '*********************************\n' +
-          '*      Pingsweep script         *\n' +
-          '*                               *\n' +
-          '*  Written and maintained by:   *\n' +
-          '*        Luke Strohm            *\n' +
-          '*    strohm.luke@gmail.com      *\n' +
-          '*  https://github.com/strohmy86 *\n' +
-          '*                               *\n' +
-          '*********************************\n' +
-          '\n'+Color.END)
+    print(
+        Color.DARKCYAN
+        + "\n"
+        + "*********************************\n"
+        + "*      Pingsweep script         *\n"
+        + "*                               *\n"
+        + "*  Written and maintained by:   *\n"
+        + "*        Luke Strohm            *\n"
+        + "*    strohm.luke@gmail.com      *\n"
+        + "*  https://github.com/strohmy86 *\n"
+        + "*                               *\n"
+        + "*********************************\n"
+        + "\n"
+        + Color.END
+    )
 
 
 def main(net_addr, file):
-    net = net_addr.replace('.', '_')
-    net = net.replace('/', '-')
+    net = net_addr.replace(".", "_")
+    net = net.replace("/", "-")
     # Create the network
     ip_net = ipaddress.ip_network(net_addr)
     # Get all hosts on that network
@@ -65,44 +69,64 @@ def main(net_addr, file):
     p = {}  # ip -> process
     for n in range(len(all_hosts)):  # start ping process
         ip = str(all_hosts[n])
-        p[ip] = Popen(['ping', '-n', '-c', '1', '-w', '2', ip],
-                      stdout=DEVNULL, stderr=DEVNULL)
+        p[ip] = Popen(
+            ["ping", "-n", "-c", "1", "-w", "2", ip],
+            stdout=DEVNULL,
+            stderr=DEVNULL,
+        )
     t = []  # List for active IP addresses
     if file is True:
-        f = open('/home/lstrohm/ActiveIps-'+net+'.txt', 'w')
+        f = open("/home/lstrohm/ActiveIps-" + net + ".txt", "w")
         f.close()
     while p:
         for ip, proc in p.items():
             if proc.poll() is not None:  # ping finished
                 del p[ip]  # remove from the process list
                 if proc.returncode == 0 and file is False:
-                    print('%s active' % ip)
+                    print("%s active" % ip)
                     t.append(ip)
                 elif proc.returncode == 0 and file is True:
-                    f = open('/home/lstrohm/ActiveIps-'+net+'.txt', 'a')
-                    f.write('%s\n' % ip)
+                    f = open("/home/lstrohm/ActiveIps-" + net + ".txt", "a")
+                    f.write("%s\n" % ip)
                 # else:
                 #    print('%s error' % ip)
                 break
     # Count total number of active IP addresses
     if file is True:
-        fr = open('/home/lstrohm/ActiveIps-'+net+'.txt', 'r')
+        fr = open("/home/lstrohm/ActiveIps-" + net + ".txt", "r")
         total = len(fr.readlines())
         fr.close()
-        fw = open('/home/lstrohm/ActiveIps-'+net+'.txt', 'a')
+        fw = open("/home/lstrohm/ActiveIps-" + net + ".txt", "a")
         fw.write("Total Active Devices: %s" % total)
         fw.close()
-        print(Color.CYAN+"Saved list to ~/ActiveIps-"+net+".txt"+Color.END)
+        print(
+            Color.CYAN
+            + "Saved list to ~/ActiveIps-"
+            + net
+            + ".txt"
+            + Color.END
+        )
     elif file is False:
-        print(Color.YELLOW+"Total Active Devices: %s" % len(t)+Color.END)
+        print(Color.YELLOW + "Total Active Devices: %s" % len(t) + Color.END)
 
 
 # Starts the script.
-parser = argparse.ArgumentParser(description='Script ping sweep a subnet')
-parser.add_argument('-f', '--file', default=False, action='store_const',
-                    const=True, help='Write results to a text file.')
-parser.add_argument('net', metavar='Network Subnet', default='', type=str,
-                    help='network address in CIDR format (ex.192.168.1.0/24)')
+parser = argparse.ArgumentParser(description="Script ping sweep a subnet")
+parser.add_argument(
+    "-f",
+    "--file",
+    default=False,
+    action="store_const",
+    const=True,
+    help="Write results to a text file.",
+)
+parser.add_argument(
+    "net",
+    metavar="Network Subnet",
+    default="",
+    type=str,
+    help="network address in CIDR format (ex.192.168.1.0/24)",
+)
 args = parser.parse_args()
 net_addr = args.net
 file = args.file
