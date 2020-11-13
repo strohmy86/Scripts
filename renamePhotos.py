@@ -28,7 +28,7 @@ import csv
 import os
 import shutil
 
-from ldap3 import ALL, Connection, Server
+from ldap3 import ALL, Connection, Server, Tls
 
 
 class Color:
@@ -64,7 +64,11 @@ def cred():
 
 def main(filename, source):
     # Connect and bind to LDAP server.
-    s = Server("madhs01staff1.mlsd.net", use_ssl=True, get_info=ALL)
+    tls = Tls(
+        local_private_key_file=None,
+        local_certificate_file=None,
+    )
+    s = Server("madhs01stu1.mlsd.net", use_ssl=True, get_info=ALL, tls=tls)
     c = Connection(s)
     c.bind()
     filename2 = filename.split("/")[-1]

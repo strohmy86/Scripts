@@ -27,7 +27,7 @@ import argparse
 import datetime
 import time
 
-from ldap3 import ALL, Connection, Server
+from ldap3 import ALL, Connection, Server, Tls
 
 
 class Color:
@@ -65,7 +65,11 @@ def main(username):
     today = str(datetime.datetime.today())[:-16]
     today2 = datetime.datetime.strptime(today, "%Y-%m-%d")
     # Connect and bind to LDAP server
-    s = Server("madhs01staff1.mlsd.net", use_ssl=True, get_info=ALL)
+    tls = Tls(
+        local_private_key_file=None,
+        local_certificate_file=None,
+    )
+    s = Server("madhs01stu1.mlsd.net", use_ssl=True, get_info=ALL, tls=tls)
     c = Connection(s)
     c.bind()
     # Search for user. Lists all usernames matching string provided.
