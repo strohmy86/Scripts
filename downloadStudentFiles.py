@@ -167,9 +167,10 @@ def makeCsv(building, all_stu):
         'query "not mimeType contains *vnd.google* and mimeType!='
         + "*text/plain* and not mimeType contains *officedocument* "
         + "and not name contains *Getting Started* and trashed!=True "
-        + "and not name contains *.hex* and mimeType!=*application/"
-        + "msword* and mimeType!=*application/pdf* and (modifiedTime "
-        + "> *"
+        + "and not name contains *.hex* and not mimeType contains "
+        + "*application/ms* and not mimeType contains *application/vnd.ms*"
+        + " and mimeType!=*application/pdf* and mimeType!=*text/rtf* and "
+        + "mimeType!=*text/csv* and (modifiedTime > *"
         + first
         + "* or createdTime > *"
         + first
