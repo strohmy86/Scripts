@@ -67,11 +67,11 @@ def cred():
 
 
 # Define global variables
-path = "/media/nss/VOL1/shared/madhs01rad1/requests/"
+path = "E:\\shared\\madhs01rad1\\requests\\"
 parser = argparse.ArgumentParser(
-    description="This is a python script\
-                                 to create a certificate request and\
-                                 then process it using the radius server."
+    description="This is a python script \
+                to create a certificate request and \
+                then process it using the radius server."
 )
 parser.add_argument(
     "name",
@@ -88,10 +88,10 @@ k = paramiko.RSAKey.from_private_key_file("/home/lstrohm/.ssh/id_rsa")
 # Configure SSH connections
 fp = paramiko.SSHClient()
 fp.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-fp.connect("10.14.10.12", username="root", pkey=k)
+fp.connect("mad-file.mlsd.local", username="administrator", pkey=k)
 rad = paramiko.SSHClient()
 rad.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-rad.connect("10.14.0.26", username="root", pkey=k)
+rad.connect("madhs01rad1.mlsd.net", username="root", pkey=k)
 
 
 # Function to close all SSH connections and exit the script
@@ -112,8 +112,8 @@ def start(path, name):
             + name
             + Color.END
         )
-        stdin, stdout, stderr = fp.exec_command("touch " + path + name)
-        time.sleep(2)
+        stdin, stdout, stderr = fp.exec_command("C:\\msys64\\usr\\bin\\touch.exe " + path + name)
+        time.sleep(4)
         gen(path, name)
     elif name == "":  # If no name is given, start the function over
         print(Color.RED + "No machine name specified." + Color.END)
@@ -130,8 +130,8 @@ def gen(path, name):
             "-q",
             "-i",
             "/home/lstrohm/.ssh/id_rsa",
-            "root@10.14.10.12",
-            "test -e " + pipes.quote(path + name),
+            "administrator@mad-file.mlsd.local",
+            "C:\\msys64\\usr\\bin\\test.exe -e " + pipes.quote(path + name),
         ]
     )
     if resp == 0:  # If the file is present, runs the cert-gen script
@@ -140,7 +140,7 @@ def gen(path, name):
             "generation..." + Color.END,
         )
         stdin, stdout, stderr = rad.exec_command("/root/certgen/cert-gen")
-        time.sleep(3)
+        time.sleep(10)
         certcheck(path, name)
     elif resp != 0:  # If request file is missing, recommends trying again
         print(
@@ -154,7 +154,7 @@ def gen(path, name):
 
 # Checks to see if the certificate was generated correctly
 def certcheck(path, name):
-    cert = "/media/nss/VOL1/shared/madhs01rad1/certs/" + name + "_cert.p12"
+    cert = "E:\\Shared\\madhs01rad1\\certs\\" + name + "_cert.p12"
     # Checks to see if the certificate file was generated correctly
     gen1 = subprocess.call(
         [
@@ -162,8 +162,8 @@ def certcheck(path, name):
             "-q",
             "-i",
             "/home/lstrohm/.ssh/id_rsa",
-            "root@10.14.10.12",
-            "test -e " + pipes.quote(cert),
+            "administrator@mad-file.mlsd.local",
+            "C:\\msys64\\usr\\bin\\test.exe -e " + pipes.quote(cert),
         ]
     )
     if gen1 == 0:  # If the certificate exists, exits cleanly
