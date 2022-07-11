@@ -90,12 +90,17 @@ def main():
     c.bind()
     c.search(
         "ou=Active,ou=Student,ou=Madison,DC=mlsd,DC=local",
-        "(&(objectclass=organizationalPerson)"
+        "(&(objectclass=person)"
         + "(!(userAccountControl=512))(!(userAccountControl=544))"
         + "(mail=*@madisonrams.net))",
         attributes=["cn", "memberOf"],
     )
     dis = c.entries
+    dis_group_dn = [i.memberOf.value for i in dis]
+    dis_groups = []
+    [dis_groups.append(i) for i in dis_group_dn if i not in dis_groups]
+    dis_user_dn = [i.entry_dn for i in dis]
+    print(dis_groups)
     with open("withdrawn.txt", "w", encoding="utf-8") as file:
         for i in dis:
             print(
@@ -110,30 +115,6 @@ def main():
             )
             file.write(str(i.entry_dn))
             file.write("\n")
-            if isinstance(i.memberOf.value, list) is True:
-                for g in i.memberOf.value:
-                    c.modify(
-                        str(g),
-                        {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                    )
-                    time.sleep(0.25)
-            elif isinstance(i.memberOf.value, str) is True:
-                c.modify(
-                    i.memberOf.value,
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
-            c.modify(
-                str(i.entry_dn),
-                {
-                    "description": [(MODIFY_DELETE, [])],
-                },
-            )
-            c.modify(
-                str(i.entry_dn),
-                {
-                    "memberOf": [(MODIFY_DELETE, [])],
-                },
-            )
             time.sleep(0.5)
             c.modify(
                 str(i.entry_dn),
@@ -157,71 +138,8 @@ def main():
             )
             os.system(cmd)
     file.close()
-
-    # Searches for active students that aren't in the student filter group.
-    c.search(
-        "ou=Active,ou=Student,ou=Madison,DC=mlsd,DC=local",
-        "(&(objectclass=organizationalPerson)(mail=*@madisonrams.net)"
-        + "(|(userAccountControl=512)(userAccountControl=544)))",
-        attributes=["cn", "memberOf"],
-    )
-    active = c.entries
-    for i in active:
-        try:
-            if "CN=mad-student-inet,OU=Groups,OU=Madison,DC=mlsd,DC=local" in i.memberOf.value:
-                continue
-            else:
-                print(
-                Color.CYAN
-                + "Adding "
-                + Color.BOLD
-                + str(i.cn.value)
-                + Color.END
-                + Color.CYAN
-                + " to mad-student-inet"
-                + Color.END
-            )
-            c.modify(
-                str(i.entry_dn),
-                {
-                    "memberOf": [
-                        (MODIFY_REPLACE, ["CN=mad-student-inet,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                    ],
-                },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=mad-student-inet,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                    "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        except TypeError:
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to mad-student-inet"
-            + Color.END
-            )
-            c.modify(
-                str(i.entry_dn),
-                {
-                    "memberOf": [
-                        (MODIFY_REPLACE, ["CN=mad-student-inet,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                    ],
-                },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=mad-student-inet,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                    "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
+    for i in dis_groups:
+        c.extend.microsoft.remove_members_from_groups([dis_user_dn], i)
 
 
     c.unbind()

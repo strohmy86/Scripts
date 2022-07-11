@@ -82,10 +82,76 @@ def main():
     
     users = c.extend.standard.paged_search(search_base="ou=Madison,DC=mlsd,DC=local",
         search_filter="(&(mail=*madisonrams.net)(objectClass=person))",
-        search_scope=SUBTREE, attributes=["cn", "memberOf", "department", 
+        search_scope=SUBTREE, attributes=["cn", "memberOf", "description", 
         "physicalDeliveryOfficeName", "userAccountControl", "title",],
         paged_size=5, generator=False
     )
+
+
+    #------------------------------mad-student-inet------------------------------#
+    for i in users:
+        dn = i['dn']
+        cn = i['attributes']['cn']
+        memberOf = i['attributes']['memberOf']
+        description = i['attributes']['description']
+        location = i['attributes']['physicalDeliveryOfficeName']
+        status = i['attributes']['userAccountControl']
+        title = i['attributes']['title']
+        if "CN=mad-student-inet,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
+        and ("514" not in str(status) or "546" not in str(status)):
+            continue
+        elif "CN=mad-student-inet,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(memberOf) \
+        and ("514" not in str(status) or "546" not in str(status)):
+            print(
+            Color.CYAN
+            + "Adding "
+            + Color.BOLD
+            + str(cn)
+            + Color.END
+            + Color.CYAN
+            + " to mad-student-inet"
+            + Color.END
+            )   
+            c.modify(
+            str(dn),
+            {
+                "memberOf": [
+                    (MODIFY_ADD, ["CN=mad-student-inet,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
+                ],
+            },
+            )
+            time.sleep(0.5)
+            c.modify(
+                "CN=mad-student-inet,OU=Groups,OU=Madison,DC=mlsd,DC=local",
+                {
+                   "member": [(MODIFY_ADD, [str(dn)])],
+                },
+            )
+        elif "CN=mad-student-inet,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
+        and ("514" in str(status) or "546" in str(status)):
+            print(
+            Color.YELLOW
+            + "Removing "
+            + Color.BOLD
+            + str(cn)
+            + Color.END
+            + Color.YELLOW
+            + " from mad-student-inet"
+            + Color.END
+            )
+            c.modify(
+                str(dn),
+                {
+                    "memberOf": [
+                        (MODIFY_DELETE, ["CN=mad-student-k,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
+                    ],
+                },
+            )
+            time.sleep(0.5)
+            c.modify(
+                    "CN=mad-student-k,OU=Groups,OU=Madison,DC=mlsd,DC=local",
+                    {"member": [(MODIFY_DELETE, [str(dn)])]},
+                )
 
 
     #------------------------------mad-student-k------------------------------#
@@ -93,16 +159,16 @@ def main():
         dn = i['dn']
         cn = i['attributes']['cn']
         memberOf = i['attributes']['memberOf']
-        department = i['attributes']['department']
+        description = i['attributes']['description']
         location = i['attributes']['physicalDeliveryOfficeName']
         status = i['attributes']['userAccountControl']
         title = i['attributes']['title']
         if "CN=mad-student-k,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and "KG".lower() in str(department).lower() and "514" not in \
+        and "KG".lower() in str(description).lower() and "514" not in \
         str(status):
             continue
         elif "CN=mad-student-k,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(memberOf) \
-        and "KG".lower() in str(department).lower() and "514" not in \
+        and "KG".lower() in str(description).lower() and "514" not in \
         str(status):
             print(
             Color.CYAN
@@ -130,7 +196,7 @@ def main():
                 },
             )
         elif "CN=mad-student-k,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and ("KG".lower() not in str(department).lower() or "514" in str(status) or "546" in str(status)):
+        and ("KG".lower() not in str(description).lower() or "514" in str(status) or "546" in str(status)):
             print(
             Color.YELLOW
             + "Removing "
@@ -161,16 +227,16 @@ def main():
         dn = i['dn']
         cn = i['attributes']['cn']
         memberOf = i['attributes']['memberOf']
-        department = i['attributes']['department']
+        description = i['attributes']['description']
         location = i['attributes']['physicalDeliveryOfficeName']
         status = i['attributes']['userAccountControl']
         title = i['attributes']['title']
         if "CN=mad-student-1,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and "01".lower() in str(department).lower() and "514" not in \
+        and "01".lower() in str(description).lower() and "514" not in \
         str(status):
             continue
         elif "CN=mad-student-1,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(memberOf) \
-        and "01".lower() in str(department).lower() and "514" not in \
+        and "01".lower() in str(description).lower() and "514" not in \
         str(status):
             print(
             Color.CYAN
@@ -198,7 +264,7 @@ def main():
                 },
             )
         elif "CN=mad-student-1,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and ("01".lower() not in str(department).lower() or "514" in \
+        and ("01".lower() not in str(description).lower() or "514" in \
         str(status)):
             print(
             Color.YELLOW
@@ -230,16 +296,16 @@ def main():
         dn = i['dn']
         cn = i['attributes']['cn']
         memberOf = i['attributes']['memberOf']
-        department = i['attributes']['department']
+        description = i['attributes']['description']
         location = i['attributes']['physicalDeliveryOfficeName']
         status = i['attributes']['userAccountControl']
         title = i['attributes']['title']
         if "CN=mad-student-2,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and "02".lower() in str(department).lower() and "514" not in \
+        and "02".lower() in str(description).lower() and "514" not in \
         str(status):
             continue
         elif "CN=mad-student-2,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(memberOf) \
-        and "02".lower() in str(department).lower() and "514" not in \
+        and "02".lower() in str(description).lower() and "514" not in \
         str(status):
             print(
             Color.CYAN
@@ -267,7 +333,7 @@ def main():
                 },
             )
         elif "CN=mad-student-2,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and ("02".lower() not in str(department).lower() or "514" in \
+        and ("02".lower() not in str(description).lower() or "514" in \
         str(status)):
             print(
             Color.YELLOW
@@ -299,16 +365,16 @@ def main():
         dn = i['dn']
         cn = i['attributes']['cn']
         memberOf = i['attributes']['memberOf']
-        department = i['attributes']['department']
+        description = i['attributes']['description']
         location = i['attributes']['physicalDeliveryOfficeName']
         status = i['attributes']['userAccountControl']
         title = i['attributes']['title']
         if "CN=mad-student-3,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and "03".lower() in str(department).lower() and "514" not in \
+        and "03".lower() in str(description).lower() and "514" not in \
         str(status):
             continue
         elif "CN=mad-student-3,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(memberOf) \
-        and "03".lower() in str(department).lower() and "514" not in \
+        and "03".lower() in str(description).lower() and "514" not in \
         str(status):
             print(
             Color.CYAN
@@ -336,7 +402,7 @@ def main():
                 },
             )
         elif "CN=mad-student-3,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and ("03".lower() not in str(department).lower() or "514" in \
+        and ("03".lower() not in str(description).lower() or "514" in \
         str(status)):
             print(
             Color.YELLOW
@@ -368,16 +434,16 @@ def main():
         dn = i['dn']
         cn = i['attributes']['cn']
         memberOf = i['attributes']['memberOf']
-        department = i['attributes']['department']
+        description = i['attributes']['description']
         location = i['attributes']['physicalDeliveryOfficeName']
         status = i['attributes']['userAccountControl']
         title = i['attributes']['title']
         if "CN=mad-student-4,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and "04".lower() in str(department).lower() and "514" not in \
+        and "04".lower() in str(description).lower() and "514" not in \
         str(status):
             continue
         elif "CN=mad-student-4,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(memberOf) \
-        and "04".lower() in str(department).lower() and "514" not in \
+        and "04".lower() in str(description).lower() and "514" not in \
         str(status):
             print(
             Color.CYAN
@@ -405,7 +471,7 @@ def main():
                 },
             )
         elif "CN=mad-student-4,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and ("04".lower() not in str(department).lower() or "514" in \
+        and ("04".lower() not in str(description).lower() or "514" in \
         str(status)):
             print(
             Color.YELLOW
@@ -437,16 +503,16 @@ def main():
         dn = i['dn']
         cn = i['attributes']['cn']
         memberOf = i['attributes']['memberOf']
-        department = i['attributes']['department']
+        description = i['attributes']['description']
         location = i['attributes']['physicalDeliveryOfficeName']
         status = i['attributes']['userAccountControl']
         title = i['attributes']['title']
         if "CN=mad-student-5,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and "05".lower() in str(department).lower() and "514" not in \
+        and "05".lower() in str(description).lower() and "514" not in \
         str(status):
             continue
         elif "CN=mad-student-5,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(memberOf) \
-        and "05".lower() in str(department).lower() and "514" not in \
+        and "05".lower() in str(description).lower() and "514" not in \
         str(status):
             print(
             Color.CYAN
@@ -474,7 +540,7 @@ def main():
                 },
             )
         elif "CN=mad-student-5,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and ("05".lower() not in str(department).lower() or "514" in \
+        and ("05".lower() not in str(description).lower() or "514" in \
         str(status)):
             print(
             Color.YELLOW
@@ -506,16 +572,16 @@ def main():
         dn = i['dn']
         cn = i['attributes']['cn']
         memberOf = i['attributes']['memberOf']
-        department = i['attributes']['department']
+        description = i['attributes']['description']
         location = i['attributes']['physicalDeliveryOfficeName']
         status = i['attributes']['userAccountControl']
         title = i['attributes']['title']
         if "CN=mad-student-6,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and "06".lower() in str(department).lower() and "514" not in \
+        and "06".lower() in str(description).lower() and "514" not in \
         str(status):
             continue
         elif "CN=mad-student-6,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(memberOf) \
-        and "06".lower() in str(department).lower() and "514" not in \
+        and "06".lower() in str(description).lower() and "514" not in \
         str(status):
             print(
             Color.CYAN
@@ -543,7 +609,7 @@ def main():
                 },
             )
         elif "CN=mad-student-6,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and ("06".lower() not in str(department).lower() or "514" in \
+        and ("06".lower() not in str(description).lower() or "514" in \
         str(status)):
             print(
             Color.YELLOW
@@ -575,16 +641,16 @@ def main():
         dn = i['dn']
         cn = i['attributes']['cn']
         memberOf = i['attributes']['memberOf']
-        department = i['attributes']['department']
+        description = i['attributes']['description']
         location = i['attributes']['physicalDeliveryOfficeName']
         status = i['attributes']['userAccountControl']
         title = i['attributes']['title']
         if "CN=mad-student-7,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and "07".lower() in str(department).lower() and "514" not in \
+        and "07".lower() in str(description).lower() and "514" not in \
         str(status):
             continue
         elif "CN=mad-student-7,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(memberOf) \
-        and "07".lower() in str(department).lower() and "514" not in \
+        and "07".lower() in str(description).lower() and "514" not in \
         str(status):
             print(
             Color.CYAN
@@ -612,7 +678,7 @@ def main():
                 },
             )
         elif "CN=mad-student-7,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and ("07".lower() not in str(department).lower() or "514" in \
+        and ("07".lower() not in str(description).lower() or "514" in \
         str(status)):
             print(
             Color.YELLOW
@@ -644,16 +710,16 @@ def main():
         dn = i['dn']
         cn = i['attributes']['cn']
         memberOf = i['attributes']['memberOf']
-        department = i['attributes']['department']
+        description = i['attributes']['description']
         location = i['attributes']['physicalDeliveryOfficeName']
         status = i['attributes']['userAccountControl']
         title = i['attributes']['title']
         if "CN=mad-student-8,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and "08".lower() in str(department).lower() and "514" not in \
+        and "08".lower() in str(description).lower() and "514" not in \
         str(status):
             continue
         elif "CN=mad-student-8,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(memberOf) \
-        and "08".lower() in str(department).lower() and "514" not in \
+        and "08".lower() in str(description).lower() and "514" not in \
         str(status):
             print(
             Color.CYAN
@@ -681,7 +747,7 @@ def main():
                 },
             )
         elif "CN=mad-student-8,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and ("08".lower() not in str(department).lower() or "514" in \
+        and ("08".lower() not in str(description).lower() or "514" in \
         str(status)):
             print(
             Color.YELLOW
@@ -713,16 +779,16 @@ def main():
         dn = i['dn']
         cn = i['attributes']['cn']
         memberOf = i['attributes']['memberOf']
-        department = i['attributes']['department']
+        description = i['attributes']['description']
         location = i['attributes']['physicalDeliveryOfficeName']
         status = i['attributes']['userAccountControl']
         title = i['attributes']['title']
         if "CN=mad-student-9,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and "09".lower() in str(department).lower() and "514" not in \
+        and "09".lower() in str(description).lower() and "514" not in \
         str(status):
             continue
         elif "CN=mad-student-9,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(memberOf) \
-        and "09".lower() in str(department).lower() and "514" not in \
+        and "09".lower() in str(description).lower() and "514" not in \
         str(status):
             print(
             Color.CYAN
@@ -750,7 +816,7 @@ def main():
                 },
             )
         elif "CN=mad-student-9,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and ("09".lower() not in str(department).lower() or "514" in \
+        and ("09".lower() not in str(description).lower() or "514" in \
         str(status)):
             print(
             Color.YELLOW
@@ -782,16 +848,16 @@ def main():
         dn = i['dn']
         cn = i['attributes']['cn']
         memberOf = i['attributes']['memberOf']
-        department = i['attributes']['department']
+        description = i['attributes']['description']
         location = i['attributes']['physicalDeliveryOfficeName']
         status = i['attributes']['userAccountControl']
         title = i['attributes']['title']
         if "CN=mad-student-10,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and "10".lower() in str(department).lower() and "514" not in \
+        and "10".lower() in str(description).lower() and "514" not in \
         str(status):
             continue
         elif "CN=mad-student-10,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(memberOf) \
-        and "10".lower() in str(department).lower() and "514" not in \
+        and "10".lower() in str(description).lower() and "514" not in \
         str(status):
             print(
             Color.CYAN
@@ -819,7 +885,7 @@ def main():
                 },
             )
         elif "CN=mad-student-10,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and ("10".lower() not in str(department).lower() or "514" in \
+        and ("10".lower() not in str(description).lower() or "514" in \
         str(status)):
             print(
             Color.YELLOW
@@ -851,16 +917,16 @@ def main():
         dn = i['dn']
         cn = i['attributes']['cn']
         memberOf = i['attributes']['memberOf']
-        department = i['attributes']['department']
+        description = i['attributes']['description']
         location = i['attributes']['physicalDeliveryOfficeName']
         status = i['attributes']['userAccountControl']
         title = i['attributes']['title']
         if "CN=mad-student-11,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and "11".lower() in str(department).lower() and "514" not in \
+        and "11".lower() in str(description).lower() and "514" not in \
         str(status):
             continue
         elif "CN=mad-student-11,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(memberOf) \
-        and "11".lower() in str(department).lower() and "514" not in \
+        and "11".lower() in str(description).lower() and "514" not in \
         str(status):
             print(
             Color.CYAN
@@ -888,7 +954,7 @@ def main():
                 },
             )
         elif "CN=mad-student-11,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and ("11".lower() not in str(department).lower() or "514" in \
+        and ("11".lower() not in str(description).lower() or "514" in \
         str(status)):
             print(
             Color.YELLOW
@@ -920,16 +986,16 @@ def main():
         dn = i['dn']
         cn = i['attributes']['cn']
         memberOf = i['attributes']['memberOf']
-        department = i['attributes']['department']
+        description = i['attributes']['description']
         location = i['attributes']['physicalDeliveryOfficeName']
         status = i['attributes']['userAccountControl']
         title = i['attributes']['title']
         if "CN=mad-student-12,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and "12".lower() in str(department).lower() and "514" not in \
+        and "12".lower() in str(description).lower() and "514" not in \
         str(status):
             continue
         elif "CN=mad-student-12,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(memberOf) \
-        and "12".lower() in str(department).lower() and "514" not in \
+        and "12".lower() in str(description).lower() and "514" not in \
         str(status):
             print(
             Color.CYAN
@@ -957,7 +1023,7 @@ def main():
                 },
             )
         elif "CN=mad-student-12,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and ("12".lower() not in str(department).lower() or "514" in \
+        and ("12".lower() not in str(description).lower() or "514" in \
         str(status)):
             print(
             Color.YELLOW
@@ -989,16 +1055,16 @@ def main():
         dn = i['dn']
         cn = i['attributes']['cn']
         memberOf = i['attributes']['memberOf']
-        department = i['attributes']['department']
+        description = i['attributes']['description']
         location = i['attributes']['physicalDeliveryOfficeName']
         status = i['attributes']['userAccountControl']
         title = i['attributes']['title']
         if "CN=mad-student-ct,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and "CT".lower() in str(department).lower() and "514" not in \
+        and "CT".lower() in str(description).lower() and "514" not in \
         str(status):
             continue
         elif "CN=mad-student-ct,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(memberOf) \
-        and "CT".lower() in str(department).lower() and "514" not in \
+        and "CT".lower() in str(description).lower() and "514" not in \
         str(status):
             print(
             Color.CYAN
@@ -1026,7 +1092,7 @@ def main():
                 },
             )
         elif "CN=mad-student-ct,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and ("CT".lower() not in str(department).lower() or "514" in \
+        and ("CT".lower() not in str(description).lower() or "514" in \
         str(status)):
             print(
             Color.YELLOW
@@ -1058,17 +1124,17 @@ def main():
         dn = i['dn']
         cn = i['attributes']['cn']
         memberOf = i['attributes']['memberOf']
-        department = i['attributes']['department']
+        description = i['attributes']['description']
         location = i['attributes']['physicalDeliveryOfficeName']
         status = i['attributes']['userAccountControl']
         title = i['attributes']['title']
         if "CN=mad-student-ct10,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and "CT".lower() in str(department).lower() and "10".lower() \
-        in str(department).lower() and "514" not in str(status) and "546" not in str(status):
+        and "CT".lower() in str(description).lower() and "10".lower() \
+        in str(description).lower() and "514" not in str(status) and "546" not in str(status):
             continue
         elif "CN=mad-student-ct10,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(memberOf) \
-        and "CT".lower() in str(department).lower() and "10".lower() \
-        in str(department).lower() and "514" not in str(status) and "546" not in str(status):
+        and "CT".lower() in str(description).lower() and "10".lower() \
+        in str(description).lower() and "514" not in str(status) and "546" not in str(status):
             print(
             Color.CYAN
             + "Adding "
@@ -1095,8 +1161,8 @@ def main():
                 },
             )
         elif "CN=mad-student-ct10,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and (("CT".lower() not in str(department).lower() and \
-        "10".lower() in str(department).lower()) or "514" in \
+        and (("CT".lower() not in str(description).lower() and \
+        "10".lower() in str(description).lower()) or "514" in \
         str(status)):
             print(
             Color.YELLOW
@@ -1128,17 +1194,17 @@ def main():
         dn = i['dn']
         cn = i['attributes']['cn']
         memberOf = i['attributes']['memberOf']
-        department = i['attributes']['department']
+        description = i['attributes']['description']
         location = i['attributes']['physicalDeliveryOfficeName']
         status = i['attributes']['userAccountControl']
         title = i['attributes']['title']
         if "CN=mad-student-ct11,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and "CT".lower() in str(department).lower() and "11".lower() \
-        in str(department).lower() and "514" not in str(status) and "546" not in str(status):
+        and "CT".lower() in str(description).lower() and "11".lower() \
+        in str(description).lower() and "514" not in str(status) and "546" not in str(status):
             continue
         elif "CN=mad-student-ct11,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(memberOf) \
-        and "CT".lower() in str(department).lower() and "11".lower() \
-        in str(department).lower() and "514" not in str(status) and "546" not in str(status):
+        and "CT".lower() in str(description).lower() and "11".lower() \
+        in str(description).lower() and "514" not in str(status) and "546" not in str(status):
             print(
             Color.CYAN
             + "Adding "
@@ -1165,8 +1231,8 @@ def main():
                 },
             )
         elif "CN=mad-student-ct11,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and (("CT".lower() not in str(department).lower() and \
-        "11".lower() in str(department).lower()) or "514" in \
+        and (("CT".lower() not in str(description).lower() and \
+        "11".lower() in str(description).lower()) or "514" in \
         str(status)):
             print(
             Color.YELLOW
@@ -1198,17 +1264,17 @@ def main():
         dn = i['dn']
         cn = i['attributes']['cn']
         memberOf = i['attributes']['memberOf']
-        department = i['attributes']['department']
+        description = i['attributes']['description']
         location = i['attributes']['physicalDeliveryOfficeName']
         status = i['attributes']['userAccountControl']
         title = i['attributes']['title']
         if "CN=mad-student-ct12,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and "CT".lower() in str(department).lower() and "12".lower() \
-        in str(department).lower() and "514" not in str(status) and "546" not in str(status):
+        and "CT".lower() in str(description).lower() and "12".lower() \
+        in str(description).lower() and "514" not in str(status) and "546" not in str(status):
             continue
         elif "CN=mad-student-ct12,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(memberOf) \
-        and "CT".lower() in str(department).lower() and "12".lower() \
-        in str(department).lower() and "514" not in str(status) and "546" not in str(status):
+        and "CT".lower() in str(description).lower() and "12".lower() \
+        in str(description).lower() and "514" not in str(status) and "546" not in str(status):
             print(
             Color.CYAN
             + "Adding "
@@ -1235,8 +1301,8 @@ def main():
                 },
             )
         elif "CN=mad-student-ct12,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and (("CT".lower() not in str(department).lower() and \
-        "12".lower() in str(department).lower()) or "514" in \
+        and (("CT".lower() not in str(description).lower() and \
+        "12".lower() in str(description).lower()) or "514" in \
         str(status)):
             print(
             Color.YELLOW
@@ -1268,16 +1334,16 @@ def main():
         dn = i['dn']
         cn = i['attributes']['cn']
         memberOf = i['attributes']['memberOf']
-        department = i['attributes']['department']
+        description = i['attributes']['description']
         location = i['attributes']['physicalDeliveryOfficeName']
         status = i['attributes']['userAccountControl']
         title = i['attributes']['title']
         if "CN=madae-student-cosmetology,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and "Cosmetology".lower() in str(department).lower() and "514" not in \
+        and "Cosmetology".lower() in str(description).lower() and "514" not in \
         str(status):
             continue
         elif "CN=madae-student-cosmetology,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(memberOf) \
-        and "Cosmetology".lower() in str(department).lower() and "514" not in \
+        and "Cosmetology".lower() in str(description).lower() and "514" not in \
         str(status):
             print(
             Color.CYAN
@@ -1305,7 +1371,7 @@ def main():
                 },
             )
         elif "CN=madae-student-cosmetology,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and ("Cosmetology".lower() not in str(department).lower() or "514" in \
+        and ("Cosmetology".lower() not in str(description).lower() or "514" in \
         str(status)):
             print(
             Color.YELLOW
@@ -1337,16 +1403,16 @@ def main():
         dn = i['dn']
         cn = i['attributes']['cn']
         memberOf = i['attributes']['memberOf']
-        department = i['attributes']['department']
+        description = i['attributes']['description']
         location = i['attributes']['physicalDeliveryOfficeName']
         status = i['attributes']['userAccountControl']
         title = i['attributes']['title']
         if "CN=madae-student-dental-assisting,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and "Dental Assisting".lower() in str(department).lower() and "514" not in \
+        and "Dental Assisting".lower() in str(description).lower() and "514" not in \
         str(status):
             continue
         elif "CN=madae-student-dental-assisting,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(memberOf) \
-        and "Dental Assisting".lower() in str(department).lower() and "514" not in \
+        and "Dental Assisting".lower() in str(description).lower() and "514" not in \
         str(status):
             print(
             Color.CYAN
@@ -1374,7 +1440,7 @@ def main():
                 },
             )
         elif "CN=madae-student-dental-assisting,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and ("Dental Assisting".lower() not in str(department).lower() or "514" in \
+        and ("Dental Assisting".lower() not in str(description).lower() or "514" in \
         str(status)):
             print(
             Color.YELLOW
@@ -1406,16 +1472,16 @@ def main():
         dn = i['dn']
         cn = i['attributes']['cn']
         memberOf = i['attributes']['memberOf']
-        department = i['attributes']['department']
+        description = i['attributes']['description']
         location = i['attributes']['physicalDeliveryOfficeName']
         status = i['attributes']['userAccountControl']
         title = i['attributes']['title']
         if "CN=madae-student-elec-maint,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and "Electrical Maintenance".lower() in str(department).lower() and "514" not in \
+        and "Electrical Maintenance".lower() in str(description).lower() and "514" not in \
         str(status):
             continue
         elif "CN=madae-student-elec-maint,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(memberOf) \
-        and "Electrical Maintenance".lower() in str(department).lower() and "514" not in \
+        and "Electrical Maintenance".lower() in str(description).lower() and "514" not in \
         str(status):
             print(
             Color.CYAN
@@ -1443,7 +1509,7 @@ def main():
                 },
             )
         elif "CN=madae-student-elec-maint,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and ("Electrical Maintenance".lower() not in str(department).lower() or "514" in \
+        and ("Electrical Maintenance".lower() not in str(description).lower() or "514" in \
         str(status)):
             print(
             Color.YELLOW
@@ -1475,16 +1541,16 @@ def main():
         dn = i['dn']
         cn = i['attributes']['cn']
         memberOf = i['attributes']['memberOf']
-        department = i['attributes']['department']
+        description = i['attributes']['description']
         location = i['attributes']['physicalDeliveryOfficeName']
         status = i['attributes']['userAccountControl']
         title = i['attributes']['title']
         if "CN=madae-student-med-asst,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and "Medical Assisting".lower() in str(department).lower() and "514" not in \
+        and "Medical Assisting".lower() in str(description).lower() and "514" not in \
         str(status):
             continue
         elif "CN=madae-student-med-asst,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(memberOf) \
-        and "Medical Assisting".lower() in str(department).lower() and "514" not in \
+        and "Medical Assisting".lower() in str(description).lower() and "514" not in \
         str(status):
             print(
             Color.CYAN
@@ -1512,7 +1578,7 @@ def main():
                 },
             )
         elif "CN=madae-student-med-asst,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and ("Medical Assisting".lower() not in str(department).lower() or "514" in \
+        and ("Medical Assisting".lower() not in str(description).lower() or "514" in \
         str(status)):
             print(
             Color.YELLOW
@@ -1544,16 +1610,16 @@ def main():
         dn = i['dn']
         cn = i['attributes']['cn']
         memberOf = i['attributes']['memberOf']
-        department = i['attributes']['department']
+        description = i['attributes']['description']
         location = i['attributes']['physicalDeliveryOfficeName']
         status = i['attributes']['userAccountControl']
         title = i['attributes']['title']
         if "CN=madae-student-med-legal-ofc-mgmt,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and "Medical & Legal Office Management".lower() in str(department).lower() and "514" not in \
+        and "Medical & Legal Office Management".lower() in str(description).lower() and "514" not in \
         str(status):
             continue
         elif "CN=madae-student-med-legal-ofc-mgmt,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(memberOf) \
-        and "Medical & Legal Office Management".lower() in str(department).lower() and "514" not in \
+        and "Medical & Legal Office Management".lower() in str(description).lower() and "514" not in \
         str(status):
             print(
             Color.CYAN
@@ -1581,7 +1647,7 @@ def main():
                 },
             )
         elif "CN=madae-student-med-legal-ofc-mgmt,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and ("Medical & Legal Office Management".lower() not in str(department).lower() or "514" in \
+        and ("Medical & Legal Office Management".lower() not in str(description).lower() or "514" in \
         str(status)):
             print(
             Color.YELLOW
@@ -1613,16 +1679,16 @@ def main():
         dn = i['dn']
         cn = i['attributes']['cn']
         memberOf = i['attributes']['memberOf']
-        department = i['attributes']['department']
+        description = i['attributes']['description']
         location = i['attributes']['physicalDeliveryOfficeName']
         status = i['attributes']['userAccountControl']
         title = i['attributes']['title']
         if "CN=madae-student-premach,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and "Precision Machining".lower() in str(department).lower() and "514" not in \
+        and "Precision Machining".lower() in str(description).lower() and "514" not in \
         str(status):
             continue
         elif "CN=madae-student-premach,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(memberOf) \
-        and "Precision Machining".lower() in str(department).lower() and "514" not in \
+        and "Precision Machining".lower() in str(description).lower() and "514" not in \
         str(status):
             print(
             Color.CYAN
@@ -1650,7 +1716,7 @@ def main():
                 },
             )
         elif "CN=madae-student-premach,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and ("Precision Machining".lower() not in str(department).lower() or "514" in \
+        and ("Precision Machining".lower() not in str(description).lower() or "514" in \
         str(status)):
             print(
             Color.YELLOW
@@ -1682,16 +1748,16 @@ def main():
         dn = i['dn']
         cn = i['attributes']['cn']
         memberOf = i['attributes']['memberOf']
-        department = i['attributes']['department']
+        description = i['attributes']['description']
         location = i['attributes']['physicalDeliveryOfficeName']
         status = i['attributes']['userAccountControl']
         title = i['attributes']['title']
         if "CN=madae-student-welding,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and "Welding Technology".lower() in str(department).lower() and "514" not in \
+        and "Welding Technology".lower() in str(description).lower() and "514" not in \
         str(status):
             continue
         elif "CN=madae-student-welding,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(memberOf) \
-        and "Welding Technology".lower() in str(department).lower() and "514" not in \
+        and "Welding Technology".lower() in str(description).lower() and "514" not in \
         str(status):
             print(
             Color.CYAN
@@ -1719,7 +1785,7 @@ def main():
                 },
             )
         elif "CN=madae-student-welding,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and ("Welding Technology".lower() not in str(department).lower() or "514" in \
+        and ("Welding Technology".lower() not in str(description).lower() or "514" in \
         str(status)):
             print(
             Color.YELLOW
@@ -1751,16 +1817,16 @@ def main():
         dn = i['dn']
         cn = i['attributes']['cn']
         memberOf = i['attributes']['memberOf']
-        department = i['attributes']['department']
+        description = i['attributes']['description']
         location = i['attributes']['physicalDeliveryOfficeName']
         status = i['attributes']['userAccountControl']
         title = i['attributes']['title']
         if "CN=madea-student-k,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and "KG".lower() in str(department).lower() and "Eastview".lower() \
+        and "KG".lower() in str(description).lower() and "Eastview".lower() \
         in str(location).lower() and "514" not in str(status) and "546" not in str(status):
             continue
         elif "CN=madea-student-k,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(memberOf) \
-        and "KG".lower() in str(department).lower() and "Eastview".lower() \
+        and "KG".lower() in str(description).lower() and "Eastview".lower() \
         in str(location).lower() and "514" not in str(status) and "546" not in str(status):
             print(
             Color.CYAN
@@ -1788,7 +1854,7 @@ def main():
                 },
             )
         elif "CN=madea-student-k,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and (("KG".lower() not in str(department).lower() or "Eastview".lower() \
+        and (("KG".lower() not in str(description).lower() or "Eastview".lower() \
         not in str(location).lower()) or "514" in str(status) or "546" in str(status)):
             print(
             Color.YELLOW
@@ -1820,16 +1886,16 @@ def main():
         dn = i['dn']
         cn = i['attributes']['cn']
         memberOf = i['attributes']['memberOf']
-        department = i['attributes']['department']
+        description = i['attributes']['description']
         location = i['attributes']['physicalDeliveryOfficeName']
         status = i['attributes']['userAccountControl']
         title = i['attributes']['title']
         if "CN=madmi-student-k,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and "KG".lower() in str(department).lower() and "Mifflin".lower() \
+        and "KG".lower() in str(description).lower() and "Mifflin".lower() \
         in str(location).lower() and "514" not in str(status) and "546" not in str(status):
             continue
         elif "CN=madmi-student-k,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(memberOf) \
-        and "KG".lower() in str(department).lower() and "Mifflin".lower() \
+        and "KG".lower() in str(description).lower() and "Mifflin".lower() \
         in str(location).lower() and "514" not in str(status) and "546" not in str(status):
             print(
             Color.CYAN
@@ -1857,7 +1923,7 @@ def main():
                 },
             )
         elif "CN=madmi-student-k,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and (("KG".lower() not in str(department).lower() or "Mifflin".lower() \
+        and (("KG".lower() not in str(description).lower() or "Mifflin".lower() \
         not in str(location).lower()) or "514" in str(status) or "546" in str(status)):
             print(
             Color.YELLOW
@@ -1889,16 +1955,16 @@ def main():
         dn = i['dn']
         cn = i['attributes']['cn']
         memberOf = i['attributes']['memberOf']
-        department = i['attributes']['department']
+        description = i['attributes']['description']
         location = i['attributes']['physicalDeliveryOfficeName']
         status = i['attributes']['userAccountControl']
         title = i['attributes']['title']
         if "CN=madso-student-k,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and "KG".lower() in str(department).lower() and "South".lower() \
+        and "KG".lower() in str(description).lower() and "South".lower() \
         in str(location).lower() and "514" not in str(status) and "546" not in str(status):
             continue
         elif "CN=madso-student-k,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(memberOf) \
-        and "KG".lower() in str(department).lower() and "South".lower() \
+        and "KG".lower() in str(description).lower() and "South".lower() \
         in str(location).lower() and "514" not in str(status) and "546" not in str(status):
             print(
             Color.CYAN
@@ -1926,7 +1992,7 @@ def main():
                 },
             )
         elif "CN=madso-student-k,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and (("KG".lower() not in str(department).lower() or "South".lower() \
+        and (("KG".lower() not in str(description).lower() or "South".lower() \
         not in str(location).lower()) or "514" in str(status) or "546" in str(status)):
             print(
             Color.YELLOW
@@ -1958,16 +2024,16 @@ def main():
         dn = i['dn']
         cn = i['attributes']['cn']
         memberOf = i['attributes']['memberOf']
-        department = i['attributes']['department']
+        description = i['attributes']['description']
         location = i['attributes']['physicalDeliveryOfficeName']
         status = i['attributes']['userAccountControl']
         title = i['attributes']['title']
         if "CN=madea-student-1,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and "01".lower() in str(department).lower() and "Eastview".lower() \
+        and "01".lower() in str(description).lower() and "Eastview".lower() \
         in str(location).lower() and "514" not in str(status) and "546" not in str(status):
             continue
         elif "CN=madea-student-1,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(memberOf) \
-        and "01".lower() in str(department).lower() and "Eastview".lower() \
+        and "01".lower() in str(description).lower() and "Eastview".lower() \
         in str(location).lower() and "514" not in str(status) and "546" not in str(status):
             print(
             Color.CYAN
@@ -1995,7 +2061,7 @@ def main():
                 },
             )
         elif "CN=madea-student-1,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and (("01".lower() not in str(department).lower() or "Eastview".lower() \
+        and (("01".lower() not in str(description).lower() or "Eastview".lower() \
         not in str(location).lower()) or "514" in str(status) or "546" in str(status)):
             print(
             Color.YELLOW
@@ -2027,16 +2093,16 @@ def main():
         dn = i['dn']
         cn = i['attributes']['cn']
         memberOf = i['attributes']['memberOf']
-        department = i['attributes']['department']
+        description = i['attributes']['description']
         location = i['attributes']['physicalDeliveryOfficeName']
         status = i['attributes']['userAccountControl']
         title = i['attributes']['title']
         if "CN=madmi-student-1,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and "01".lower() in str(department).lower() and "Mifflin".lower() \
+        and "01".lower() in str(description).lower() and "Mifflin".lower() \
         in str(location).lower() and "514" not in str(status) and "546" not in str(status):
             continue
         elif "CN=madmi-student-1,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(memberOf) \
-        and "01".lower() in str(department).lower() and "Mifflin".lower() \
+        and "01".lower() in str(description).lower() and "Mifflin".lower() \
         in str(location).lower() and "514" not in str(status) and "546" not in str(status):
             print(
             Color.CYAN
@@ -2064,7 +2130,7 @@ def main():
                 },
             )
         elif "CN=madmi-student-1,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and (("01".lower() not in str(department).lower() or "Mifflin".lower() \
+        and (("01".lower() not in str(description).lower() or "Mifflin".lower() \
         not in str(location).lower()) or "514" in str(status) or "546" in str(status)):
             print(
             Color.YELLOW
@@ -2096,16 +2162,16 @@ def main():
         dn = i['dn']
         cn = i['attributes']['cn']
         memberOf = i['attributes']['memberOf']
-        department = i['attributes']['department']
+        description = i['attributes']['description']
         location = i['attributes']['physicalDeliveryOfficeName']
         status = i['attributes']['userAccountControl']
         title = i['attributes']['title']
         if "CN=madso-student-1,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and "01".lower() in str(department).lower() and "South".lower() \
+        and "01".lower() in str(description).lower() and "South".lower() \
         in str(location).lower() and "514" not in str(status) and "546" not in str(status):
             continue
         elif "CN=madso-student-1,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(memberOf) \
-        and "01".lower() in str(department).lower() and "South".lower() \
+        and "01".lower() in str(description).lower() and "South".lower() \
         in str(location).lower() and "514" not in str(status) and "546" not in str(status):
             print(
             Color.CYAN
@@ -2133,7 +2199,7 @@ def main():
                 },
             )
         elif "CN=madso-student-1,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and (("01".lower() not in str(department).lower() or "South".lower() \
+        and (("01".lower() not in str(description).lower() or "South".lower() \
         not in str(location).lower()) or "514" in str(status) or "546" in str(status)):
             print(
             Color.YELLOW
@@ -2165,16 +2231,16 @@ def main():
         dn = i['dn']
         cn = i['attributes']['cn']
         memberOf = i['attributes']['memberOf']
-        department = i['attributes']['department']
+        description = i['attributes']['description']
         location = i['attributes']['physicalDeliveryOfficeName']
         status = i['attributes']['userAccountControl']
         title = i['attributes']['title']
         if "CN=madea-student-2,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and "02".lower() in str(department).lower() and "Eastview".lower() \
+        and "02".lower() in str(description).lower() and "Eastview".lower() \
         in str(location).lower() and "514" not in str(status) and "546" not in str(status):
             continue
         elif "CN=madea-student-2,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(memberOf) \
-        and "02".lower() in str(department).lower() and "Eastview".lower() \
+        and "02".lower() in str(description).lower() and "Eastview".lower() \
         in str(location).lower() and "514" not in str(status) and "546" not in str(status):
             print(
             Color.CYAN
@@ -2202,7 +2268,7 @@ def main():
                 },
             )
         elif "CN=madea-student-2,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and (("02".lower() not in str(department).lower() or "Eastview".lower() \
+        and (("02".lower() not in str(description).lower() or "Eastview".lower() \
         not in str(location).lower()) or "514" in str(status) or "546" in str(status)):
             print(
             Color.YELLOW
@@ -2234,16 +2300,16 @@ def main():
         dn = i['dn']
         cn = i['attributes']['cn']
         memberOf = i['attributes']['memberOf']
-        department = i['attributes']['department']
+        description = i['attributes']['description']
         location = i['attributes']['physicalDeliveryOfficeName']
         status = i['attributes']['userAccountControl']
         title = i['attributes']['title']
         if "CN=madmi-student-2,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and "02".lower() in str(department).lower() and "Mifflin".lower() \
+        and "02".lower() in str(description).lower() and "Mifflin".lower() \
         in str(location).lower() and "514" not in str(status) and "546" not in str(status):
             continue
         elif "CN=madmi-student-2,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(memberOf) \
-        and "02".lower() in str(department).lower() and "Mifflin".lower() \
+        and "02".lower() in str(description).lower() and "Mifflin".lower() \
         in str(location).lower() and "514" not in str(status) and "546" not in str(status):
             print(
             Color.CYAN
@@ -2271,7 +2337,7 @@ def main():
                 },
             )
         elif "CN=madmi-student-2,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and (("02".lower() not in str(department).lower() or "Mifflin".lower() \
+        and (("02".lower() not in str(description).lower() or "Mifflin".lower() \
         not in str(location).lower()) or "514" in str(status) or "546" in str(status)):
             print(
             Color.YELLOW
@@ -2303,16 +2369,16 @@ def main():
         dn = i['dn']
         cn = i['attributes']['cn']
         memberOf = i['attributes']['memberOf']
-        department = i['attributes']['department']
+        description = i['attributes']['description']
         location = i['attributes']['physicalDeliveryOfficeName']
         status = i['attributes']['userAccountControl']
         title = i['attributes']['title']
         if "CN=madso-student-2,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and "02".lower() in str(department).lower() and "South".lower() \
+        and "02".lower() in str(description).lower() and "South".lower() \
         in str(location).lower() and "514" not in str(status) and "546" not in str(status):
             continue
         elif "CN=madso-student-2,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(memberOf) \
-        and "02".lower() in str(department).lower() and "South".lower() \
+        and "02".lower() in str(description).lower() and "South".lower() \
         in str(location).lower() and "514" not in str(status) and "546" not in str(status):
             print(
             Color.CYAN
@@ -2340,7 +2406,7 @@ def main():
                 },
             )
         elif "CN=madso-student-2,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and (("02".lower() not in str(department).lower() or "South".lower() \
+        and (("02".lower() not in str(description).lower() or "South".lower() \
         not in str(location).lower()) or "514" in str(status) or "546" in str(status)):
             print(
             Color.YELLOW
@@ -2372,16 +2438,16 @@ def main():
         dn = i['dn']
         cn = i['attributes']['cn']
         memberOf = i['attributes']['memberOf']
-        department = i['attributes']['department']
+        description = i['attributes']['description']
         location = i['attributes']['physicalDeliveryOfficeName']
         status = i['attributes']['userAccountControl']
         title = i['attributes']['title']
         if "CN=madea-student-3,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and "03".lower() in str(department).lower() and "Eastview".lower() \
+        and "03".lower() in str(description).lower() and "Eastview".lower() \
         in str(location).lower() and "514" not in str(status) and "546" not in str(status):
             continue
         elif "CN=madea-student-3,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(memberOf) \
-        and "03".lower() in str(department).lower() and "Eastview".lower() \
+        and "03".lower() in str(description).lower() and "Eastview".lower() \
         in str(location).lower() and "514" not in str(status) and "546" not in str(status):
             print(
             Color.CYAN
@@ -2409,7 +2475,7 @@ def main():
                 },
             )
         elif "CN=madea-student-3,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and (("03".lower() not in str(department).lower() or "Eastview".lower() \
+        and (("03".lower() not in str(description).lower() or "Eastview".lower() \
         not in str(location).lower()) or "514" in str(status) or "546" in str(status)):
             print(
             Color.YELLOW
@@ -2441,16 +2507,16 @@ def main():
         dn = i['dn']
         cn = i['attributes']['cn']
         memberOf = i['attributes']['memberOf']
-        department = i['attributes']['department']
+        description = i['attributes']['description']
         location = i['attributes']['physicalDeliveryOfficeName']
         status = i['attributes']['userAccountControl']
         title = i['attributes']['title']
         if "CN=madmi-student-3,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and "03".lower() in str(department).lower() and "Mifflin".lower() \
+        and "03".lower() in str(description).lower() and "Mifflin".lower() \
         in str(location).lower() and "514" not in str(status) and "546" not in str(status):
             continue
         elif "CN=madmi-student-3,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(memberOf) \
-        and "03".lower() in str(department).lower() and "Mifflin".lower() \
+        and "03".lower() in str(description).lower() and "Mifflin".lower() \
         in str(location).lower() and "514" not in str(status) and "546" not in str(status):
             print(
             Color.CYAN
@@ -2478,7 +2544,7 @@ def main():
                 },
             )
         elif "CN=madmi-student-3,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and (("03".lower() not in str(department).lower() or "Mifflin".lower() \
+        and (("03".lower() not in str(description).lower() or "Mifflin".lower() \
         not in str(location).lower()) or "514" in str(status) or "546" in str(status)):
             print(
             Color.YELLOW
@@ -2510,16 +2576,16 @@ def main():
         dn = i['dn']
         cn = i['attributes']['cn']
         memberOf = i['attributes']['memberOf']
-        department = i['attributes']['department']
+        description = i['attributes']['description']
         location = i['attributes']['physicalDeliveryOfficeName']
         status = i['attributes']['userAccountControl']
         title = i['attributes']['title']
         if "CN=madso-student-3,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and "03".lower() in str(department).lower() and "South".lower() \
+        and "03".lower() in str(description).lower() and "South".lower() \
         in str(location).lower() and "514" not in str(status) and "546" not in str(status):
             continue
         elif "CN=madso-student-3,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(memberOf) \
-        and "03".lower() in str(department).lower() and "South".lower() \
+        and "03".lower() in str(description).lower() and "South".lower() \
         in str(location).lower() and "514" not in str(status) and "546" not in str(status):
             print(
             Color.CYAN
@@ -2547,7 +2613,7 @@ def main():
                 },
             )
         elif "CN=madso-student-3,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and (("03".lower() not in str(department).lower() or "South".lower() \
+        and (("03".lower() not in str(description).lower() or "South".lower() \
         not in str(location).lower()) or "514" in str(status) or "546" in str(status)):
             print(
             Color.YELLOW
@@ -2579,16 +2645,16 @@ def main():
         dn = i['dn']
         cn = i['attributes']['cn']
         memberOf = i['attributes']['memberOf']
-        department = i['attributes']['department']
+        description = i['attributes']['description']
         location = i['attributes']['physicalDeliveryOfficeName']
         status = i['attributes']['userAccountControl']
         title = i['attributes']['title']
         if "CN=madea-student-4,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and "04".lower() in str(department).lower() and "Eastview".lower() \
+        and "04".lower() in str(description).lower() and "Eastview".lower() \
         in str(location).lower() and "514" not in str(status) and "546" not in str(status):
             continue
         elif "CN=madea-student-4,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(memberOf) \
-        and "04".lower() in str(department).lower() and "Eastview".lower() \
+        and "04".lower() in str(description).lower() and "Eastview".lower() \
         in str(location).lower() and "514" not in str(status) and "546" not in str(status):
             print(
             Color.CYAN
@@ -2616,7 +2682,7 @@ def main():
                 },
             )
         elif "CN=madea-student-4,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and (("04".lower() not in str(department).lower() or "Eastview".lower() \
+        and (("04".lower() not in str(description).lower() or "Eastview".lower() \
         not in str(location).lower()) or "514" in str(status) or "546" in str(status)):
             print(
             Color.YELLOW
@@ -2648,16 +2714,16 @@ def main():
         dn = i['dn']
         cn = i['attributes']['cn']
         memberOf = i['attributes']['memberOf']
-        department = i['attributes']['department']
+        description = i['attributes']['description']
         location = i['attributes']['physicalDeliveryOfficeName']
         status = i['attributes']['userAccountControl']
         title = i['attributes']['title']
         if "CN=madmi-student-4,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and "04".lower() in str(department).lower() and "Mifflin".lower() \
+        and "04".lower() in str(description).lower() and "Mifflin".lower() \
         in str(location).lower() and "514" not in str(status) and "546" not in str(status):
             continue
         elif "CN=madmi-student-4,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(memberOf) \
-        and "04".lower() in str(department).lower() and "Mifflin".lower() \
+        and "04".lower() in str(description).lower() and "Mifflin".lower() \
         in str(location).lower() and "514" not in str(status) and "546" not in str(status):
             print(
             Color.CYAN
@@ -2685,7 +2751,7 @@ def main():
                 },
             )
         elif "CN=madmi-student-4,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and (("04".lower() not in str(department).lower() or "Mifflin".lower() \
+        and (("04".lower() not in str(description).lower() or "Mifflin".lower() \
         not in str(location).lower()) or "514" in str(status) or "546" in str(status)):
             print(
             Color.YELLOW
@@ -2717,16 +2783,16 @@ def main():
         dn = i['dn']
         cn = i['attributes']['cn']
         memberOf = i['attributes']['memberOf']
-        department = i['attributes']['department']
+        description = i['attributes']['description']
         location = i['attributes']['physicalDeliveryOfficeName']
         status = i['attributes']['userAccountControl']
         title = i['attributes']['title']
         if "CN=madso-student-4,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and "04".lower() in str(department).lower() and "South".lower() \
+        and "04".lower() in str(description).lower() and "South".lower() \
         in str(location).lower() and "514" not in str(status) and "546" not in str(status):
             continue
         elif "CN=madso-student-4,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(memberOf) \
-        and "04".lower() in str(department).lower() and "South".lower() \
+        and "04".lower() in str(description).lower() and "South".lower() \
         in str(location).lower() and "514" not in str(status) and "546" not in str(status):
             print(
             Color.CYAN
@@ -2754,7 +2820,7 @@ def main():
                 },
             )
         elif "CN=madso-student-4,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(memberOf) \
-        and (("04".lower() not in str(department).lower() or "South".lower() \
+        and (("04".lower() not in str(description).lower() or "South".lower() \
         not in str(location).lower()) or "514" in str(status) or "546" in str(status)):
             print(
             Color.YELLOW
@@ -2786,7 +2852,7 @@ def main():
         dn = i['dn']
         cn = i['attributes']['cn']
         memberOf = i['attributes']['memberOf']
-        department = i['attributes']['department']
+        description = i['attributes']['description']
         location = i['attributes']['physicalDeliveryOfficeName']
         status = i['attributes']['userAccountControl']
         title = i['attributes']['title']
@@ -2852,7 +2918,7 @@ def main():
         dn = i['dn']
         cn = i['attributes']['cn']
         memberOf = i['attributes']['memberOf']
-        department = i['attributes']['department']
+        description = i['attributes']['description']
         location = i['attributes']['physicalDeliveryOfficeName']
         status = i['attributes']['userAccountControl']
         title = i['attributes']['title']
@@ -2918,7 +2984,7 @@ def main():
         dn = i['dn']
         cn = i['attributes']['cn']
         memberOf = i['attributes']['memberOf']
-        department = i['attributes']['department']
+        description = i['attributes']['description']
         location = i['attributes']['physicalDeliveryOfficeName']
         status = i['attributes']['userAccountControl']
         title = i['attributes']['title']
@@ -2984,7 +3050,7 @@ def main():
         dn = i['dn']
         cn = i['attributes']['cn']
         memberOf = i['attributes']['memberOf']
-        department = i['attributes']['department']
+        description = i['attributes']['description']
         location = i['attributes']['physicalDeliveryOfficeName']
         status = i['attributes']['userAccountControl']
         title = i['attributes']['title']
@@ -3050,7 +3116,7 @@ def main():
         dn = i['dn']
         cn = i['attributes']['cn']
         memberOf = i['attributes']['memberOf']
-        department = i['attributes']['department']
+        description = i['attributes']['description']
         location = i['attributes']['physicalDeliveryOfficeName']
         status = i['attributes']['userAccountControl']
         title = i['attributes']['title']
