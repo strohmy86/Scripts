@@ -76,8 +76,7 @@ tls = Tls(
         local_certificate_file=None,
     )
 s = Server("madhs01dc3.mlsd.local", use_ssl=True, get_info=ALL, tls=tls)
-c = Connection(s, user=username.strip(),
-               password=password.strip())
+c = Connection(s, user=username.strip(), password=password.strip())
 c.bind()
 # Specify private key file
 k = paramiko.RSAKey.from_private_key_file("/home/lstrohm/.ssh/id_rsa")
@@ -98,4346 +97,1713 @@ users = c.entries
 
 def main(c, gcds, users):
     #------------------------------911-Notify------------------------------#
-    for i in users:
+    nineoneone_notify_add = [i.entry_dn for i in users 
+        if "CN=911-notify,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "911".lower() in str(i.department.value).lower() and "514" not in \
+        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    nineoneone_notify_del = [i.entry_dn for i in users 
         if "CN=911-notify,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "911".lower() in str(i.department.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=911-notify,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "911".lower() in str(i.department.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to 911-notify"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=911-notify,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=911-notify,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=911-notify,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
         and ("911".lower() not in str(i.department.value).lower() or "514" in \
-        str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from 911-notify"
-            + Color.END
+        str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))]
+    
+    if len(nineoneone_notify_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            nineoneone_notify_add,
+            "CN=911-notify,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=911-notify,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
+    time.sleep(0.250)
+    if len(nineoneone_notify_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            nineoneone_notify_del,
+            "CN=911-notify,OU=Groups,OU=Madison,DC=mlsd,DC=local",
             )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=911-notify,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+    time.sleep(0.250)
     
 
     #------------------------------cabinet------------------------------#
-    for i in users:
+    cabinet_add = [i.entry_dn for i in users 
+        if "CN=cabinet,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "Cabinet".lower() in str(i.department.value).lower() and "514" not in \
+        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    cabinet_del = [i.entry_dn for i in users 
         if "CN=cabinet,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "Cabinet".lower() in str(i.department.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=cabinet,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "Cabinet".lower() in str(i.department.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to cabinet"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=cabinet,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=cabinet,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=cabinet,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
         and ("Cabinet".lower() not in str(i.department.value).lower() or "514" in \
-        str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from cabinet"
-            + Color.END
+        str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))]
+
+    if len(cabinet_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            cabinet_add,
+            "CN=cabinet,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=cabinet,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
+    time.sleep(0.250)
+    if len(cabinet_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            cabinet_del,
+            "CN=cabinet,OU=Groups,OU=Madison,DC=mlsd,DC=local",
             )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=cabinet,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+    time.sleep(0.250)
 
 
     #------------------------------certified------------------------------#
-    for i in users:
+    cert_add = [i.entry_dn for i in users
+        if "CN=certified,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "CERT".lower() in str(i.department.value).lower() and "514" not in \
+        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    cert_del = [i.entry_dn for i in users
         if "CN=certified,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "CERT".lower() in str(i.department.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=certified,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "CERT".lower() in str(i.department.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to certified"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=certified,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=certified,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=certified,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
         and ("CERT".lower() not in str(i.department.value).lower() or "514" in \
-        str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from certified"
-            + Color.END
+        str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))]
+
+    if len(cert_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            cert_add,
+            "CN=certified,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=certified,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
+    time.sleep(0.250)
+    if len(cert_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            cert_del,
+            "CN=certified,OU=Groups,OU=Madison,DC=mlsd,DC=local",
             )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=certified,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+    time.sleep(0.250)
 
 
     #------------------------------classified------------------------------#
-    for i in users:
+    clsfd_add = [i.entry_dn for i in users
+        if "CN=classified,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "CLSFD".lower() in str(i.department.value).lower() and "514" not in \
+        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    clsfd_del = [i.entry_dn for i in users
         if "CN=classified,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "CLSFD".lower() in str(i.department.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=classified,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "CLSFD".lower() in str(i.department.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to classified"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=classified,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=classified,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=classified,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
         and ("CLSFD".lower() not in str(i.department.value).lower() or "514" in \
-        str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from classified"
-            + Color.END
+        str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))]
+
+    if len(clsfd_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            clsfd_add,
+            "CN=classified,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=classified,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
+    time.sleep(0.250)
+    if len(clsfd_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            clsfd_del,
+            "CN=classified,OU=Groups,OU=Madison,DC=mlsd,DC=local",
             )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=classified,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+    time.sleep(0.250)
     
 
     #------------------------------mad-mail-1------------------------------#
-    for i in users:
+    mad_mail_1_add = [i.entry_dn for i in users
+        if "CN=mad-mail-1,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "1st".lower() in str(i.department.value).lower() and "514" not in \
+        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    mad_mail_1_del = [i.entry_dn for i in users 
         if "CN=mad-mail-1,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "1st".lower() in str(i.department.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=mad-mail-1,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "1st".lower() in str(i.department.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to mad-mail-1"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=mad-mail-1,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=mad-mail-1,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=mad-mail-1,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
         and ("1st".lower() not in str(i.department.value).lower() or "514" in \
-        str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from mad-mail-1"
-            + Color.END
-            )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=mad-mail-1,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=mad-mail-1,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+        str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))]
 
-
+    if len(mad_mail_1_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            mad_mail_1_add,
+            "CN=mad-mail-1,OU=Groups,OU=Madison,DC=mlsd,DC=local"
+            )
+    time.sleep(0.250)
+    if len(mad_mail_1_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            mad_mail_1_del,
+            "CN=mad-mail-1,OU=Groups,OU=Madison,DC=mlsd,DC=local"
+            )
+    time.sleep(0.250)
+    
+    
     #------------------------------mad-mail-2------------------------------#
-    for i in users:
+    mad_mail_2_add = [i.entry_dn for i in users
+        if "CN=mad-mail-2,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "2nd".lower() in str(i.department.value).lower() and "514" not in \
+        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    mad_mail_2_del = [i.entry_dn for i in users 
         if "CN=mad-mail-2,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "2nd".lower() in str(i.department.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=mad-mail-2,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "2nd".lower() in str(i.department.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to mad-mail-2"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=mad-mail-2,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=mad-mail-2,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=mad-mail-2,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
         and ("2nd".lower() not in str(i.department.value).lower() or "514" in \
-        str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from mad-mail-2"
-            + Color.END
+        str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))]
+
+    if len(mad_mail_2_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            mad_mail_2_add,
+            "CN=mad-mail-2,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=mad-mail-2,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
+    time.sleep(0.250)
+    if len(mad_mail_2_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            mad_mail_2_del,
+            "CN=mad-mail-2,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=mad-mail-2,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+    time.sleep(0.250)
 
 
     #------------------------------mad-mail-3------------------------------#
-    for i in users:
+    mad_mail_3_add = [i.entry_dn for i in users
+        if "CN=mad-mail-3,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "3rd".lower() in str(i.department.value).lower() and "514" not in \
+        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    mad_mail_3_del = [i.entry_dn for i in users 
         if "CN=mad-mail-3,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "3rd".lower() in str(i.department.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=mad-mail-3,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "3rd".lower() in str(i.department.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to mad-mail-3"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=mad-mail-3,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=mad-mail-3,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=mad-mail-3,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
         and ("3rd".lower() not in str(i.department.value).lower() or "514" in \
-        str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from mad-mail-3"
-            + Color.END
+        str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))]
+
+    if len(mad_mail_3_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            mad_mail_3_add,
+            "CN=mad-mail-3,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=mad-mail-3,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
+    time.sleep(0.250)
+    if len(mad_mail_3_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            mad_mail_3_del,
+            "CN=mad-mail-3,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=mad-mail-3,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+    time.sleep(0.250)
 
 
     #------------------------------mad-mail-4------------------------------#
-    for i in users:
+    mad_mail_4_add = [i.entry_dn for i in users
+        if "CN=mad-mail-4,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "4th".lower() in str(i.department.value).lower() and "514" not in \
+        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    mad_mail_4_del = [i.entry_dn for i in users 
         if "CN=mad-mail-4,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "4th".lower() in str(i.department.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=mad-mail-4,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "4th".lower() in str(i.department.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to mad-mail-4"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=mad-mail-4,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=mad-mail-4,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=mad-mail-4,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
         and ("4th".lower() not in str(i.department.value).lower() or "514" in \
-        str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from mad-mail-4"
-            + Color.END
+        str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))]
+
+    if len(mad_mail_4_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            mad_mail_4_add,
+            "CN=mad-mail-4,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=mad-mail-4,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
+    time.sleep(0.250)
+    if len(mad_mail_4_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            mad_mail_4_del,
+            "CN=mad-mail-4,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=mad-mail-4,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+    time.sleep(0.250)
 
 
     #------------------------------mad-mail-5------------------------------#
-    for i in users:
+    mad_mail_5_add = [i.entry_dn for i in users
+        if "CN=mad-mail-5,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "5th".lower() in str(i.department.value).lower() and "514" not in \
+        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    mad_mail_5_del = [i.entry_dn for i in users 
         if "CN=mad-mail-5,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "5th".lower() in str(i.department.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=mad-mail-5,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "5th".lower() in str(i.department.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to mad-mail-5"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=mad-mail-5,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=mad-mail-5,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=mad-mail-5,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
         and ("5th".lower() not in str(i.department.value).lower() or "514" in \
-        str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from mad-mail-5"
-            + Color.END
+        str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))]
+
+    if len(mad_mail_5_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            mad_mail_5_add,
+            "CN=mad-mail-5,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=mad-mail-5,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
+    time.sleep(0.250)
+    if len(mad_mail_5_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            mad_mail_5_del,
+            "CN=mad-mail-5,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=mad-mail-5,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+    time.sleep(0.250)
 
 
     #------------------------------mad-mail-6------------------------------#
-    for i in users:
+    mad_mail_6_add = [i.entry_dn for i in users
+        if "CN=mad-mail-6,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "6th".lower() in str(i.department.value).lower() and "514" not in \
+        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    mad_mail_6_del = [i.entry_dn for i in users 
         if "CN=mad-mail-6,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "6th".lower() in str(i.department.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=mad-mail-6,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "6th".lower() in str(i.department.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to mad-mail-6"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=mad-mail-6,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=mad-mail-6,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=mad-mail-6,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
         and ("6th".lower() not in str(i.department.value).lower() or "514" in \
-        str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from mad-mail-6"
-            + Color.END
+        str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))]
+
+    if len(mad_mail_6_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            mad_mail_6_add,
+            "CN=mad-mail-6,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=mad-mail-6,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
+    time.sleep(0.250)
+    if len(mad_mail_6_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            mad_mail_6_del,
+            "CN=mad-mail-6,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=mad-mail-6,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+    time.sleep(0.250)
 
 
     #------------------------------mad-mail-k------------------------------#
-    for i in users:
+    mad_mail_k_add = [i.entry_dn for i in users
+        if "CN=mad-mail-k,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "k".lower() in str(i.department.value).lower() and "514" not in \
+        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    mad_mail_k_del = [i.entry_dn for i in users 
         if "CN=mad-mail-k,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "k".lower() in str(i.department.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=mad-mail-k,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "k".lower() in str(i.department.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to mad-mail-k"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=mad-mail-k,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=mad-mail-k,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=mad-mail-k,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
         and ("k".lower() not in str(i.department.value).lower() or "514" in \
-        str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from mad-mail-k"
-            + Color.END
+        str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))]
+
+    if len(mad_mail_k_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            mad_mail_k_add,
+            "CN=mad-mail-k,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=mad-mail-k,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
+    time.sleep(0.250)
+    if len(mad_mail_k_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            mad_mail_k_del,
+            "CN=mad-mail-k,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=mad-mail-k,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+    time.sleep(0.250)
 
 
     #------------------------------mad-mail-admin------------------------------#
-    for i in users:
+    mad_mail_admin_add = [i.entry_dn for i in users
+        if "CN=mad-mail-admin,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "adminteam".lower() in str(i.department.value).lower() and "514" not in \
+        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    mad_mail_admin_del = [i.entry_dn for i in users 
         if "CN=mad-mail-admin,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "adminteam".lower() in str(i.department.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=mad-mail-admin,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "adminteam".lower() in str(i.department.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to mad-mail-admin"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=mad-mail-admin,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=mad-mail-admin,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=mad-mail-admin,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
         and ("adminteam".lower() not in str(i.department.value).lower() or "514" in \
-        str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from mad-mail-admin"
-            + Color.END
-            )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=mad-mail-admin,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=mad-mail-admin,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+        str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))]
 
+    if len(mad_mail_admin_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            mad_mail_admin_add,
+            "CN=mad-mail-admin,OU=Groups,OU=Madison,DC=mlsd,DC=local"
+            )
+    time.sleep(0.250)
+    if len(mad_mail_admin_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            mad_mail_admin_del,
+            "CN=mad-mail-admin,OU=Groups,OU=Madison,DC=mlsd,DC=local"
+            )
+    time.sleep(0.250)
+    
 
     #------------------------------mad-mail-custodian------------------------------#
-    for i in users:
+    mad_mail_cust_add = [i.entry_dn for i in users
+        if "CN=mad-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "custodian".lower() in str(i.title.value).lower() and "514" not in \
+        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    mad_mail_cust_del = [i.entry_dn for i in users 
         if "CN=mad-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "custodian".lower() in str(i.title.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=mad-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "custodian".lower() in str(i.title.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to mad-mail-custodian"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=mad-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=mad-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=mad-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
         and ("custodian".lower() not in str(i.title.value).lower() or "514" in \
-        str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from mad-mail-custodian"
-            + Color.END
-            )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=mad-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=mad-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+        str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))]
 
+    if len(mad_mail_cust_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            mad_mail_cust_add,
+            "CN=mad-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local"
+            )
+    time.sleep(0.250)
+    if len(mad_mail_cust_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            mad_mail_cust_del,
+            "CN=mad-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local"
+            )
+    time.sleep(0.250)
+    
 
     #------------------------------mad-mail-foodsvc------------------------------#
-    for i in users:
+    mad_mail_foodsvc_add = [i.entry_dn for i in users
+        if "CN=mad-mail-foodsvc,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "cook".lower() in str(i.department.value).lower() and "514" not in \
+        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    mad_mail_foodsvc_del = [i.entry_dn for i in users 
         if "CN=mad-mail-foodsvc,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "cook".lower() in str(i.title.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=mad-mail-foodsvc,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "cook".lower() in str(i.title.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to mad-mail-foodsvc"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=mad-mail-foodsvc,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=mad-mail-foodsvc,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=mad-mail-foodsvc,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and ("cook".lower() not in str(i.title.value).lower() or "514" in \
-        str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from mad-mail-foodsvc"
-            + Color.END
-            )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=mad-mail-foodsvc,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=mad-mail-foodsvc,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+        and "cook".lower() not in str(i.department.value).lower() or ("514" in \
+        str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))]
 
+    if len(mad_mail_foodsvc_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            mad_mail_foodsvc_add,
+            "CN=mad-mail-foodsvc,OU=Groups,OU=Madison,DC=mlsd,DC=local"
+            )
+    time.sleep(0.250)
+    if len(mad_mail_foodsvc_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            mad_mail_foodsvc_del,
+            "CN=mad-mail-foodsvc,OU=Groups,OU=Madison,DC=mlsd,DC=local"
+            )
+    time.sleep(0.250)
+    
 
     #------------------------------mad-mail-guidance------------------------------#
-    for i in users:
+    mad_mail_guidance_add = [i.entry_dn for i in users
+        if "CN=mad-mail-guidance,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "guidance".lower() in str(i.department.value).lower() and "514" not in \
+        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    mad_mail_guidance_del = [i.entry_dn for i in users 
         if "CN=mad-mail-guidance,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "guidance".lower() in str(i.title.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=mad-mail-guidance,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "guidance".lower() in str(i.title.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to mad-mail-guidance"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=mad-mail-guidance,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=mad-mail-guidance,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=mad-mail-guidance,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and ("guidance".lower() not in str(i.title.value).lower() or "514" in \
-        str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from mad-mail-guidance"
-            + Color.END
-            )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=mad-mail-guidance,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=mad-mail-guidance,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+        and ("guidance".lower() not in str(i.department.value).lower() or "514" in \
+        str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))]
 
-
+    if len(mad_mail_guidance_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            mad_mail_guidance_add,
+            "CN=mad-mail-guidance,OU=Groups,OU=Madison,DC=mlsd,DC=local"
+            )
+    time.sleep(0.250)
+    if len(mad_mail_guidance_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            mad_mail_guidance_del,
+            "CN=mad-mail-guidance,OU=Groups,OU=Madison,DC=mlsd,DC=local"
+            )
+    time.sleep(0.250)
+    
+    
     #------------------------------mad-mail-nurse------------------------------#
-    for i in users:
+    mad_mail_nurse_add = [i.entry_dn for i in users
+        if "CN=mad-mail-nurse,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "nurse".lower() in str(i.department.value).lower() and "514" not in \
+        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    mad_mail_nurse_del = [i.entry_dn for i in users 
         if "CN=mad-mail-nurse,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "nurse".lower() in str(i.title.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=mad-mail-nurse,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "nurse".lower() in str(i.title.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to mad-mail-nurse"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=mad-mail-nurse,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
+        and ("nurse".lower() not in str(i.department.value).lower() or "514" in \
+        str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))]
+
+    if len(mad_mail_nurse_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            mad_mail_nurse_add,
+            "CN=mad-mail-nurse,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            time.sleep(0.5)
-            c.modify(
-                "CN=mad-mail-nurse,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
+    time.sleep(0.250)
+    if len(mad_mail_nurse_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            mad_mail_nurse_del,
+            "CN=mad-mail-nurse,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-        elif "CN=mad-mail-nurse,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and ("nurse".lower() not in str(i.title.value).lower() or "514" in \
-        str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from mad-mail-nurse"
-            + Color.END
-            )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=mad-mail-nurse,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=mad-mail-nurse,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+    time.sleep(0.250)
 
 
     #------------------------------mad-mail-para------------------------------#
-    for i in users:
+    mad_mail_para_add = [i.entry_dn for i in users
+        if "CN=mad-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "para".lower() in str(i.department.value).lower() and "514" not in \
+        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    mad_mail_para_del = [i.entry_dn for i in users 
         if "CN=mad-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "para".lower() in str(i.title.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=mad-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "para".lower() in str(i.title.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to mad-mail-para"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=mad-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
+        and "para".lower() not in str(i.department.value).lower() or ("514" in \
+        str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))]
+
+    if len(mad_mail_para_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            mad_mail_para_add,
+            "CN=mad-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            time.sleep(0.5)
-            c.modify(
-                "CN=mad-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
+    time.sleep(0.250)
+    if len(mad_mail_para_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            mad_mail_para_del,
+            "CN=mad-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-        elif "CN=mad-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and ("para".lower() not in str(i.title.value).lower() or "514" in \
-        str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from mad-mail-para"
-            + Color.END
-            )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=mad-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=mad-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+    time.sleep(0.250)
 
 
     #------------------------------mad-mail-pe------------------------------#
-    for i in users:
-        if "CN=mad-mail-pe,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
+    mad_mail_pe_add = [i.entry_dn for i in users
+        if "CN=mad-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
         and "physed".lower() in str(i.department.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=mad-mail-pe,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "physed".lower() in str(i.department.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to mad-mail-pe"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=mad-mail-pe,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=mad-mail-pe,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=mad-mail-pe,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
+        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    mad_mail_pe_del = [i.entry_dn for i in users 
+        if "CN=mad-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
         and ("physed".lower() not in str(i.department.value).lower() or "514" in \
-        str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from mad-mail-pe"
-            + Color.END
+        str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))]
+
+    if len(mad_mail_pe_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            mad_mail_pe_add,
+            "CN=mad-mail-pe,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=mad-mail-pe,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
+    time.sleep(0.250)
+    if len(mad_mail_pe_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            mad_mail_pe_del,
+            "CN=mad-mail-pe,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=mad-mail-pe,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+    time.sleep(0.250)
 
 
     #------------------------------mad-mail-pltw------------------------------#
-    for i in users:
+    mad_mail_pltw_add = [i.entry_dn for i in users
+        if "CN=mad-mail-pltw,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "pltw".lower() in str(i.department.value).lower() and "514" not in \
+        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    mad_mail_pltw_del = [i.entry_dn for i in users 
         if "CN=mad-mail-pltw,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "pltw".lower() in str(i.department.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=mad-mail-pltw,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "pltw".lower() in str(i.department.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to mad-mail-pltw"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=mad-mail-pltw,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=mad-mail-pltw,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=mad-mail-pltw,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
         and ("pltw".lower() not in str(i.department.value).lower() or "514" in \
-        str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from mad-mail-pltw"
-            + Color.END
+        str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))]
+
+    if len(mad_mail_pltw_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            mad_mail_pltw_add,
+            "CN=mad-mail-pltw,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=mad-mail-pltw,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
+    time.sleep(0.250)
+    if len(mad_mail_pltw_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            mad_mail_pltw_del,
+            "CN=mad-mail-pltw,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=mad-mail-pltw,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+    time.sleep(0.250)
 
 
     #------------------------------mad-mail-prin------------------------------#
-    for i in users:
+    mad_mail_prin_add = [i.entry_dn for i in users
+        if "CN=mad-mail-prin,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "principal".lower() in str(i.department.value).lower() and "514" not in \
+        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    mad_mail_prin_del = [i.entry_dn for i in users 
         if "CN=mad-mail-prin,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "principal".lower() in str(i.title.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=mad-mail-prin,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "principal".lower() in str(i.title.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to mad-mail-prin"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=mad-mail-prin,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=mad-mail-prin,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=mad-mail-prin,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and ("principal".lower() not in str(i.title.value).lower() or "514" in \
-        str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from mad-mail-prin"
-            + Color.END
-            )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=mad-mail-prin,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=mad-mail-prin,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+        and "principal".lower() not in str(i.department.value).lower() or ("514" in \
+        str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))]
 
+    if len(mad_mail_prin_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            mad_mail_prin_add,
+            "CN=mad-mail-prin,OU=Groups,OU=Madison,DC=mlsd,DC=local"
+            )
+    time.sleep(0.250)
+    if len(mad_mail_prin_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            mad_mail_prin_del,
+            "CN=mad-mail-prin,OU=Groups,OU=Madison,DC=mlsd,DC=local"
+            )
+    time.sleep(0.250)
+    
 
     #------------------------------mad-mail-secretary------------------------------#
-    for i in users:
+    mad_mail_secretary_add = [i.entry_dn for i in users
+        if "CN=mad-mail-secretary,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "secretary".lower() in str(i.department.value).lower() and "514" not in \
+        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    mad_mail_secretary_del = [i.entry_dn for i in users 
         if "CN=mad-mail-secretary,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "secretary".lower() in str(i.title.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=mad-mail-secretary,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "secretary".lower() in str(i.title.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to mad-mail-secretary"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=mad-mail-secretary,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
+        and "secretary".lower() not in str(i.department.value).lower() or ("514" in \
+        str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))]
+
+    if len(mad_mail_secretary_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            mad_mail_secretary_add,
+            "CN=mad-mail-secretary,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            time.sleep(0.5)
-            c.modify(
-                "CN=mad-mail-secretary,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
+    time.sleep(0.250)
+    if len(mad_mail_secretary_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            mad_mail_secretary_del,
+            "CN=mad-mail-secretary,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-        elif "CN=mad-mail-secretary,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and ("secretary".lower() not in str(i.title.value).lower() or "514" in \
-        str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from mad-mail-secretary"
-            + Color.END
-            )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=mad-mail-secretary,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=mad-mail-secretary,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+    time.sleep(0.250)
 
 
     #------------------------------mad-mail-sis------------------------------#
-    for i in users:
+    mad_mail_sis_add = [i.entry_dn for i in users
+        if "CN=mad-mail-sis,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "sis".lower() in str(i.department.value).lower() and "514" not in \
+        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    mad_mail_sis_del = [i.entry_dn for i in users 
         if "CN=mad-mail-sis,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "sis".lower() in str(i.department.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=mad-mail-sis,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "sis".lower() in str(i.department.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to mad-mail-sis"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=mad-mail-sis,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=mad-mail-sis,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=mad-mail-sis,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
         and ("sis".lower() not in str(i.department.value).lower() or "514" in \
-        str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from mad-mail-sis"
-            + Color.END
-            )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=mad-mail-sis,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=mad-mail-sis,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+        str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))]
 
+    if len(mad_mail_sis_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            mad_mail_sis_add,
+            "CN=mad-mail-sis,OU=Groups,OU=Madison,DC=mlsd,DC=local"
+            )
+    time.sleep(0.250)
+    if len(mad_mail_sis_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            mad_mail_sis_del,
+            "CN=mad-mail-sis,OU=Groups,OU=Madison,DC=mlsd,DC=local"
+            )
+    time.sleep(0.250)
+    
 
     #------------------------------mad-mail-sped------------------------------#
-    for i in users:
+    mad_mail_sped_add = [i.entry_dn for i in users
+        if "CN=mad-mail-sped,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "intervention".lower() in str(i.department.value).lower() and "514" not in \
+        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    mad_mail_sped_del = [i.entry_dn for i in users 
         if "CN=mad-mail-sped,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "intervention".lower() in str(i.department.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=mad-mail-sped,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "intervention".lower() in str(i.department.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to mad-mail-sped"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=mad-mail-sped,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=mad-mail-sped,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=mad-mail-sped,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
         and ("intervention".lower() not in str(i.department.value).lower() or "514" in \
-        str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from mad-mail-sped"
-            + Color.END
+        str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))]
+
+    if len(mad_mail_sped_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            mad_mail_sped_add,
+            "CN=mad-mail-sped,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=mad-mail-sped,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
+    time.sleep(0.250)
+    if len(mad_mail_sped_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            mad_mail_sped_del,
+            "CN=mad-mail-sped,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=mad-mail-sped,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+    time.sleep(0.250)
 
 
     #------------------------------mad-mail-teacher------------------------------#
-    for i in users:
-        if "CN=mad-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and ("teacher".lower() in str(i.title.value).lower() or "principal".lower() in str(i.title.value).lower()) and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=mad-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+    mad_mail_teacher_add = [i.entry_dn for i in users
+        if "CN=mad-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
         and ("teacher".lower() in str(i.title.value).lower() or "principal".lower() in str(i.title.value).lower()) \
-        and "514" not in str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to mad-mail-teacher"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=mad-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
+        and "514" not in str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    mad_mail_teacher_del = [i.entry_dn for i in users
+        if "CN=mad-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
+        and ("teacher".lower() not in str(i.title.value).lower() or "principal".lower() not in str(i.title.value).lower()) \
+        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))]
+    
+    if len(mad_mail_teacher_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            mad_mail_teacher_add,
+            "CN=mad-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            time.sleep(0.5)
-            c.modify(
-                "CN=mad-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
+    time.sleep(0.250)
+    if len(mad_mail_teacher_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            mad_mail_teacher_del,
+            "CN=mad-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-        elif "CN=mad-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and ("teacher".lower() not in str(i.title.value).lower() or "514" in \
-        str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from mad-mail-teacher"
-            + Color.END
-            )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=mad-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=mad-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+    time.sleep(0.250)
 
 
     #------------------------------mad-mail-title1------------------------------#
-    for i in users:
+    mad_mail_title1_add = [i.entry_dn for i in users
+        if "CN=mad-mail-title1,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "title 1".lower() in str(i.department.value).lower() and "514" not in \
+        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    mad_mail_title1_del = [i.entry_dn for i in users 
         if "CN=mad-mail-title1,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "title 1".lower() in str(i.department.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=mad-mail-title1,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "title 1".lower() in str(i.department.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to mad-mail-title1"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=mad-mail-title1,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=mad-mail-title1,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=mad-mail-title1,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
         and ("title 1".lower() not in str(i.department.value).lower() or "514" in \
-        str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from mad-mail-title1"
-            + Color.END
+        str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))]
+
+    if len(mad_mail_title1_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            mad_mail_title1_add,
+            "CN=mad-mail-title1,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=mad-mail-title1,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
+    time.sleep(0.250)
+    if len(mad_mail_title1_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            mad_mail_title1_del,
+            "CN=mad-mail-title1,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=mad-mail-title1,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+    time.sleep(0.250)
 
 
     #------------------------------mad-mail-user------------------------------#
-    for i in users:
+    mad_mail_user_add = [i.entry_dn for i in users
+        if "CN=mad-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "sub".lower() not in str(i.cn.value).lower() and "514" not in \
+        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    mad_mail_user_del = [i.entry_dn for i in users
         if "CN=mad-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "sub".lower() not in str(i.cn.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=mad-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "sub".lower() not in str(i.cn.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to mad-mail-user"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=mad-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
+        and ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))]
+
+    if len(mad_mail_user_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            mad_mail_user_add,
+            "CN=mad-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            time.sleep(0.5)
-            c.modify(
-                "CN=mad-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
+    time.sleep(0.250)
+    if len(mad_mail_user_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            mad_mail_user_del,
+            "CN=mad-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-        elif "CN=mad-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "514" in str(i.userAccountControl.value):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from mad-mail-user"
-            + Color.END
-            )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=mad-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=mad-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+    time.sleep(0.250)
 
 
     #------------------------------mad-tech------------------------------#
-    for i in users:
+    mad_tech_add = [i.entry_dn for i in users
+        if "CN=mad-tech,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "Technology Office".lower() in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
+        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    mad_tech_del = [i.entry_dn for i in users
         if "CN=mad-tech,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "Technology Office".lower() in str(i.physicalDeliveryOfficeName.value).lower() \
-        and "514" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=mad-tech,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "Technology Office".lower() in str(i.physicalDeliveryOfficeName.value).lower() \
-        and "514" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to mad-tech"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=mad-tech,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=mad-tech,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=mad-tech,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
         and ("Technology Office".lower() not in str(i.physicalDeliveryOfficeName.value).lower() \
-        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from mad-tech"
-            + Color.END
+        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)))]
+
+    if len(mad_tech_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            mad_tech_add,
+            "CN=mad-tech,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=mad-tech,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
+    time.sleep(0.250)
+    if len(mad_tech_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            mad_tech_del,
+            "CN=mad-tech,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=mad-tech,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+    time.sleep(0.250)
 
 
     #------------------------------mad56-mail-teacher------------------------------#
-    for i in users:
+    mad56_mail_teacher_add = [i.entry_dn for i in users
+        if "CN=mad56-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and ("teacher".lower() in str(i.title.value).lower() or "principal".lower() in str(i.title.value).lower()) \
+        and "56".lower() in str(i.department.value).lower() and "514" not in str(i.userAccountControl.value) \
+        and "546" not in str(i.userAccountControl.value)]
+    mad56_mail_teacher_del = [i.entry_dn for i in users
         if "CN=mad56-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and ("teacher".lower() in str(i.title.value).lower() or "principal".lower() in str(i.title.value).lower()) and "56".lower() in \
-        str(i.department.value).lower() and "514" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=mad56-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and ("teacher".lower() in str(i.title.value).lower() or "principal".lower() in str(i.title.value).lower()) and "56".lower() in \
-        str(i.department.value).lower() and "514" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to mad56-mail-teacher"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=mad56-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
+        and (("teacher".lower() not in str(i.title.value).lower() or "principal".lower() not in str(i.title.value).lower() \
+        or "56".lower() not in str(i.department.value).lower()) or ("514" in str(i.userAccountControl.value) or \
+        "546" in str(i.userAccountControl.value)))]
+
+    if len(mad56_mail_teacher_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            mad56_mail_teacher_add,
+            "CN=mad56-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            time.sleep(0.5)
-            c.modify(
-                "CN=mad56-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
+    time.sleep(0.250)
+    if len(mad56_mail_teacher_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            mad56_mail_teacher_del,
+            "CN=mad56-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-        elif "CN=mad56-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and (("teacher".lower() not in str(i.title.value).lower() or "56".lower() not in \
-        str(i.department.value).lower()) or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from mad56-mail-teacher"
-            + Color.END
-            )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=mad56-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=mad56-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+    time.sleep(0.250)
 
 
     #------------------------------mad78-mail-teacher------------------------------#
-    for i in users:
+    mad78_mail_teacher_add = [i.entry_dn for i in users
+        if "CN=mad78-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and ("teacher".lower() in str(i.title.value).lower() or "principal".lower() in str(i.title.value).lower()) \
+        and "78".lower() in str(i.department.value).lower() and "514" not in str(i.userAccountControl.value) \
+        and "546" not in str(i.userAccountControl.value)]
+    mad78_mail_teacher_del = [i.entry_dn for i in users
         if "CN=mad78-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and ("teacher".lower() in str(i.title.value).lower() or "principal".lower() in str(i.title.value).lower()) and "78".lower() in \
-        str(i.department.value).lower() and "514" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=mad78-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and ("teacher".lower() in str(i.title.value).lower() or "principal".lower() in str(i.title.value).lower()) and "78".lower() in \
-        str(i.department.value).lower() and "514" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to mad78-mail-teacher"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=mad78-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=mad78-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=mad78-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and (("teacher".lower() not in str(i.title.value).lower() or "78".lower() not in \
-        str(i.department.value).lower()) or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from mad78-mail-teacher"
-            + Color.END
-            )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=mad78-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=mad78-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+        and (("teacher".lower() not in str(i.title.value).lower() or "principal".lower() not in str(i.title.value).lower() \
+        or "78".lower() not in str(i.department.value).lower()) or ("514" in str(i.userAccountControl.value) or \
+        "546" in str(i.userAccountControl.value)))]
 
+    if len(mad78_mail_teacher_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            mad78_mail_teacher_add,
+            "CN=mad78-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local"
+            )
+    time.sleep(0.250)
+    if len(mad78_mail_teacher_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            mad78_mail_teacher_del,
+            "CN=mad78-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local"
+            )
+    time.sleep(0.250)
+    
 
     #------------------------------mad56-mail-user------------------------------#
-    for i in users:
+    mad56_mail_user_add = [i.entry_dn for i in users
+        if "CN=mad56-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "56".lower() in str(i.department.value).lower() and "514" not in str(i.userAccountControl.value) \
+        and "546" not in str(i.userAccountControl.value)]
+    mad56_mail_user_del = [i.entry_dn for i in users
         if "CN=mad56-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "56".lower() in str(i.department.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=mad56-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "56".lower() in str(i.department.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to mad56-mail-user"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=mad56-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=mad56-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=mad56-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and ("56".lower() not in str(i.department.value).lower() or "514" \
-        in str(i.userAccountControl.value)):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from mad56-mail-user"
-            + Color.END
-            )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=mad56-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=mad56-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+        and "56".lower() not in str(i.department.value).lower() or ("514" in str(i.userAccountControl.value) or \
+        "546" in str(i.userAccountControl.value))]
 
+    if len(mad56_mail_user_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            mad56_mail_user_add,
+            "CN=mad56-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local"
+            )
+    time.sleep(0.250)
+    if len(mad56_mail_user_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            mad56_mail_user_del,
+            "CN=mad56-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local"
+            )
+    time.sleep(0.250)
+    
 
     #------------------------------mad78-mail-user------------------------------#
-    for i in users:
+    mad78_mail_user_add = [i.entry_dn for i in users
+        if "CN=mad78-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "78".lower() in str(i.department.value).lower() and "514" not in str(i.userAccountControl.value) \
+        and "546" not in str(i.userAccountControl.value)]
+    mad78_mail_user_del = [i.entry_dn for i in users
         if "CN=mad78-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "78".lower() in str(i.department.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=mad78-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "78".lower() in str(i.department.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to mad78-mail-user"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=mad78-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
+        and "78".lower() not in str(i.department.value).lower() or ("514" in str(i.userAccountControl.value) or \
+        "546" in str(i.userAccountControl.value))]
+
+    if len(mad78_mail_user_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            mad78_mail_user_add,
+            "CN=mad78-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            time.sleep(0.5)
-            c.modify(
-                "CN=mad78-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
+    time.sleep(0.250)
+    if len(mad78_mail_user_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            mad78_mail_user_del,
+            "CN=mad78-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-        elif "CN=mad78-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and ("78".lower() not in str(i.department.value).lower() or "514" \
-        in str(i.userAccountControl.value)):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from mad78-mail-user"
-            + Color.END
-            )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=mad78-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=mad78-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+    time.sleep(0.250)
 
 
     #------------------------------madea-mail-custodian------------------------------#
-    for i in users:
+    madea_mail_custodian_add = [i.entry_dn for i in users
+        if "CN=madea-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "custodian".lower() in str(i.title.value).lower() and "Eastview".lower() \
+        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
+        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    madea_mail_custodian_del = [i.entry_dn for i in users
         if "CN=madea-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "custodian".lower() in str(i.title.value).lower() and "Eastview".lower() \
-        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=madea-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "custodian".lower() in str(i.title.value).lower() and "Eastview".lower() \
-        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to madea-mail-custodian"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=madea-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
+        and ("custodian".lower() not in str(i.title.value).lower() or \
+        "Eastview".lower() not in str(i.physicalDeliveryOfficeName.value).lower()) \
+        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))]
+    
+    if len(madea_mail_custodian_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            madea_mail_custodian_add,
+            "CN=madea-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            time.sleep(0.5)
-            c.modify(
-                "CN=madea-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
+    time.sleep(0.250)
+    if len(madea_mail_custodian_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            madea_mail_custodian_del,
+            "CN=madea-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-        elif "CN=madea-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and (("custodian".lower() not in str(i.title.value).lower() or \
-        "Eastview".lower() in str(i.physicalDeliveryOfficeName.value).lower()) \
-        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from madea-mail-custodian"
-            + Color.END
-            )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=madea-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=madea-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+    time.sleep(0.250)
 
 
     #------------------------------madmi-mail-custodian------------------------------#
-    for i in users:
+    madmi_mail_custodian_add = [i.entry_dn for i in users
+        if "CN=madmi-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "custodian".lower() in str(i.title.value).lower() and "Mifflin".lower() \
+        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
+        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    madmi_mail_custodian_del = [i.entry_dn for i in users
         if "CN=madmi-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "custodian".lower() in str(i.title.value).lower() and "mifflin".lower() \
-        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=madmi-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "custodian".lower() in str(i.title.value).lower() and "mifflin".lower() \
-        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to madmi-mail-custodian"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=madmi-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=madmi-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=madmi-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
         and (("custodian".lower() not in str(i.title.value).lower() or \
-        "mifflin".lower() in str(i.physicalDeliveryOfficeName.value).lower()) \
-        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from madmi-mail-custodian"
-            + Color.END
+        "Mifflin".lower() not in str(i.physicalDeliveryOfficeName.value).lower()) \
+        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)))]
+    
+    if len(madmi_mail_custodian_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            madmi_mail_custodian_add,
+            "CN=madmi-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=madmi-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
+    time.sleep(0.250)
+    if len(madmi_mail_custodian_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            madmi_mail_custodian_del,
+            "CN=madmi-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=madmi-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+    time.sleep(0.250)
 
 
     #------------------------------madso-mail-custodian------------------------------#
-    for i in users:
+    madso_mail_custodian_add = [i.entry_dn for i in users
+        if "CN=madso-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "custodian".lower() in str(i.title.value).lower() and "South".lower() \
+        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
+        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    madso_mail_custodian_del = [i.entry_dn for i in users
         if "CN=madso-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "custodian".lower() in str(i.title.value).lower() and "south".lower() \
-        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=madso-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "custodian".lower() in str(i.title.value).lower() and "south".lower() \
-        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to madso-mail-custodian"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=madso-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=madso-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=madso-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
         and (("custodian".lower() not in str(i.title.value).lower() or \
-        "south".lower() in str(i.physicalDeliveryOfficeName.value).lower()) \
-        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from madso-mail-custodian"
-            + Color.END
+        "South".lower() not in str(i.physicalDeliveryOfficeName.value).lower()) \
+        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)))]
+    
+    if len(madso_mail_custodian_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            madso_mail_custodian_add,
+            "CN=madso-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=madso-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
+    time.sleep(0.250)
+    if len(madso_mail_custodian_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            madso_mail_custodian_del,
+            "CN=madso-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=madso-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+    time.sleep(0.250)
 
 
     #------------------------------madms-mail-custodian------------------------------#
-    for i in users:
+    madms_mail_custodian_add = [i.entry_dn for i in users
+        if "CN=madms-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "custodian".lower() in str(i.title.value).lower() and "Middle".lower() \
+        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
+        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    madms_mail_custodian_del = [i.entry_dn for i in users
         if "CN=madms-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "custodian".lower() in str(i.title.value).lower() and "middle".lower() \
-        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=madms-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "custodian".lower() in str(i.title.value).lower() and "middle".lower() \
-        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to madms-mail-custodian"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=madms-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=madms-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=madms-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
         and (("custodian".lower() not in str(i.title.value).lower() or \
-        "middle".lower() in str(i.physicalDeliveryOfficeName.value).lower()) \
-        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from madms-mail-custodian"
-            + Color.END
+        "Middle".lower() in str(i.physicalDeliveryOfficeName.value).lower()) \
+        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)))]
+    
+    if len(madms_mail_custodian_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            madms_mail_custodian_add,
+            "CN=madms-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=madms-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
+    time.sleep(0.250)
+    if len(madms_mail_custodian_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            madms_mail_custodian_del,
+            "CN=madms-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=madms-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+    time.sleep(0.250)
 
 
     #------------------------------madhs-mail-custodian------------------------------#
-    for i in users:
+    madhs_mail_custodian_add = [i.entry_dn for i in users
+        if "CN=madhs-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "custodian".lower() in str(i.title.value).lower() and "High".lower() \
+        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
+        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    madhs_mail_custodian_del = [i.entry_dn for i in users
         if "CN=madhs-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "custodian".lower() in str(i.title.value).lower() and "high".lower() \
-        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=madhs-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "custodian".lower() in str(i.title.value).lower() and "high".lower() \
-        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to madhs-mail-custodian"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=madhs-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=madhs-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=madhs-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
         and (("custodian".lower() not in str(i.title.value).lower() or \
-        "high".lower() in str(i.physicalDeliveryOfficeName.value).lower()) \
-        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from madhs-mail-custodian"
-            + Color.END
+        "High".lower() not in str(i.physicalDeliveryOfficeName.value).lower()) \
+        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)))]
+    
+    if len(madhs_mail_custodian_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            madhs_mail_custodian_add,
+            "CN=madhs-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=madhs-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
+    time.sleep(0.250)
+    if len(madhs_mail_custodian_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            madhs_mail_custodian_del,
+            "CN=madhs-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=madhs-mail-custodian,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+    time.sleep(0.250)
 
 
     #------------------------------madea-mail-para------------------------------#
-    for i in users:
+    madea_mail_para_add = [i.entry_dn for i in users
+        if "CN=madea-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "para".lower() in str(i.title.value).lower() and "Eastview".lower() \
+        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
+        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    madea_mail_para_del = [i.entry_dn for i in users
         if "CN=madea-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "para".lower() in str(i.title.value).lower() and "Eastview".lower() \
-        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=madea-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "para".lower() in str(i.title.value).lower() and "Eastview".lower() \
-        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to madea-mail-para"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=madea-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=madea-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=madea-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
         and (("para".lower() not in str(i.title.value).lower() or \
-        "Eastview".lower() in str(i.physicalDeliveryOfficeName.value).lower()) \
-        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from madea-mail-para"
-            + Color.END
+        "Eastview".lower() not in str(i.physicalDeliveryOfficeName.value).lower()) \
+        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)))]
+    
+    if len(madea_mail_para_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            madea_mail_para_add,
+            "CN=madea-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=madea-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
+    time.sleep(0.250)
+    if len(madea_mail_para_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            madea_mail_para_del,
+            "CN=madea-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=madea-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+    time.sleep(0.250)
 
 
     #------------------------------madmi-mail-para------------------------------#
-    for i in users:
+    madmi_mail_para_add = [i.entry_dn for i in users
+        if "CN=madmi-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "para".lower() in str(i.title.value).lower() and "Miflin".lower() \
+        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
+        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    madmi_mail_para_del = [i.entry_dn for i in users
         if "CN=madmi-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "para".lower() in str(i.title.value).lower() and "mifflin".lower() \
-        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=madmi-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "para".lower() in str(i.title.value).lower() and "mifflin".lower() \
-        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to madmi-mail-para"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=madmi-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=madmi-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=madmi-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
         and (("para".lower() not in str(i.title.value).lower() or \
-        "mifflin".lower() in str(i.physicalDeliveryOfficeName.value).lower()) \
-        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from madmi-mail-para"
-            + Color.END
+        "Miflin".lower() in str(i.physicalDeliveryOfficeName.value).lower()) \
+        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)))]
+    
+    if len(madmi_mail_para_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            madmi_mail_para_add,
+            "CN=madmi-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=madmi-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
+    time.sleep(0.250)
+    if len(madmi_mail_para_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            madmi_mail_para_del,
+            "CN=madmi-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=madmi-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+    time.sleep(0.250)
 
 
     #------------------------------madso-mail-para------------------------------#
-    for i in users:
+    madso_mail_para_add = [i.entry_dn for i in users
+        if "CN=madso-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "para".lower() in str(i.title.value).lower() and "South".lower() \
+        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
+        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    madso_mail_para_del = [i.entry_dn for i in users
         if "CN=madso-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "para".lower() in str(i.title.value).lower() and "south".lower() \
-        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=madso-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "para".lower() in str(i.title.value).lower() and "south".lower() \
-        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to madso-mail-para"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=madso-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=madso-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=madso-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
         and (("para".lower() not in str(i.title.value).lower() or \
-        "south".lower() in str(i.physicalDeliveryOfficeName.value).lower()) \
-        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from madso-mail-para"
-            + Color.END
+        "South".lower() in str(i.physicalDeliveryOfficeName.value).lower()) \
+        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)))]
+    
+    if len(madso_mail_para_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            madso_mail_para_add,
+            "CN=madso-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=madso-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
+    time.sleep(0.250)
+    if len(madso_mail_para_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            madso_mail_para_del,
+            "CN=madso-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=madso-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
-
+    time.sleep(0.250)
+    
 
     #------------------------------madms-mail-para------------------------------#
-    for i in users:
+    madms_mail_para_add = [i.entry_dn for i in users
+        if "CN=madms-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "para".lower() in str(i.title.value).lower() and "Middle".lower() \
+        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
+        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    madms_mail_para_del = [i.entry_dn for i in users
         if "CN=madms-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "para".lower() in str(i.title.value).lower() and "middle".lower() \
-        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=madms-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "para".lower() in str(i.title.value).lower() and "middle".lower() \
-        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to madms-mail-para"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=madms-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=madms-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=madms-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
         and (("para".lower() not in str(i.title.value).lower() or \
-        "middle".lower() in str(i.physicalDeliveryOfficeName.value).lower()) \
-        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from madms-mail-para"
-            + Color.END
+        "Middle".lower() in str(i.physicalDeliveryOfficeName.value).lower()) \
+        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)))]
+    
+    if len(madms_mail_para_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            madms_mail_para_add,
+            "CN=madms-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=madms-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
+    time.sleep(0.250)
+    if len(madms_mail_para_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            madms_mail_para_del,
+            "CN=madms-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=madms-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
-
+    time.sleep(0.250)
+    
 
     #------------------------------madhs-mail-para------------------------------#
-    for i in users:
+    madhs_mail_para_add = [i.entry_dn for i in users
+        if "CN=madhs-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "para".lower() in str(i.title.value).lower() and "High".lower() \
+        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
+        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    madhs_mail_para_del = [i.entry_dn for i in users
         if "CN=madhs-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "para".lower() in str(i.title.value).lower() and "high".lower() \
-        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=madhs-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "para".lower() in str(i.title.value).lower() and "high".lower() \
-        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to madhs-mail-para"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=madhs-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=madhs-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=madhs-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
         and (("para".lower() not in str(i.title.value).lower() or \
-        "high".lower() in str(i.physicalDeliveryOfficeName.value).lower()) \
-        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from madhs-mail-para"
-            + Color.END
+        "High".lower() not in str(i.physicalDeliveryOfficeName.value).lower()) \
+        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)))]
+    
+    if len(madhs_mail_para_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            madhs_mail_para_add,
+            "CN=madhs-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=madhs-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
+    time.sleep(0.250)
+    if len(madhs_mail_para_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            madhs_mail_para_del,
+            "CN=madhs-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=madhs-mail-para,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
-
+    time.sleep(0.250)
+    
 
     #------------------------------madea-mail-teacher------------------------------#
-    for i in users:
+    madea_mail_teacher_add = [i.entry_dn for i in users
+        if "CN=madea-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and ("teacher".lower() in str(i.title.value).lower() or "principal".lower() in str(i.title.value).lower()) \
+        and "Eastview".lower() in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
+        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    madea_mail_teacher_del = [i.entry_dn for i in users
         if "CN=madea-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and ("teacher".lower() in str(i.title.value).lower() or "principal".lower() in str(i.title.value).lower()) and "Eastview".lower() \
-        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=madea-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and ("teacher".lower() in str(i.title.value).lower() or "principal".lower() in str(i.title.value).lower()) and "Eastview".lower() \
-        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to madea-mail-teacher"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=madea-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=madea-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=madea-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and (("teacher".lower() not in str(i.title.value).lower() or \
-        "Eastview".lower() in str(i.physicalDeliveryOfficeName.value).lower()) \
-        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from madea-mail-teacher"
-            + Color.END
-            )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=madea-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=madea-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+        and (("teacher".lower() not in str(i.title.value).lower() or "principal".lower() not in str(i.title.value).lower() \
+        or "Eastview".lower() not in str(i.physicalDeliveryOfficeName.value).lower()) \
+        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)))]
 
+    if len(madea_mail_teacher_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            madea_mail_teacher_add,
+            "CN=madea-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local"
+            )
+    time.sleep(0.250)
+    if len(madea_mail_teacher_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            madea_mail_teacher_del,
+            "CN=madea-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local"
+            )
+    time.sleep(0.250)
+    
 
     #------------------------------madmi-mail-teacher------------------------------#
-    for i in users:
+    madmi_mail_teacher_add = [i.entry_dn for i in users
+        if "CN=madmi-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and ("teacher".lower() in str(i.title.value).lower() or "principal".lower() in str(i.title.value).lower()) \
+        and "Mifflin".lower() in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
+        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    madmi_mail_teacher_del = [i.entry_dn for i in users
         if "CN=madmi-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and ("teacher".lower() in str(i.title.value).lower() or "principal".lower() in str(i.title.value).lower()) and "mifflin".lower() \
-        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=madmi-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and ("teacher".lower() in str(i.title.value).lower() or "principal".lower() in str(i.title.value).lower()) and "mifflin".lower() \
-        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to madmi-mail-teacher"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=madmi-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=madmi-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=madmi-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and (("teacher".lower() not in str(i.title.value).lower() or \
-        "mifflin".lower() in str(i.physicalDeliveryOfficeName.value).lower()) \
-        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from madmi-mail-teacher"
-            + Color.END
-            )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=madmi-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=madmi-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+        and (("teacher".lower() not in str(i.title.value).lower() or "principal".lower() not in str(i.title.value).lower() \
+        or "Mifflin".lower() not in str(i.physicalDeliveryOfficeName.value).lower()) \
+        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)))]
 
+    if len(madmi_mail_teacher_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            madmi_mail_teacher_add,
+            "CN=madmi-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local"
+            )
+    time.sleep(0.250)
+    if len(madmi_mail_teacher_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            madmi_mail_teacher_del,
+            "CN=madmi-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local"
+            )
+    time.sleep(0.250)
+    
 
     #------------------------------madso-mail-teacher------------------------------#
-    for i in users:
+    madso_mail_teacher_add = [i.entry_dn for i in users
+        if "CN=madso-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and ("teacher".lower() in str(i.title.value).lower() or "principal".lower() in str(i.title.value).lower()) \
+        and "South".lower() in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
+        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    madso_mail_teacher_del = [i.entry_dn for i in users
         if "CN=madso-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and ("teacher".lower() in str(i.title.value).lower() or "principal".lower() in str(i.title.value).lower()) and "south".lower() \
-        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=madso-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and ("teacher".lower() in str(i.title.value).lower() or "principal".lower() in str(i.title.value).lower()) and "south".lower() \
-        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to madso-mail-teacher"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=madso-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=madso-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=madso-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and (("teacher".lower() not in str(i.title.value).lower() or \
-        "south".lower() in str(i.physicalDeliveryOfficeName.value).lower()) \
-        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from madso-mail-teacher"
-            + Color.END
-            )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=madso-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=madso-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+        and (("teacher".lower() not in str(i.title.value).lower() or "principal".lower() not in str(i.title.value).lower() \
+        or "South".lower() not in str(i.physicalDeliveryOfficeName.value).lower()) \
+        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)))]
 
+    if len(madso_mail_teacher_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            madso_mail_teacher_add,
+            "CN=madso-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local"
+            )
+    time.sleep(0.250)
+    if len(madso_mail_teacher_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            madso_mail_teacher_del,
+            "CN=madso-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local"
+            )
+    time.sleep(0.250)
+    
 
     #------------------------------madms-mail-teacher------------------------------#
-    for i in users:
+    madms_mail_teacher_add = [i.entry_dn for i in users
+        if "CN=madms-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and ("teacher".lower() in str(i.title.value).lower() or "principal".lower() in str(i.title.value).lower()) \
+        and "Middle".lower() in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
+        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    madms_mail_teacher_del = [i.entry_dn for i in users
         if "CN=madms-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and ("teacher".lower() in str(i.title.value).lower() or "principal".lower() in str(i.title.value).lower()) and "middle".lower() \
-        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=madms-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and ("teacher".lower() in str(i.title.value).lower() or "principal".lower() in str(i.title.value).lower()) and "middle".lower() \
-        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to madms-mail-teacher"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=madms-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=madms-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=madms-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and (("teacher".lower() not in str(i.title.value).lower() or \
-        "middle".lower() in str(i.physicalDeliveryOfficeName.value).lower()) \
-        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from madms-mail-teacher"
-            + Color.END
-            )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=madms-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=madms-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+        and (("teacher".lower() not in str(i.title.value).lower() or "principal".lower() not in str(i.title.value).lower() \
+        or "Middle".lower() not in str(i.physicalDeliveryOfficeName.value).lower()) \
+        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)))]
 
+    if len(madms_mail_teacher_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            madms_mail_teacher_add,
+            "CN=madms-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local"
+            )
+    time.sleep(0.250)
+    if len(madms_mail_teacher_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            madms_mail_teacher_del,
+            "CN=madms-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local"
+            )
+    time.sleep(0.250)
+    
 
     #------------------------------madhs-mail-teacher------------------------------#
-    for i in users:
+    madhs_mail_teacher_add = [i.entry_dn for i in users
+        if "CN=madhs-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and ("teacher".lower() in str(i.title.value).lower() or "principal".lower() in str(i.title.value).lower()) \
+        and "High".lower() in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
+        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    madhs_mail_teacher_del = [i.entry_dn for i in users
         if "CN=madhs-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and ("teacher".lower() in str(i.title.value).lower() or "principal".lower() in str(i.title.value).lower()) and "high".lower() \
-        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=madhs-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and ("teacher".lower() in str(i.title.value).lower() or "principal".lower() in str(i.title.value).lower()) and "high".lower() \
-        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to madhs-mail-teacher"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=madhs-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=madhs-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=madhs-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and (("teacher".lower() not in str(i.title.value).lower() or \
-        "high".lower() in str(i.physicalDeliveryOfficeName.value).lower()) \
-        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from madhs-mail-teacher"
-            + Color.END
-            )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=madhs-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=madhs-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+        and (("teacher".lower() not in str(i.title.value).lower() or "principal".lower() not in str(i.title.value).lower() \
+        or "High".lower() not in str(i.physicalDeliveryOfficeName.value).lower()) \
+        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)))]
 
+    if len(madhs_mail_teacher_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            madhs_mail_teacher_add,
+            "CN=madhs-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local"
+            )
+    time.sleep(0.250)
+    if len(madhs_mail_teacher_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            madhs_mail_teacher_del,
+            "CN=madhs-mail-teacher,OU=Groups,OU=Madison,DC=mlsd,DC=local"
+            )
+    time.sleep(0.250)
+    
 
     #------------------------------madea-mail-user------------------------------#
-    for i in users:
+    madea_mail_user_add = [i.entry_dn for i in users
+        if "CN=madea-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "Eastview".lower() in str(i.physicalDeliveryOfficeName.value).lower() \
+        and "514" not in str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    madea_mail_user_del = [i.entry_dn for i in users
         if "CN=madea-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "Eastview".lower() in str(i.physicalDeliveryOfficeName.value).lower() \
-        and "514" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=madea-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "Eastview".lower() in str(i.physicalDeliveryOfficeName.value).lower() \
-        and "514" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to madea-mail-user"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=madea-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=madea-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=madea-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and ("Eastview".lower() in str(i.physicalDeliveryOfficeName.value).lower() \
-        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from madea-mail-user"
-            + Color.END
-            )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=madea-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=madea-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+        and ("Eastview".lower() not in str(i.physicalDeliveryOfficeName.value).lower() \
+        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)))]
 
+    if len(madea_mail_user_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            madea_mail_user_add,
+            "CN=madea-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local"
+            )
+    time.sleep(0.250)
+    if len(madea_mail_user_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            madea_mail_user_del,
+            "CN=madea-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local"
+            )
+    time.sleep(0.250)
+    
 
     #------------------------------madmi-mail-user------------------------------#
-    for i in users:
+    madmi_mail_user_add = [i.entry_dn for i in users
+        if "CN=madmi-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "Mifflin".lower() in str(i.physicalDeliveryOfficeName.value).lower() \
+        and "514" not in str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    madmi_mail_user_del = [i.entry_dn for i in users
         if "CN=madmi-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "mifflin".lower() in str(i.physicalDeliveryOfficeName.value).lower() \
-        and "514" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=madmi-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "mifflin".lower() in str(i.physicalDeliveryOfficeName.value).lower() \
-        and "514" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to madmi-mail-user"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=madmi-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=madmi-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=madmi-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and ("mifflin".lower() in str(i.physicalDeliveryOfficeName.value).lower() \
-        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from madmi-mail-user"
-            + Color.END
-            )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=madmi-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=madmi-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+        and ("Mifflin".lower() not in str(i.physicalDeliveryOfficeName.value).lower() \
+        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)))]
 
+    if len(madmi_mail_user_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            madmi_mail_user_add,
+            "CN=madmi-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local"
+            )
+    time.sleep(0.250)
+    if len(madmi_mail_user_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            madmi_mail_user_del,
+            "CN=madmi-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local"
+            )
+    time.sleep(0.250)
+    
 
     #------------------------------madso-mail-user------------------------------#
-    for i in users:
+    madso_mail_user_add = [i.entry_dn for i in users
+        if "CN=madso-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "South".lower() in str(i.physicalDeliveryOfficeName.value).lower() \
+        and "514" not in str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    madso_mail_user_del = [i.entry_dn for i in users
         if "CN=madso-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "south".lower() in str(i.physicalDeliveryOfficeName.value).lower() \
-        and "514" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=madso-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "south".lower() in str(i.physicalDeliveryOfficeName.value).lower() \
-        and "514" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to madso-mail-user"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=madso-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=madso-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=madso-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and ("south".lower() in str(i.physicalDeliveryOfficeName.value).lower() \
-        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from madso-mail-user"
-            + Color.END
-            )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=madso-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=madso-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+        and ("South".lower() not in str(i.physicalDeliveryOfficeName.value).lower() \
+        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)))]
 
+    if len(madso_mail_user_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            madso_mail_user_add,
+            "CN=madso-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local"
+            )
+    time.sleep(0.250)
+    if len(madso_mail_user_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            madso_mail_user_del,
+            "CN=madso-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local"
+            )
+    time.sleep(0.250)
+    
 
     #------------------------------madms-mail-user------------------------------#
-    for i in users:
+    madms_mail_user_add = [i.entry_dn for i in users
+        if "CN=madms-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "Middle".lower() in str(i.physicalDeliveryOfficeName.value).lower() \
+        and "514" not in str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    madms_mail_user_del = [i.entry_dn for i in users
         if "CN=madms-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "middle".lower() in str(i.physicalDeliveryOfficeName.value).lower() \
-        and "514" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=madms-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "middle".lower() in str(i.physicalDeliveryOfficeName.value).lower() \
-        and "514" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to madms-mail-user"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=madms-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=madms-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=madms-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and ("middle".lower() in str(i.physicalDeliveryOfficeName.value).lower() \
-        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from madms-mail-user"
-            + Color.END
-            )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=madms-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=madms-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+        and ("Middle".lower() not in str(i.physicalDeliveryOfficeName.value).lower() \
+        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)))]
 
+    if len(madms_mail_user_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            madms_mail_user_add,
+            "CN=madms-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local"
+            )
+    time.sleep(0.250)
+    if len(madms_mail_user_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            madms_mail_user_del,
+            "CN=madms-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local"
+            )
+    time.sleep(0.250)
+    
 
     #------------------------------madhs-mail-user------------------------------#
-    for i in users:
+    madhs_mail_user_add = [i.entry_dn for i in users
+        if "CN=madhs-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "High".lower() in str(i.physicalDeliveryOfficeName.value).lower() \
+        and "514" not in str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    madhs_mail_user_del = [i.entry_dn for i in users
         if "CN=madhs-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "high".lower() in str(i.physicalDeliveryOfficeName.value).lower() \
-        and "514" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=madhs-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "high".lower() in str(i.physicalDeliveryOfficeName.value).lower() \
-        and "514" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to madhs-mail-user"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=madhs-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=madhs-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=madhs-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and ("high".lower() in str(i.physicalDeliveryOfficeName.value).lower() \
-        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from madhs-mail-user"
-            + Color.END
-            )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=madhs-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=madhs-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+        and ("High".lower() not in str(i.physicalDeliveryOfficeName.value).lower() \
+        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)))]
 
+    if len(madhs_mail_user_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            madhs_mail_user_add,
+            "CN=madhs-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local"
+            )
+    time.sleep(0.250)
+    if len(madhs_mail_user_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            madhs_mail_user_del,
+            "CN=madhs-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local"
+            )
+    time.sleep(0.250)
+    
 
     #------------------------------madjb-mail-user------------------------------#
-    for i in users:
+    madjb_mail_user_add = [i.entry_dn for i in users
+        if "CN=madjb-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "Early Childhood".lower() in str(i.physicalDeliveryOfficeName.value).lower() \
+        and "514" not in str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    madjb_mail_user_del = [i.entry_dn for i in users
         if "CN=madjb-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "early childhood".lower() in str(i.physicalDeliveryOfficeName.value).lower() \
-        and "514" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=madjb-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "early childhood".lower() in str(i.physicalDeliveryOfficeName.value).lower() \
-        and "514" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to madjb-mail-user"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=madjb-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=madjb-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=madjb-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and ("early childhood".lower() in str(i.physicalDeliveryOfficeName.value).lower() \
-        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from madjb-mail-user"
-            + Color.END
-            )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=madjb-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=madjb-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+        and ("Early Childhood".lower() not in str(i.physicalDeliveryOfficeName.value).lower() \
+        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)))]
 
+    if len(madjb_mail_user_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            madjb_mail_user_add,
+            "CN=madjb-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local"
+            )
+    time.sleep(0.250)
+    if len(madjb_mail_user_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            madjb_mail_user_del,
+            "CN=madjb-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local"
+            )
+    time.sleep(0.250)
+    
 
     #------------------------------madea-mail-cook------------------------------#
-    for i in users:
+    madea_mail_cook_add = [i.entry_dn for i in users
+        if "CN=madea-mail-cook,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "cook".lower() in str(i.title.value).lower() and "Eastview".lower() \
+        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
+        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    madea_mail_cook_del = [i.entry_dn for i in users
         if "CN=madea-mail-cook,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "cook".lower() in str(i.title.value).lower() and "Eastview".lower() \
-        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=madea-mail-cook,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "cook".lower() in str(i.title.value).lower() and "Eastview".lower() \
-        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to madea-mail-cook"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=madea-mail-cook,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
+        and ("cook".lower() not in str(i.title.value).lower() or \
+        "Eastview".lower() not in str(i.physicalDeliveryOfficeName.value).lower()) \
+        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))]
+    
+    if len(madea_mail_cook_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            madea_mail_cook_add,
+            "CN=madea-mail-cook,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            time.sleep(0.5)
-            c.modify(
-                "CN=madea-mail-cook,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
+    time.sleep(0.250)
+    if len(madea_mail_cook_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            madea_mail_cook_del,
+            "CN=madea-mail-cook,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-        elif "CN=madea-mail-cook,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and (("cook".lower() not in str(i.title.value).lower() or \
-        "Eastview".lower() in str(i.physicalDeliveryOfficeName.value).lower()) \
-        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from madea-mail-cook"
-            + Color.END
-            )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=madea-mail-cook,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=madea-mail-cook,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+    time.sleep(0.250)
 
 
     #------------------------------madmi-mail-cook------------------------------#
-    for i in users:
+    madmi_mail_cook_add = [i.entry_dn for i in users
+        if "CN=madmi-mail-cook,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "cook".lower() in str(i.title.value).lower() and "Miflin".lower() \
+        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
+        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    madmi_mail_cook_del = [i.entry_dn for i in users
         if "CN=madmi-mail-cook,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "cook".lower() in str(i.title.value).lower() and "mifflin".lower() \
-        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=madmi-mail-cook,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "cook".lower() in str(i.title.value).lower() and "mifflin".lower() \
-        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to madmi-mail-cook"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=madmi-mail-cook,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=madmi-mail-cook,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=madmi-mail-cook,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
         and (("cook".lower() not in str(i.title.value).lower() or \
-        "mifflin".lower() in str(i.physicalDeliveryOfficeName.value).lower()) \
-        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from madmi-mail-cook"
-            + Color.END
+        "Miflin".lower() not in str(i.physicalDeliveryOfficeName.value).lower()) \
+        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)))]
+    
+    if len(madmi_mail_cook_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            madmi_mail_cook_add,
+            "CN=madmi-mail-cook,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=madmi-mail-cook,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
+    time.sleep(0.250)
+    if len(madmi_mail_cook_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            madmi_mail_cook_del,
+            "CN=madmi-mail-cook,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=madmi-mail-cook,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
-
+    time.sleep(0.250)
+    
 
     #------------------------------madso-mail-cook------------------------------#
-    for i in users:
+    madso_mail_cook_add = [i.entry_dn for i in users
+        if "CN=madso-mail-cook,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "cook".lower() in str(i.title.value).lower() and "South".lower() \
+        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
+        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    madso_mail_cook_del = [i.entry_dn for i in users
         if "CN=madso-mail-cook,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "cook".lower() in str(i.title.value).lower() and "south".lower() \
-        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=madso-mail-cook,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "cook".lower() in str(i.title.value).lower() and "south".lower() \
-        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to madso-mail-cook"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=madso-mail-cook,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=madso-mail-cook,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=madso-mail-cook,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
         and (("cook".lower() not in str(i.title.value).lower() or \
-        "south".lower() in str(i.physicalDeliveryOfficeName.value).lower()) \
-        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from madso-mail-cook"
-            + Color.END
+        "South".lower() not in str(i.physicalDeliveryOfficeName.value).lower()) \
+        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)))]
+    
+    if len(madso_mail_cook_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            madso_mail_cook_add,
+            "CN=madso-mail-cook,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=madso-mail-cook,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
+    time.sleep(0.250)
+    if len(madso_mail_cook_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            madso_mail_cook_del,
+            "CN=madso-mail-cook,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=madso-mail-cook,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
-
+    time.sleep(0.250)
+    
 
     #------------------------------madms-mail-cook------------------------------#
-    for i in users:
+    madms_mail_cook_add = [i.entry_dn for i in users
+        if "CN=madms-mail-cook,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "cook".lower() in str(i.title.value).lower() and "Middle".lower() \
+        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
+        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    madms_mail_cook_del = [i.entry_dn for i in users
         if "CN=madms-mail-cook,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "cook".lower() in str(i.title.value).lower() and "middle".lower() \
-        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=madms-mail-cook,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "cook".lower() in str(i.title.value).lower() and "middle".lower() \
-        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to madms-mail-cook"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=madms-mail-cook,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=madms-mail-cook,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=madms-mail-cook,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
         and (("cook".lower() not in str(i.title.value).lower() or \
-        "middle".lower() in str(i.physicalDeliveryOfficeName.value).lower()) \
-        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from madms-mail-cook"
-            + Color.END
+        "Middle".lower() not in str(i.physicalDeliveryOfficeName.value).lower()) \
+        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)))]
+    
+    if len(madms_mail_cook_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            madms_mail_cook_add,
+            "CN=madms-mail-cook,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=madms-mail-cook,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
+    time.sleep(0.250)
+    if len(madms_mail_cook_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            madms_mail_cook_del,
+            "CN=madms-mail-cook,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=madms-mail-cook,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
-
+    time.sleep(0.250)
+    
 
     #------------------------------madhs-mail-cook------------------------------#
-    for i in users:
+    madhs_mail_cook_add = [i.entry_dn for i in users
+        if "CN=madhs-mail-cook,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "cook".lower() in str(i.title.value).lower() and "High".lower() \
+        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
+        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    madhs_mail_cook_del = [i.entry_dn for i in users
         if "CN=madhs-mail-cook,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "cook".lower() in str(i.title.value).lower() and "high".lower() \
-        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=madhs-mail-cook,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "cook".lower() in str(i.title.value).lower() and "high".lower() \
-        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to madhs-mail-cook"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=madhs-mail-cook,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=madhs-mail-cook,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=madhs-mail-cook,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
         and (("cook".lower() not in str(i.title.value).lower() or \
-        "high".lower() in str(i.physicalDeliveryOfficeName.value).lower()) \
-        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from madhs-mail-cook"
-            + Color.END
+        "High".lower() not in str(i.physicalDeliveryOfficeName.value).lower()) \
+        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)))]
+    
+    if len(madhs_mail_cook_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            madhs_mail_cook_add,
+            "CN=madhs-mail-cook,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=madhs-mail-cook,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
+    time.sleep(0.250)
+    if len(madhs_mail_cook_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            madhs_mail_cook_del,
+            "CN=madhs-mail-cook,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=madhs-mail-cook,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
-
+    time.sleep(0.250)
+    
 
     #------------------------------madms-halo------------------------------#
-    for i in users:
+    madms_halo_add = [i.entry_dn for i in users
+        if "CN=madms-halo,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "halo".lower() in str(i.department.value).lower() and "middle".lower() \
+        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
+        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    madms_halo_del = [i.entry_dn for i in users
         if "CN=madms-halo,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "halo".lower() in str(i.department.value).lower() and "middle".lower() \
-        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=madms-halo,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "halo".lower() in str(i.department.value).lower() and "middle".lower() \
-        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to madms-halo"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=madms-halo,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=madms-halo,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=madms-halo,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
         and (("halo".lower() not in str(i.department.value).lower() or \
-        "middle".lower() in str(i.physicalDeliveryOfficeName.value).lower()) \
-        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from madms-halo"
-            + Color.END
-            )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=madms-halo,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=madms-halo,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+        "middle".lower() not in str(i.physicalDeliveryOfficeName.value).lower()) \
+        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)))]
 
+    if len(madms_halo_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            madms_halo_add,
+            "CN=madms-halo,OU=Groups,OU=Madison,DC=mlsd,DC=local"
+            )
+    time.sleep(0.250)
+    if len(madms_halo_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            madms_halo_del,
+            "CN=madms-halo,OU=Groups,OU=Madison,DC=mlsd,DC=local"
+            )
+    time.sleep(0.250)
+    
 
     #------------------------------madhs-halo------------------------------#
-    for i in users:
+    madhs_halo_add = [i.entry_dn for i in users
+        if "CN=madhs-halo,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "halo".lower() in str(i.department.value).lower() and "high".lower() \
+        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
+        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    madhs_halo_del = [i.entry_dn for i in users
         if "CN=madhs-halo,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "halo".lower() in str(i.department.value).lower() and "high".lower() \
-        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=madhs-halo,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "halo".lower() in str(i.department.value).lower() and "high".lower() \
-        in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to madhs-halo"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=madhs-halo,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=madhs-halo,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=madhs-halo,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
         and (("halo".lower() not in str(i.department.value).lower() or \
-        "high".lower() in str(i.physicalDeliveryOfficeName.value).lower()) \
-        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from madhs-halo"
-            + Color.END
+        "high".lower() not in str(i.physicalDeliveryOfficeName.value).lower()) \
+        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)))]
+
+    if len(madhs_halo_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            madhs_halo_add,
+            "CN=madhs-halo,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=madhs-halo,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
+    time.sleep(0.250)
+    if len(madhs_halo_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            madhs_halo_del,
+            "CN=madhs-halo,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=madhs-halo,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+    time.sleep(0.250)
 
 
     #------------------------------mlea------------------------------#
-    for i in users:
+    mlea_add = [i.entry_dn for i in users
+        if "CN=mlea,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "mlea".lower() in str(i.department.value).lower() and "514" not in \
+        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    mlea_del = [i.entry_dn for i in users
         if "CN=mlea,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "mlea".lower() in str(i.department.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=mlea,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "mlea".lower() in str(i.department.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to mlea"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=mlea,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=mlea,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=mlea,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
         and ("mlea".lower() not in str(i.department.value).lower() \
-        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from mlea"
-            + Color.END
+        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)))]
+    
+    if len(mlea_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            mlea_add,
+            "CN=mlea,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=mlea,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
+    time.sleep(0.250)
+    if len(mlea_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            mlea_del,
+            "CN=mlea,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=mlea,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+    time.sleep(0.250)
 
 
     #------------------------------oapse------------------------------#
-    for i in users:
+    oapse_add = [i.entry_dn for i in users
+        if "CN=oapse,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "oapse".lower() in str(i.department.value).lower() and "514" not in \
+        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    oapse_del = [i.entry_dn for i in users
         if "CN=oapse,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "oapse".lower() in str(i.department.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=oapse,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "oapse".lower() in str(i.department.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to oapse"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=oapse,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=oapse,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=oapse,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
         and ("oapse".lower() not in str(i.department.value).lower() \
-        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from oapse"
-            + Color.END
+        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)))]
+    
+    if len(oapse_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            oapse_add,
+            "CN=oapse,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=oapse,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
+    time.sleep(0.250)
+    if len(oapse_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            oapse_del,
+            "CN=oapse,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=oapse,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+    time.sleep(0.250)
 
 
     #------------------------------slo-trainers------------------------------#
-    for i in users:
+    slo_trainers_add = [i.entry_dn for i in users
+        if "CN=slo-trainers,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "SLO".lower() in str(i.department.value).lower() and "514" not in \
+        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    slo_trainers_del = [i.entry_dn for i in users 
         if "CN=slo-trainers,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "SLO".lower() in str(i.department.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=slo-trainers,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "SLO".lower() in str(i.department.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to slo-trainers"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=slo-trainers,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=slo-trainers,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=slo-trainers,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
         and ("SLO".lower() not in str(i.department.value).lower() \
-        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from slo-trainers"
-            + Color.END
+        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)))]
+
+    if len(slo_trainers_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            slo_trainers_add,
+            "CN=slo-trainers,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=slo-trainers,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
+    time.sleep(0.250)
+    if len(slo_trainers_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            slo_trainers_del,
+            "CN=slo-trainers,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=slo-trainers,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+    time.sleep(0.250)
 
 
     #------------------------------titleixcoordinator------------------------------#
-    for i in users:
+    titleixcoordinator_add = [i.entry_dn for i in users
+        if "CN=titleixcoordinator,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "Title IX".lower() in str(i.department.value).lower() and "514" not in \
+        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    titleixcoordinator_del = [i.entry_dn for i in users
         if "CN=titleixcoordinator,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "Title IX".lower() in str(i.department.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=titleixcoordinator,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "Title IX".lower() in str(i.department.value).lower() and "514" not in \
-        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to titleixcoordinator"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=titleixcoordinator,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=titleixcoordinator,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=titleixcoordinator,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
         and ("Title IX".lower() not in str(i.department.value).lower() \
-        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from titleixcoordinator"
-            + Color.END
+        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)))]
+
+    if len(titleixcoordinator_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            titleixcoordinator_add,
+            "CN=titleixcoordinator,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=titleixcoordinator,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
+    time.sleep(0.250)
+    if len(titleixcoordinator_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            titleixcoordinator_del,
+            "CN=titleixcoordinator,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=titleixcoordinator,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+    time.sleep(0.250)
 
 
     #------------------------------Helpdesk------------------------------#
-    for i in users:
+    helpdesk_add = [i.entry_dn for i in users
+        if "CN=Helpdesk,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "Technology Office".lower() in str(i.physicalDeliveryOfficeName.value).lower() \
+        and "514" not in str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    helpdesk_del = [i.entry_dn for i in users
         if "CN=Helpdesk,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "Technology Office".lower() in str(i.physicalDeliveryOfficeName.value).lower() \
-        and "514" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=Helpdesk,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "Technology Office".lower() in str(i.physicalDeliveryOfficeName.value).lower() \
-        and "514" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to Helpdesk"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=Helpdesk,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=Helpdesk,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=Helpdesk,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
         and ("Technology Office".lower() not in str(i.physicalDeliveryOfficeName.value).lower() \
-        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from Helpdesk"
-            + Color.END
+        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)))]
+
+    if len(helpdesk_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            helpdesk_add,
+            "CN=Helpdesk,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=Helpdesk,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
+    time.sleep(0.250)
+    if len(helpdesk_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            helpdesk_del,
+            "CN=Helpdesk,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=Helpdesk,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+    time.sleep(0.250)
 
 
     #------------------------------mad-mail-emis------------------------------#
-    for i in users:
+    mad_mail_emis_add = [i.entry_dn for i in users
+        if "CN=mad-mail-emis,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "EMIS".lower() in str(i.department.value).lower() \
+        and "514" not in str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    mad_mail_emis_del = [i.entry_dn for i in users
         if "CN=mad-mail-emis,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "EMIS".lower() in str(i.department.value).lower() \
-        and "514" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=mad-mail-emis,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "EMIS".lower() in str(i.department.value).lower() \
-        and "514" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to mad-mail-emis"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=mad-mail-emis,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=mad-mail-emis,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=mad-mail-emis,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
         and ("EMIS".lower() not in str(i.department.value).lower() \
-        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from mad-mail-emis"
-            + Color.END
+        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)))]
+
+    if len(mad_mail_emis_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            mad_mail_emis_add,
+            "CN=mad-mail-emis,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=mad-mail-emis,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
+    time.sleep(0.250)
+    if len(mad_mail_emis_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            mad_mail_emis_del,
+            "CN=mad-mail-emis,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=mad-mail-emis,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+    time.sleep(0.250)
 
 
     #------------------------------mad-mail-ps------------------------------#
-    for i in users:
+    mad_mail_ps_add = [i.entry_dn for i in users
+        if "CN=mad-mail-ps,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "Preschool".lower() in str(i.department.value).lower() \
+        and "514" not in str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    mad_mail_ps_del = [i.entry_dn for i in users
         if "CN=mad-mail-ps,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "Preschool".lower() in str(i.department.value).lower() \
-        and "514" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=mad-mail-ps,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "Preschool".lower() in str(i.department.value).lower() \
-        and "514" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to mad-mail-ps"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=mad-mail-ps,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=mad-mail-ps,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=mad-mail-ps,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
         and ("Preschool".lower() not in str(i.department.value).lower() \
-        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from mad-mail-ps"
-            + Color.END
+        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)))]
+    
+    if len(mad_mail_ps_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            mad_mail_ps_add,
+            "CN=mad-mail-ps,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=mad-mail-ps,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
+    time.sleep(0.250)
+    if len(mad_mail_ps_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            mad_mail_ps_del,
+            "CN=mad-mail-ps,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=mad-mail-ps,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+    time.sleep(0.250)
 
 
     #------------------------------mad-mail-tech------------------------------#
-    for i in users:
+    mad_mail_tech_add = [i.entry_dn for i in users
+        if "CN=mad-mail-tech,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "Technology Office".lower() in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
+        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    mad_mail_tech_del = [i.entry_dn for i in users
         if "CN=mad-mail-tech,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "Technology Office".lower() in str(i.physicalDeliveryOfficeName.value).lower() \
-        and "514" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=mad-mail-tech,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "Technology Office".lower() in str(i.physicalDeliveryOfficeName.value).lower() \
-        and "514" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to mad-mail-tech"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=mad-mail-tech,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=mad-mail-tech,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=mad-mail-tech,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
         and ("Technology Office".lower() not in str(i.physicalDeliveryOfficeName.value).lower() \
-        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from mad-mail-tech"
-            + Color.END
+        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)))]
+
+    if len(mad_mail_tech_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            mad_mail_tech_add,
+            "CN=mad-mail-tech,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=mad-mail-tech,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
+    time.sleep(0.250)
+    if len(mad_mail_tech_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            mad_mail_tech_del,
+            "CN=mad-mail-tech,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=mad-mail-tech,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+    time.sleep(0.250)
 
 
     #------------------------------madbo-mail-user------------------------------#
-    for i in users:
+    madbo_mail_user_add = [i.entry_dn for i in users
+        if "CN=madbo-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and "Administration Office".lower() in str(i.physicalDeliveryOfficeName.value).lower() and "514" not in \
+        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    madbo_mail_user_del = [i.entry_dn for i in users
         if "CN=madbo-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "Administration Office".lower() in str(i.physicalDeliveryOfficeName.value).lower() \
-        and "514" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=madbo-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "Administration Office".lower() in str(i.physicalDeliveryOfficeName.value).lower() \
-        and "514" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to madbo-mail-user"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=madbo-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                "CN=madbo-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
-            )
-        elif "CN=madbo-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
         and ("Administration Office".lower() not in str(i.physicalDeliveryOfficeName.value).lower() \
-        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from madbo-mail-user"
-            + Color.END
+        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)))]
+
+    if len(madbo_mail_user_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            madbo_mail_user_add,
+            "CN=madbo-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=madbo-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
+    time.sleep(0.250)
+    if len(madbo_mail_user_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            madbo_mail_user_del,
+            "CN=madbo-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=madbo-mail-user,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+    time.sleep(0.250)
 
 
     #------------------------------madelem-mail-sped------------------------------#
-    for i in users:
+    madelem_mail_sped_add = [i.entry_dn for i in users
+        if "CN=madelem-mail-sped,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
+        and ("Eastview".lower() in str(i.physicalDeliveryOfficeName.value).lower() or \
+        "Mifflin".lower() in str(i.physicalDeliveryOfficeName.value).lower() or \
+        "South".lower() in str(i.physicalDeliveryOfficeName.value).lower()) \
+        and "Intervention".lower() in str(i.department.value).lower() and "514" not in \
+        str(i.userAccountControl.value) and "546" not in str(i.userAccountControl.value)]
+    madelem_mail_sped_del = [i.entry_dn for i in users
         if "CN=madelem-mail-sped,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and "Inervention".lower() in str(i.department.value).lower() \
-        and "514" not in str(i.userAccountControl.value):
-            continue
-        elif "CN=madelem-mail-sped,OU=Groups,OU=Madison,DC=mlsd,DC=local" not in str(i.memberOf.value) \
-        and "Inervention".lower() in str(i.department.value).lower() \
-        and "514" not in str(i.userAccountControl.value):
-            print(
-            Color.CYAN
-            + "Adding "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.CYAN
-            + " to madelem-mail-sped"
-            + Color.END
-            )   
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_ADD, ["CN=madelem-mail-sped,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
+        and (("Eastview".lower() not in str(i.physicalDeliveryOfficeName.value).lower() or \
+        "Mifflin".lower() not in str(i.physicalDeliveryOfficeName.value).lower() or \
+        "South".lower() not in str(i.physicalDeliveryOfficeName.value).lower()) or \
+        "Intervention".lower() not in str(i.department.value).lower() \
+        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value)))]
+
+    if len(madelem_mail_sped_add) > 0:
+        c.extend.microsoft.add_members_to_groups(
+            madelem_mail_sped_add,
+            "CN=madelem-mail-sped,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-            time.sleep(0.5)
-            c.modify(
-                "CN=madelem-mail-sped,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                {
-                   "member": [(MODIFY_ADD, [str(i.entry_dn)])],
-                },
+    time.sleep(0.250)
+    if len(madelem_mail_sped_del) > 0:
+        c.extend.microsoft.remove_members_from_groups(
+            madelem_mail_sped_del,
+            "CN=madelem-mail-sped,OU=Groups,OU=Madison,DC=mlsd,DC=local"
             )
-        elif "CN=madelem-mail-sped,OU=Groups,OU=Madison,DC=mlsd,DC=local" in str(i.memberOf.value) \
-        and ("Inervention".lower() not in str(i.department.value).lower() \
-        or ("514" in str(i.userAccountControl.value) or "546" in str(i.userAccountControl.value))):
-            print(
-            Color.YELLOW
-            + "Removing "
-            + Color.BOLD
-            + str(i.cn.value)
-            + Color.END
-            + Color.YELLOW
-            + " from madelem-mail-sped"
-            + Color.END
-            )
-            c.modify(
-            str(i.entry_dn),
-            {
-                "memberOf": [
-                    (MODIFY_DELETE, ["CN=madelem-mail-sped,OU=Groups,OU=Madison,DC=mlsd,DC=local"])
-                ],
-            },
-            )
-            time.sleep(0.5)
-            c.modify(
-                    "CN=madelem-mail-sped,OU=Groups,OU=Madison,DC=mlsd,DC=local",
-                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]},
-                )
+    time.sleep(0.250)
+
 
     c.unbind()
 

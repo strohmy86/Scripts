@@ -100,7 +100,7 @@ def main():
     dis_groups = []
     [dis_groups.append(i) for i in dis_group_dn if i not in dis_groups]
     dis_user_dn = [i.entry_dn for i in dis]
-    print(dis_groups)
+    # print(dis_groups)
     with open("withdrawn.txt", "w", encoding="utf-8") as file:
         for i in dis:
             print(

@@ -2,7 +2,7 @@
 
 # MIT License
 
-# Copyright (c) 2020 Luke Strohm
+# Copyright (c) 2023 Luke Strohm
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the 'Software'), to deal
@@ -31,6 +31,8 @@ from email.mime.text import MIMEText
 
 from ldap3 import ALL, Connection, Server, Tls
 
+
+# Constant Variables
 frAddr = "helpdesk@mlsd.net"
 server = smtplib.SMTP(host="relay.mlsd.net", port=25)
 today = str(datetime.datetime.today())[:-16]
@@ -62,7 +64,8 @@ c.search(
     "ou=Madison,dc=mlsd,dc=local",
     "(&(objectClass=person)"
     + "(|(mail=*@mlsd.net)(mail=*@madisonadultcc.org))"
-    + "(!(userAccountControl=514))(!(userAccountcontrol=546)))",
+    + "(!(userAccountControl=514))(!(userAccountcontrol=546))"
+    + "(!(pwdLastSet=0)))",
     attributes=[
         "givenName",
         "mail",
@@ -74,6 +77,7 @@ c.search(
 users = c.entries
 c.unbind()
 report = []
+
 for x in users:
     setstr = str(x.pwdLastSet.value)[:-22]
     setdate = datetime.datetime.strptime(setstr, "%Y-%m-%d")
@@ -117,10 +121,6 @@ https://helpdesk.mlsd.net/index.php/2018/02/06/change-password/
 
 Thank you,
 The Madison Tech Office staff
-
-
-Raise Expectations, Increase Achievement, Prepare for Tomorrow... """
-            + """Make it Happen!
 """
         )
         html = (
@@ -143,8 +143,6 @@ Raise Expectations, Increase Achievement, Prepare for Tomorrow... """
         <p>Thank you,</p>
         <p>The Madison Tech Office staff</p>
 
-        <p><em><small>Raise Expectations, Increase Achievement, Prepare """
-            + """for Tomorrow... Make it Happen!</small></em></p>
 
         <p><small>Please do not reply to this message.</small></p>
     </body>
@@ -178,10 +176,6 @@ https://helpdesk.mlsd.net/index.php/2018/02/06/change-password/
 
 Thank you,
 The Madison Tech Office staff
-
-
-Raise Expectations, Increase Achievement, Prepare for Tomorrow... Make """
-            + """it Happen!
 """
         )
         html = (
@@ -205,14 +199,15 @@ Raise Expectations, Increase Achievement, Prepare for Tomorrow... Make """
         <p>Thank you,</p>
         <p>The Madison Tech Office staff</p>
 
-        <p><em><small>Raise Expectations, Increase Achievement, Prepare """
-            + """for Tomorrow... Make it Happen!</em></small></p>
-
         <p><small>Please do not reply to this message.</small></p>
     </body>
 </html>
 """
         )
+
+    else:
+        continue
+
     part1 = MIMEText(text, "plain")
     part2 = MIMEText(html, "html")
     msg.attach(part1)
@@ -231,7 +226,7 @@ Raise Expectations, Increase Achievement, Prepare for Tomorrow... Make """
     )
     report.append(data)
 
-to_addr = ["lstrohm@mlsd.net", "sbarr@mlsd.net"]
+to_addr = ["lstrohm@mlsd.net", "cmcvicker@mlsd.net"]
 msg2 = MIMEMultipart("alternative")
 msg2["From"] = frAddr
 msg2["Subject"] = "Password Expiration Report For " + today4
