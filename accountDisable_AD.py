@@ -106,6 +106,8 @@ def single(c, usr, disabled_ou, now, gcds):
                 "cn",
                 "description",
                 "memberOf",
+                "physicalDeliveryOfficeName",
+                "company",
             ],
         )
         users = c.entries
@@ -217,15 +219,18 @@ def single(c, usr, disabled_ou, now, gcds):
             },
         )
         time.sleep(0.500)
-        if "@madisonrams.net" in str(user.mail.value):
+        if "@madisonrams.net" in str(user.mail.value) and "Adult" in str(user.physicalDeliveryOfficeName.value):
+            disabled_ou = "ou=AdultEd,ou=Disabled,ou=Student,ou=Madison,dc=mlsd,dc=local"
+        elif "staff" in str(user.company.value):
+            disabled_ou = "ou=Staff" + disabled_ou
+        else:
             disabled_ou = (
                 "ou="
                 + str(datetime.date.today().year)
                 + ",ou=Disabled,"
                 + "ou=Student,ou=Madison,dc=mlsd,dc=local"
             )
-        else:
-            disabled_ou = "ou=Staff" + disabled_ou
+        
 
         c.modify_dn(
             str(user.entry_dn),
@@ -276,6 +281,7 @@ def batch(c, file, disabled_ou, now, gcds):
                         "cn",
                         "description",
                         "memberOf",
+                        "physicalDeliveryOfficeName",
                     ],
                 )
                 user = c.entries
@@ -351,15 +357,17 @@ def batch(c, file, disabled_ou, now, gcds):
                     },
                 )
                 time.sleep(0.500)
-                if "@madisonrams.net" in str(user.mail.value):
+                if "@madisonrams.net" in str(user.mail.value) and "Adult" in str(user.physicalDeliveryOfficeName.value):
+                    disabled_ou = "ou=AdultEd,ou=Disabled,ou=Student,ou=Madison,dc=mlsd,dc=local"
+                elif "staff" in str(user.company.value):
+                    disabled_ou = "ou=Staff" + disabled_ou
+                else:
                     disabled_ou = (
                     "ou="
                     + str(datetime.date.today().year)
                     + ",ou=Disabled,"
                     + "ou=Student,ou=Madison,dc=mlsd,dc=local"
                 )
-                else:
-                    dis_ou = "ou=Staff" + disabled_ou
 
                 c.modify_dn(
                     str(user.entry_dn),

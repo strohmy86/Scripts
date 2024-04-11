@@ -67,7 +67,7 @@ def cred():
 def download(building, all_stu):
     if all_stu is True:
         building = "AllStudents"
-    basedir = "/home/lstrohm/Audit-Files/"
+    basedir = "/data/Audit-Files/"
     file = "/home/lstrohm/" + building + "-Filelist.csv"
     with open(file[:-4] + "-Modded.csv", mode="w", newline="") as fa:
         writer = csv.writer(fa)
@@ -91,7 +91,7 @@ def download(building, all_stu):
         ) in reader:
             bldg = ""
             if all_stu is True:
-                basedir = "/home/lstrohm/Audit-Files/"
+                basedir = "/data/Audit-Files/"
                 cmd2 = (
                     "/home/lstrohm/bin/gamadv-xtd3/gam user "
                     + email
@@ -101,7 +101,7 @@ def download(building, all_stu):
                 bldg = os.popen(cmd2).read()
                 basedir = basedir + bldg + "/"
             if all_stu is False:
-                basedir = "/home/lstrohm/Audit-Files/" + building + "/"
+                basedir = "/data/Audit-Files/" + building + "/"
             data = [email, ids, str(basedir + email)]
             writer.writerow(data)
             if size in (None, ""):
@@ -164,20 +164,16 @@ def makeCsv(building, all_stu):
     first = str(first2 + "T00:00:00")  # Format that Google recognizes
     last = str(last2 + "T23:59:59")  # Format that Google recognizes
     query = (
-        'query "not mimeType contains *vnd.google* and mimeType!='
-        + "*text/plain* and not mimeType contains *officedocument* "
-        + "and not name contains *Getting Started* and trashed!=True "
-        + "and not name contains *.hex* and not mimeType contains "
-        + "*application/ms* and not mimeType contains *application/vnd.ms*"
-        + " and mimeType!=*application/pdf* and mimeType!=*text/rtf* and "
-        + "mimeType!=*text/csv* and (modifiedTime > *"
+        'query "(mimeType contains *image* or mimeType contains *video* or '
+        + 'mimeType contains *zip* or mimeType contains *gz*) and '
+        + '(modifiedTime > *'
         + first
-        + "* or createdTime > *"
+        + '* or createdTime > *'
         + first
-        + "*) and "
-        + "(modifiedTime < *"
+        + '*) and '
+        + '(modifiedTime < *'
         + last
-        + "* or createdTime < *"
+        + '* or createdTime < *'
         + last
         + '*)"'
     )
