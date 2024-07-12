@@ -71,28 +71,30 @@ def cred():
 
 
 def main():
-    f = open("/home/lstrohm/Scripts/ADcreds.txt", "r")
-    lines = f.readlines()
-    username = lines[0]
-    password = lines[1]
-    f.close()
+    with open("/home/lstrohm/Scripts/ADcreds.txt", "r") as f:
+        lines = f.readlines()
+        username = lines[0]
+        password = lines[1]
     today = str(datetime.datetime.now())
     today2 = datetime.datetime.strptime(today, "%Y-%m-%d %H:%M:%S.%f")
     now = today2.strftime("%m-%d-%Y at %H:%M")
-    disabled_ou = "ou="+str(datetime.date.today().year)+",ou=Disabled,ou=Student,ou=Madison,DC=mlsd,DC=local"
+    disabled_ou = (
+        "ou="
+        + str(datetime.date.today().year)
+        + ",ou=Disabled,ou=Student,ou=Madison,DC=mlsd,DC=local"
+    )
     tls = Tls(
         local_private_key_file=None,
         local_certificate_file=None,
     )
     s = Server("madhs01dc3.mlsd.local", use_ssl=True, get_info=ALL, tls=tls)
-    c = Connection(s, user=username.strip(),
-                   password=password.strip())
+    c = Connection(s, user=username.strip(), password=password.strip())
     c.bind()
     c.search(
         "ou=Active,ou=Student,ou=Madison,DC=mlsd,DC=local",
         "(&(objectclass=person)"
         + "(!(userAccountControl=512))(!(userAccountControl=544))"
-        + "(mail=*@madisonrams.net))",
+        + "(company=student))",
         attributes=["cn", "memberOf"],
     )
     dis = c.entries
@@ -120,9 +122,7 @@ def main():
                 str(i.entry_dn),
                 {
                     "userAccountControl": [(MODIFY_REPLACE, ["514"])],
-                    "description": [
-                        (MODIFY_REPLACE, ["Disabled - " + str(now)])
-                    ],
+                    "description": [(MODIFY_REPLACE, ["Disabled - " + str(now)])],
                 },
             )
             time.sleep(0.5)
@@ -132,15 +132,12 @@ def main():
                 new_superior=disabled_ou,
             )
             cmd = (
-                "/home/lstrohm/bin/gamadv-xtd3/gam user "
-                + str(i.cn.value)
-                + " deprov"
+                "/home/lstrohm/bin/gamadv-xtd3/gam user " + str(i.cn.value) + " deprov"
             )
             os.system(cmd)
     file.close()
     for i in dis_groups:
         c.extend.microsoft.remove_members_from_groups([dis_user_dn], i)
-
 
     c.unbind()
 

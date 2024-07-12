@@ -33,6 +33,8 @@ from ldap3 import ALL, MODIFY_DELETE, MODIFY_REPLACE, Connection, Server, Tls
 
 
 class Color:
+    """Class for text colors"""
+
     PURPLE = "\033[95m"
     CYAN = "\033[96m"
     DARKCYAN = "\033[36m"
@@ -46,6 +48,7 @@ class Color:
 
 
 def cred():
+    """Simply print credits of the script"""
     print(
         Color.DARKCYAN
         + "\n"
@@ -65,18 +68,16 @@ def cred():
 
 
 # Connects  and binds to LDAP server
-f = open("/home/lstrohm/Scripts/ADcreds.txt", "r")
-lines = f.readlines()
-username = lines[0]
-password = lines[1]
-f.close()
+with open("/home/lstrohm/Scripts/ADcreds.txt", "r", encoding="utf-8") as creds:
+    lines = creds.readlines()
+    username = lines[0]
+    password = lines[1]
 tls = Tls(
-        local_private_key_file=None,
-        local_certificate_file=None,
-    )
+    local_private_key_file=None,
+    local_certificate_file=None,
+)
 s = Server("madhs01dc3.mlsd.local", use_ssl=True, get_info=ALL, tls=tls)
-c = Connection(s, user=username.strip(),
-               password=password.strip())
+c = Connection(s, user=username.strip(), password=password.strip())
 c.bind()
 # Global Variables
 disabled_ou = ",ou=Disabled,ou=Madison,dc=mlsd,dc=local"
@@ -92,7 +93,7 @@ gcds.connect("madhs01gcds.mlsd.local", username="mlsd\\administrator", pkey=k)
 
 
 def single(c, usr, disabled_ou, now, gcds):
-    # Search for user. Lists all usernames matching string provided.
+    """Searches AD and return results to choose for account disable."""
     try:
         c.search(
             "ou=Madison,dc=mlsd,dc=local",
@@ -114,20 +115,15 @@ def single(c, usr, disabled_ou, now, gcds):
         if len(users) <= 0:
             raise IndexError
         ent = 0  # Start of result list
-        print(
-            Color.BOLD
-            + Color.CYAN
-            + "I found the following user(s):\n"
-            + Color.END
-        )
+        print(Color.BOLD + Color.CYAN + "I found the following user(s):\n" + Color.END)
         for i in users:
-            if "514" in str(
+            if "514" in str(users[ent].userAccountControl.value) or "546" in str(
                 users[ent].userAccountControl.value
-            ) or "546" in str(users[ent].userAccountControl.value):
+            ):
                 status = "Disabled"
-            elif "512" in str(
+            elif "512" in str(users[ent].userAccountControl.value) or "544" in str(
                 users[ent].userAccountControl.value
-            ) or "544" in str(users[ent].userAccountControl.value):
+            ):
                 status = "Active"
             else:
                 status = "Unknown"
@@ -219,8 +215,12 @@ def single(c, usr, disabled_ou, now, gcds):
             },
         )
         time.sleep(0.500)
-        if "@madisonrams.net" in str(user.mail.value) and "Adult" in str(user.physicalDeliveryOfficeName.value):
-            disabled_ou = "ou=AdultEd,ou=Disabled,ou=Student,ou=Madison,dc=mlsd,dc=local"
+        if "@madisonrams.net" in str(user.mail.value) and "Adult" in str(
+            user.physicalDeliveryOfficeName.value
+        ):
+            disabled_ou = (
+                "ou=AdultEd,ou=Disabled,ou=Student,ou=Madison,dc=mlsd,dc=local"
+            )
         elif "staff" in str(user.company.value):
             disabled_ou = "ou=Staff" + disabled_ou
         else:
@@ -230,31 +230,22 @@ def single(c, usr, disabled_ou, now, gcds):
                 + ",ou=Disabled,"
                 + "ou=Student,ou=Madison,dc=mlsd,dc=local"
             )
-        
 
         c.modify_dn(
             str(user.entry_dn),
             "cn=" + str(user.cn.value),
             new_superior=disabled_ou,
         )
-        cmd = (
-            "/home/lstrohm/bin/gamadv-xtd3/gam user "
-            + str(user.cn.value)
-            + " deprov"
-        )
+        cmd = "/home/lstrohm/bin/gamadv-xtd3/gam user " + str(user.cn.value) + " deprov"
         os.system(cmd)
-        print(
-            Color.CYAN
-            + Color.BOLD
-            + "Running GCDS. Please wait....."
-            + Color.END
-        )
+        print(Color.CYAN + Color.BOLD + "Running GCDS. Please wait....." + Color.END)
         # Connects to madhs01gcds server via SSH and runs a Google Sync
-        stdin, stdout, stderr = gcds.exec_command("C:\Tools\gcds.cmd")
+        stdin, stdout, stderr = gcds.exec_command("C:\\Tools\\gcds.cmd")
         for line in stdout:
             print(Color.YELLOW + line.strip("\n") + Color.END)
 
         print(Color.GREEN + "\nDone!\n" + Color.END)
+
     except IndexError:  # Error received if empty search result
         print(Color.RED + "No username found! Try again.\n" + Color.END)
     except KeyboardInterrupt:  # User exited script with CTRL + C
@@ -263,8 +254,9 @@ def single(c, usr, disabled_ou, now, gcds):
 
 
 def batch(c, file, disabled_ou, now, gcds):
+    """Runs script in batch mode using a file with CNs"""
     try:
-        with open(file, "r") as f:
+        with open(file, "r", encoding="utf-8") as f:
             for i in f:
                 dis_ou = disabled_ou
                 i = str(i)[0:-1]
@@ -282,6 +274,7 @@ def batch(c, file, disabled_ou, now, gcds):
                         "description",
                         "memberOf",
                         "physicalDeliveryOfficeName",
+                        "company",
                     ],
                 )
                 user = c.entries
@@ -317,9 +310,7 @@ def batch(c, file, disabled_ou, now, gcds):
                         c.modify(
                             str(i),
                             {
-                                "member": [
-                                    (MODIFY_DELETE, [str(user.entry_dn)])
-                                ],
+                                "member": [(MODIFY_DELETE, [str(user.entry_dn)])],
                             },
                         )
                         time.sleep(0.300)
@@ -351,23 +342,25 @@ def batch(c, file, disabled_ou, now, gcds):
                 c.modify(
                     str(user.entry_dn),
                     {
-                        "description": [
-                            (MODIFY_REPLACE, ["Disabled - " + str(now)])
-                        ],
+                        "description": [(MODIFY_REPLACE, ["Disabled - " + str(now)])],
                     },
                 )
                 time.sleep(0.500)
-                if "@madisonrams.net" in str(user.mail.value) and "Adult" in str(user.physicalDeliveryOfficeName.value):
-                    disabled_ou = "ou=AdultEd,ou=Disabled,ou=Student,ou=Madison,dc=mlsd,dc=local"
+                if "@madisonrams.net" in str(user.mail.value) and "Adult" in str(
+                    user.physicalDeliveryOfficeName.value
+                ):
+                    disabled_ou = (
+                        "ou=AdultEd,ou=Disabled,ou=Student,ou=Madison,dc=mlsd,dc=local"
+                    )
                 elif "staff" in str(user.company.value):
                     disabled_ou = "ou=Staff" + disabled_ou
                 else:
                     disabled_ou = (
-                    "ou="
-                    + str(datetime.date.today().year)
-                    + ",ou=Disabled,"
-                    + "ou=Student,ou=Madison,dc=mlsd,dc=local"
-                )
+                        "ou="
+                        + str(datetime.date.today().year)
+                        + ",ou=Disabled,"
+                        + "ou=Student,ou=Madison,dc=mlsd,dc=local"
+                    )
 
                 c.modify_dn(
                     str(user.entry_dn),
@@ -382,14 +375,9 @@ def batch(c, file, disabled_ou, now, gcds):
                     + " deprov"
                 )
                 os.system(cmd)
-        print(
-            Color.CYAN
-            + Color.BOLD
-            + "Running GCDS. Please wait....."
-            + Color.END
-        )
+        print(Color.CYAN + Color.BOLD + "Running GCDS. Please wait....." + Color.END)
         # Connects to madhs01gcds server via SSH and runs a Google Sync
-        stdin, stdout, stderr = gcds.exec_command("C:\Tools\gcds.cmd")
+        stdin, stdout, stderr = gcds.exec_command("C:\\Tools\\gcds.cmd")
         for line in stdout:
             print(Color.YELLOW + line.strip("\n") + Color.END)
 
@@ -405,9 +393,7 @@ def batch(c, file, disabled_ou, now, gcds):
 
 
 # Sets up parser and adds arguement
-parser = argparse.ArgumentParser(
-    description="Script to disable user accounts."
-)
+parser = argparse.ArgumentParser(description="Script to disable user accounts.")
 parser.add_argument(
     "usr",
     metavar="Username",
