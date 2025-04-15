@@ -49,7 +49,13 @@ read ans
 
 if [[ ($ans == y) || ($ans == Y) || ($ans == "") ]]; then
     echo "Erasing partition table for $yep."
-    parted -a optimal -s $yep mklabel msdos
+    parted -s -a optimal $yep \
+      mklabel gpt \
+      mkpart primary 0% 100%
+
+    echo "Done!\n"
+    echo "Making ext4 partition"
+    mkfs.ext4 $yep"1"
     echo "Done!"
     exit 0
 else

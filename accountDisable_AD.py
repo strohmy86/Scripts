@@ -238,6 +238,9 @@ def single(c, usr, disabled_ou, now, gcds):
         )
         cmd = "/home/lstrohm/bin/gamadv-xtd3/gam user " + str(user.cn.value) + " deprov"
         os.system(cmd)
+        cmd2 = "/home/lstrohm/bin/gamadv-xtd3/gam create transfer "\
+            + str(user.cn.value) + " drive vault"
+        os.system(cmd2)
         print(Color.CYAN + Color.BOLD + "Running GCDS. Please wait....." + Color.END)
         # Connects to madhs01gcds server via SSH and runs a Google Sync
         stdin, stdout, stderr = gcds.exec_command("C:\\Tools\\gcds.cmd")
@@ -375,6 +378,12 @@ def batch(c, file, disabled_ou, now, gcds):
                     + " deprov"
                 )
                 os.system(cmd)
+                cmd2 = (
+                    "/home/lstrohm/bin/gamadv-xtd3/gam create transfer "
+                    + str(user.cn.value)
+                    + " drive vault"
+                )
+                os.system(cmd2)
         print(Color.CYAN + Color.BOLD + "Running GCDS. Please wait....." + Color.END)
         # Connects to madhs01gcds server via SSH and runs a Google Sync
         stdin, stdout, stderr = gcds.exec_command("C:\\Tools\\gcds.cmd")
