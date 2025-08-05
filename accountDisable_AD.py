@@ -215,7 +215,7 @@ def single(c, usr, disabled_ou, now, gcds):
             },
         )
         time.sleep(0.500)
-        if "@madisonrams.net" in str(user.mail.value) and "Adult" in str(
+        if "student" in str(user.company.value) and "Adult" in str(
             user.physicalDeliveryOfficeName.value
         ):
             disabled_ou = (
@@ -261,7 +261,6 @@ def batch(c, file, disabled_ou, now, gcds):
     try:
         with open(file, "r", encoding="utf-8") as f:
             for i in f:
-                dis_ou = disabled_ou
                 i = str(i)[0:-1]
                 # i = i[2:-2]
                 c.search(
@@ -349,7 +348,7 @@ def batch(c, file, disabled_ou, now, gcds):
                     },
                 )
                 time.sleep(0.500)
-                if "@madisonrams.net" in str(user.mail.value) and "Adult" in str(
+                if "student" in str(user.company.value) and "Adult" in str(
                     user.physicalDeliveryOfficeName.value
                 ):
                     disabled_ou = (
@@ -368,7 +367,7 @@ def batch(c, file, disabled_ou, now, gcds):
                 c.modify_dn(
                     str(user.entry_dn),
                     "cn=" + str(user.cn.value),
-                    new_superior=dis_ou,
+                    new_superior=disabled_ou,
                 )
                 print(c.result)
                 time.sleep(0.500)
