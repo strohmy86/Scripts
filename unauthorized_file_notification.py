@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+'''Script to warn students of non-compliant files on their Google Drive'''
 
 # MIT License
 
@@ -32,6 +33,7 @@ from email.mime.text import MIMEText
 
 
 class Color:
+    '''Colors'''
     PURPLE = "\033[95m"
     CYAN = "\033[96m"
     DARKCYAN = "\033[36m"
@@ -45,6 +47,7 @@ class Color:
 
 
 def cred():
+    '''Credentials'''
     print(
         Color.DARKCYAN
         + "\n"
@@ -66,43 +69,33 @@ def cred():
 
 
 def main():
+    '''Main function'''
     parser = argparse.ArgumentParser(
         description="This is a python script\
-                                 send emails to students that have\
-                                 unauthorized files on their Google Drive."
+                     to send emails to students that have\
+                     unauthorized files on their Google Drive."
     )
     parser.add_argument(
         "file",
         metavar="File",
         default="",
         type=str,
-        help="CSV file containing unauthorized\
-                        file info.",
+        help="CSV file containing unauthorized file info.",
     )
     args = parser.parse_args()
     now = datetime.datetime.now()
     date = now.strftime("%Y-%m-%d")
-    frAddr = "noreply@madisonrams.net"
+    from_addr = "noreply@madisonrams.net"
     server = smtplib.SMTP(host="relay.mlsd.net", port=25)
     file = args.file
     building = file[14:-13]
-    with open(file, mode="r") as fh:
+    with open(file, mode="r", encoding="UTF-8") as fh:
         reader = csv.reader(fh)
         next(reader)  # Skip header row
-        for (
-            email,
-            ids,
-            title,
-            created,
-            mime,
-            modified,
-            owners,
-            name,
-            size,
-        ) in reader:
-            print(f"Sending email to " + Color.GREEN + f"{name}" + Color.END)
+        for (email, ids, title, created, mime, modified, owners, name, size,) in reader:
+            print("Sending email to " + Color.GREEN + f"{name}" + Color.END)
             msg = MIMEMultipart("alternative")
-            msg["From"] = frAddr
+            msg["From"] = from_addr
             msg["Subject"] = "Unauthorized File Found on Your Google Drive"
             msg["To"] = email
             text = """Hi {name},
@@ -151,19 +144,13 @@ The Madison Technology Office"""
             msg.attach(part2)
             message = msg.as_string()
             server.sendmail(
-                frAddr,
+                from_addr,
                 email,
                 message.format(name=name, title=title),
             )
         with open(
-            "/home/lstrohm/"
-            + building
-            + "-Unauthorized-Files-"
-            + date
-            + ".csv",
-            mode="w",
-            newline="",
-        ) as fa:
+            "/home/lstrohm/" + building + "-Unauthorized-Files-" + date + ".csv",
+            mode="w", newline="", encoding="UTF-8") as fa:
             writer = csv.writer(fa)
             headers = [
                 "Name",
@@ -173,20 +160,10 @@ The Madison Technology Office"""
                 "Modified Date",
             ]
             writer.writerow(headers)
-            fs = open(file, mode="r")
+            fs = open(file, mode="r", encoding="UTF-8")
             reader2 = csv.reader(fs)
             next(reader2)  # Skip header row
-            for (
-                email,
-                ids,
-                title,
-                created,
-                mime,
-                modified,
-                owners,
-                name,
-                size,
-            ) in reader2:
+            for (email, ids, title, created, mime, modified, owners, name, size) in reader2:
                 data = [name, email, title, created, modified]
                 writer.writerow(data)
             fs.close()
