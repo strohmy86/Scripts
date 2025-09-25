@@ -29,8 +29,6 @@ import time
 
 from ldap3 import (
     ALL,
-    MODIFY_ADD,
-    MODIFY_DELETE,
     MODIFY_REPLACE,
     Connection,
     Server,
@@ -39,6 +37,7 @@ from ldap3 import (
 
 
 class Color:
+    '''Colors'''
     PURPLE = "\033[95m"
     CYAN = "\033[96m"
     DARKCYAN = "\033[36m"
@@ -52,6 +51,7 @@ class Color:
 
 
 def cred():
+    '''Credentials'''
     print(
         Color.DARKCYAN
         + "\n"
@@ -71,7 +71,8 @@ def cred():
 
 
 def main():
-    with open("/home/lstrohm/Scripts/ADcreds.txt", "r") as f:
+    '''Main Function'''
+    with open("/home/lstrohm/Scripts/ADcreds.txt", mode="r", encoding="utf-8") as f:
         lines = f.readlines()
         username = lines[0]
         password = lines[1]
@@ -103,7 +104,7 @@ def main():
     [dis_groups.append(i) for i in dis_group_dn if i not in dis_groups]
     dis_user_dn = [i.entry_dn for i in dis]
     # print(dis_groups)
-    with open("withdrawn.txt", "w", encoding="utf-8") as file:
+    with open("withdrawn.txt", mode="w", encoding="utf-8") as file:
         for i in dis:
             print(
                 Color.YELLOW

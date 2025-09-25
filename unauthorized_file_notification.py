@@ -89,7 +89,7 @@ def main():
     server = smtplib.SMTP(host="relay.mlsd.net", port=25)
     file = args.file
     building = file[14:-13]
-    with open(file, mode="r", encoding="UTF-8") as fh:
+    with open(file, mode="r", encoding="utf-8") as fh:
         reader = csv.reader(fh)
         next(reader)  # Skip header row
         for (email, ids, title, created, mime, modified, owners, name, size,) in reader:
@@ -150,7 +150,7 @@ The Madison Technology Office"""
             )
         with open(
             "/home/lstrohm/" + building + "-Unauthorized-Files-" + date + ".csv",
-            mode="w", newline="", encoding="UTF-8") as fa:
+            mode="w", newline="", encoding="utf-8") as fa:
             writer = csv.writer(fa)
             headers = [
                 "Name",
@@ -160,7 +160,7 @@ The Madison Technology Office"""
                 "Modified Date",
             ]
             writer.writerow(headers)
-            fs = open(file, mode="r", encoding="UTF-8")
+            fs = open(file, mode="r", encoding="utf-8")
             reader2 = csv.reader(fs)
             next(reader2)  # Skip header row
             for (email, ids, title, created, mime, modified, owners, name, size) in reader2:

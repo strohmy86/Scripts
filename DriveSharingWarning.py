@@ -67,8 +67,8 @@ def cred():
 def main():
     parser = argparse.ArgumentParser(
         description="This is a python script to\
-                                     send emails to users that have a file\
-                                     shared with anyone."
+                     send emails to users that have a file\
+                     shared with anyone."
     )
     parser.add_argument(
         "file",
@@ -93,8 +93,7 @@ def main():
             elif permissionid == "id:anyoneWithLink":
                 permission = "anyone with the link"
                 explanation = (
-                    "everyone in the world with the link has "
-                    + "access to the file"
+                    "everyone in the world with the link has access to the file"
                 )
             else:
                 permission = None
@@ -103,7 +102,7 @@ def main():
                 edit = ", and can edit said file"
             else:
                 edit = ""
-            print(f"Sending email to " + Color.GREEN + f"{email}" + Color.END)
+            print("Sending email to " + Color.GREEN + f"{email}" + Color.END)
             msg = MIMEMultipart("alternative")
             msg["From"] = frAddr
             msg[
@@ -180,11 +179,12 @@ The Madison Technology Office"""
         "/home/lstrohm/DriveSharingAudit-" + date + ".csv",
         mode="w",
         newline="",
+        encoding="utf-8"
     ) as fa:
         writer = csv.writer(fa)
         headers = ["Email", "File", "Permission", "Role", "Discoverable"]
         writer.writerow(headers)
-        fs = open(file, mode="r")
+        fs = open(file, mode="r", encoding="utf-8")
         reader2 = csv.reader(fs)
         next(reader2)  # Skip header row
         for email, ids, title, permissionid, role, discoverable in reader2:

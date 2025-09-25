@@ -11,7 +11,6 @@ shittyfiles = [
     "~/.macromedia",  # Flash crap
     "~/.recently-used",
     "~/.local/share/recently-used.xbel",
-    "~/Desktop",  # Firefox creates this
     "~/.thumbnails",
     "~/.gconfd",
     "~/.gconf",
@@ -33,7 +32,7 @@ shittyfiles = [
     "~/.bazaar/",  # bzr insists on creating files holding default values
     "~/.bzr.log",
     "~/.nv/",
-    "~/.viminfo",  # configured to be moved to ~/.cache/vim/viminfo, but it is still sometimes created...
+    "~/.viminfo",  # should be moved to ~/.cache/vim/viminfo, but it is still sometimes created...
     "~/.npm/",  # npm cache
     "~/.java/",
     "~/.swt/",
@@ -67,7 +66,7 @@ def yesno(question, default="n"):
     """Asks the user for YES or NO, always case insensitive.
     Returns True for YES and False for NO.
     """
-    prompt = "%s (y/[n]) " % question
+    prompt = f"{question} (y/[n]) "
 
     ans = input(prompt).strip().lower()
 
@@ -82,22 +81,22 @@ def yesno(question, default="n"):
 def rmshit():
     print("Found shittyfiles:")
     found = []
-    for f in shittyfiles:
-        absf = os.path.expanduser(f)
+    for file in shittyfiles:
+        absf = os.path.expanduser(file)
         if os.path.exists(absf):
             found.append(absf)
-            print("    %s" % f)
+            print(f"    {file}")
 
     if len(found) == 0:
         print("No shitty files found :)")
         return
 
     if yesno("Remove all?", default="n"):
-        for f in found:
-            if os.path.isfile(f):
-                os.remove(f)
+        for file in found:
+            if os.path.isfile(file):
+                os.remove(file)
             else:
-                shutil.rmtree(f)
+                shutil.rmtree(file)
         print("All cleaned")
     else:
         print("No file removed")
