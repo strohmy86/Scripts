@@ -23,7 +23,7 @@
 # SOFTWARE.
 
 
-import argparse
+from argparse import ArgumentParser
 import datetime
 import os
 import time
@@ -400,41 +400,47 @@ def batch(c, file, disabled_ou, now, gcds):
         )
 
 
-# Sets up parser and adds arguement
-parser = argparse.ArgumentParser(description="Script to disable user accounts.")
-parser.add_argument(
-    "usr",
-    metavar="Username",
-    default="",
-    type=str,
-    help="Username or last name of user to disable.",
-    nargs="?",
-)
-parser.add_argument(
-    "-b",
-    "--batch",
-    metavar="Filename",
-    default="",
-    type=str,
-    help="Batch mode with a text file. File must contain full cn\
-        (one per line). EX: cn=some_user",
-)
-args = parser.parse_args()
-usr = args.usr
-file = args.batch
+# Sets up parser and adds arguements
+def main():
+    '''Main function'''
+    parser = ArgumentParser(description="Script to disable user accounts.")
+    parser.add_argument(
+        "usr",
+        metavar="Username",
+        default="",
+        type=str,
+        help="Username or last name of user to disable.",
+        nargs="?",
+    )
+    parser.add_argument(
+        "-b",
+        "--batch",
+        metavar="Filename",
+        default="",
+        type=str,
+        help="Batch mode with a text file. File must contain full cn\
+            (one per line). EX: cn=some_user",
+    )
+    args = parser.parse_args()
+    usr = args.usr
+    file = args.batch
 
-cred()
+    cred()
 
-if file == "" and usr != "":
-    single(c, usr, disabled_ou, now, gcds)
-    c.unbind()
-    gcds.close()
-elif file != "" and usr == "":
-    batch(c, file, disabled_ou, now, gcds)
-    c.unbind()
-    gcds.close()
-else:
-    c.unbind()
-    gcds.close()
-    parser.print_help()
-    parser.exit(1)
+    if file == "" and usr != "":
+        single(c, usr, disabled_ou, now, gcds)
+        c.unbind()
+        gcds.close()
+    elif file != "" and usr == "":
+        batch(c, file, disabled_ou, now, gcds)
+        c.unbind()
+        gcds.close()
+    else:
+        c.unbind()
+        gcds.close()
+        parser.print_help()
+        parser.exit(1)
+
+
+if __name__ == "__main__":
+    main()
