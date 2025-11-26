@@ -1,6 +1,5 @@
 # Scripts
 
-[![Build Status](https://travis-ci.com/strohmy86/Scripts.svg?branch=master)](https://travis-ci.com/strohmy86/Scripts)
 
 Simple scripts to make my job easier.
 
