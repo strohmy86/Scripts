@@ -1,4 +1,5 @@
 #!/bin/env python3
+'''Script to reset student passwords to their default value'''
 
 # MIT License
 
@@ -26,10 +27,11 @@
 import argparse
 import time
 
-from ldap3 import ALL, MODIFY_REPLACE, Connection, Server, Tls
+from ldap3 import ALL, Connection, Server, Tls
 
 
 class Color:
+    '''colors'''
     PURPLE = "\033[95m"
     CYAN = "\033[96m"
     DARKCYAN = "\033[36m"
@@ -43,6 +45,7 @@ class Color:
 
 
 def cred():
+    '''Credentials'''
     print(Color.DARKCYAN + "\n")
     print("*********************************")
     print("*      Python 3 Script For      *")
@@ -59,21 +62,21 @@ def cred():
 
 
 # Global Variables
-f = open("/home/lstrohm/Scripts/ADcreds.txt", "r")
-lines = f.readlines()
-username = lines[0]
-password = lines[1]
-f.close()
+with open("/home/lstrohm/Scripts/ADcreds.txt", mode="r", encoding="utf-8") as f:
+    lines = f.readlines()
+    user = lines[0]
+    password = lines[1]
 tls = Tls(
         local_private_key_file=None,
         local_certificate_file=None,
     )
-s = Server("madhs01dc3.mlsd.local", use_ssl=True, get_info=ALL, tls=tls)
-c = Connection(s, user=username.strip(),
+server = Server("madhs01dc3.mlsd.local", use_ssl=True, get_info=ALL, tls=tls)
+conn = Connection(server, user=user.strip(),
                password=password.strip())
 
 
-def all(s, c):
+def reset_all(c):
+    '''Resets all student passwords'''
     c.bind()
     c.search(
         "ou=Madison,dc=mlsd,dc=local",
@@ -135,7 +138,8 @@ def all(s, c):
         exit()
 
 
-def single(s, c, username):
+def reset_single(c, username):
+    '''Resets single student's password'''
     c.bind()
     try:
         c.search(
@@ -156,7 +160,7 @@ def single(s, c, username):
                 + Color.GREEN
                 + str(users[ent].displayName.value)
                 + Color.END
-                + ", eDir Location: "
+                + ", AD Location: "
                 + Color.GREEN
                 + str(users[ent].entry_dn)
                 + Color.END
@@ -174,10 +178,10 @@ def single(s, c, username):
                 + Color.END
             )
         )
-        user = c.entries[usn]
-        name = str(user.displayName.value)
-        dn = str(user.entry_dn)
-        pw = str(user.employeeID)
+        student_user = c.entries[usn]
+        name = str(student_user.displayName.value)
+        dn = str(student_user.entry_dn)
+        pw = str(student_user.employeeID)
         while len(pw) < 8:
             pw = "0" + pw
         print(
@@ -250,39 +254,41 @@ def single(s, c, username):
         )
 
 
-# Sets up parser and adds arguement
-parser = argparse.ArgumentParser(
-    description="Script to reset a student\
-                                 password to its default value"
-)
-parser.add_argument(
-    "username",
-    metavar="Username",
-    default="",
-    type=str,
-    help="Username or last name of student",
-    nargs="?",
-)
-parser.add_argument(
-    "-a",
-    "--all",
-    metavar="All",
-    default=False,
-    action="store_const",
-    const=True,
-    help="Reset all \
-                    students' passwords",
-)
-args = parser.parse_args()
-username = args.username
-all_stu = args.all
 
-cred()
+if __name__ == "__main__":
+    # Sets up parser and adds arguement
+    parser = argparse.ArgumentParser(
+        description="Script to reset a student\
+                                    password to its default value"
+    )
+    parser.add_argument(
+        "user_name",
+        metavar="Username",
+        default="",
+        type=str,
+        help="Username or last name of student",
+        nargs="?",
+    )
+    parser.add_argument(
+        "-a",
+        "--all",
+        metavar="All",
+        default=False,
+        action="store_const",
+        const=True,
+        help="Reset all \
+                        students' passwords",
+    )
+    args = parser.parse_args()
+    user_name = args.user_name
+    all_stu = args.all
 
-if all_stu is True and username == "":
-    all(s, c)
-elif all_stu is False and len(username) > 0:
-    single(s, c, username)
-elif username == "" and all_stu is False:
-    parser.print_help()
-    parser.exit(1)
+    cred()
+
+    if all_stu is True and user_name == "":
+        reset_all(conn)
+    elif all_stu is False and len(user_name) > 0:
+        reset_single(conn, user_name)
+    elif user_name == "" and all_stu is False:
+        parser.print_help()
+        parser.exit(1)

@@ -61,12 +61,12 @@ def cred():
 
 
 def main():
+    '''Main Function'''
     disabled_ou = "ou=Disabled,ou=Student,ou=Madison,dc=mlsd,dc=local"
-    f = open("/home/lstrohm/Scripts/ADcreds.txt", "r")
-    lines = f.readlines()
-    username = lines[0]
-    password = lines[1]
-    f.close()
+    with open("/home/lstrohm/Scripts/ADcreds.txt", mode="r", encoding="utf-8") as f:
+        lines = f.readlines()
+        username = lines[0]
+        password = lines[1]
     tls = Tls(
             local_private_key_file=None,
             local_certificate_file=None,
@@ -77,7 +77,7 @@ def main():
     c.search(
         disabled_ou,
         "(&(objectclass=person)(memberOf=*))",
-        attributes=["cn", "memberOf", "title", "physicalDeliveryOfficeName", "department"],
+        attributes=["cn", "memberOf", "physicalDeliveryOfficeName", "l", "description"],
     )
     disabled = c.entries
     for i in disabled:
@@ -91,7 +91,8 @@ def main():
         if isinstance(i.memberOf.value, list) is True:
             for g in i.memberOf.value:
                 c.modify(
-                    str(g), {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]}
+                    str(g),
+                    {"member": [(MODIFY_DELETE, [str(i.entry_dn)])]}
                 )
                 time.sleep(0.5)
         elif isinstance(i.memberOf.value, str) is True:
@@ -103,34 +104,16 @@ def main():
         c.modify(
             str(i.entry_dn),
             {
-                "title": [(MODIFY_DELETE, [])],
-            },
-        )
-        time.sleep(0.5)
-        c.modify(
-            str(i.entry_dn),
-            {
                 "physicalDeliveryOfficeName": [(MODIFY_DELETE, [])],
-            },
-        )
-        time.sleep(0.5)
-        c.modify(
-            str(i.entry_dn),
-            {
-                "department": [(MODIFY_DELETE, [])],
-            },
-        )
-        time.sleep(0.5)
-        c.modify(
-            str(i.entry_dn),
-            {
+                "l": [(MODIFY_DELETE, [])],
                 "memberOf": [(MODIFY_DELETE, [])],
+                "description": [(MODIFY_DELETE, [])],
             },
         )
         time.sleep(0.5)
     time.sleep(1)
     c.unbind()
 
-
-cred()
-main()
+if __name__ == "__main__":
+    cred()
+    main()

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+'''Scripts to disable a user's account in AD'''
 
 # MIT License
 
@@ -34,7 +35,6 @@ from ldap3 import ALL, MODIFY_DELETE, MODIFY_REPLACE, Connection, Server, Tls
 
 class Color:
     """Class for text colors"""
-
     PURPLE = "\033[95m"
     CYAN = "\033[96m"
     DARKCYAN = "\033[36m"
@@ -77,22 +77,22 @@ tls = Tls(
     local_certificate_file=None,
 )
 s = Server("madhs01dc3.mlsd.local", use_ssl=True, get_info=ALL, tls=tls)
-c = Connection(s, user=username.strip(), password=password.strip())
-c.bind()
+con = Connection(s, user=username.strip(), password=password.strip())
+con.bind()
 # Global Variables
-disabled_ou = ",ou=Disabled,ou=Madison,dc=mlsd,dc=local"
+dis_ou = ",ou=Disabled,ou=Madison,dc=mlsd,dc=local"
 today = str(datetime.datetime.now())
 today2 = datetime.datetime.strptime(today, "%Y-%m-%d %H:%M:%S.%f")
-now = today2.strftime("%m-%d-%Y at %H:%M")
+right_now = today2.strftime("%m-%d-%Y at %H:%M")
 # Specify private key file
 k = paramiko.RSAKey.from_private_key_file("/home/lstrohm/.ssh/id_rsa")
 # Connects to gcds server via SSH
-gcds = paramiko.SSHClient()
-gcds.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-gcds.connect("madhs01gcds.mlsd.local", username="mlsd\\administrator", pkey=k)
+gcds_server = paramiko.SSHClient()
+gcds_server.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+gcds_server.connect("madhs01gcds.mlsd.local", username="mlsd\\administrator", pkey=k)
 
 
-def single(c, usr, disabled_ou, now, gcds):
+def single(c, usr, disabled_ou, now):
     """Searches AD and return results to choose for account disable."""
     try:
         c.search(
@@ -139,7 +139,7 @@ def single(c, usr, disabled_ou, now, gcds):
                 + Color.END
                 + ", Title: "
                 + Color.GREEN
-                + str(users[ent].title)
+                + str(users[ent].title.value)
                 + Color.END
                 + ", Status: "
                 + Color.GREEN
@@ -241,13 +241,6 @@ def single(c, usr, disabled_ou, now, gcds):
         cmd2 = "/home/lstrohm/bin/gamadv-xtd3/gam create transfer "\
             + str(user.cn.value) + " drive vault"
         os.system(cmd2)
-        print(Color.CYAN + Color.BOLD + "Running GCDS. Please wait....." + Color.END)
-        # Connects to madhs01gcds server via SSH and runs a Google Sync
-        stdin, stdout, stderr = gcds.exec_command("C:\\Tools\\gcds.cmd")
-        for line in stdout:
-            print(Color.YELLOW + line.strip("\n") + Color.END)
-
-        print(Color.GREEN + "\nDone!\n" + Color.END)
 
     except IndexError:  # Error received if empty search result
         print(Color.RED + "No username found! Try again.\n" + Color.END)
@@ -256,16 +249,16 @@ def single(c, usr, disabled_ou, now, gcds):
         exit()
 
 
-def batch(c, file, disabled_ou, now, gcds):
+def batch(c, file, disabled_ou, now):
     """Runs script in batch mode using a file with CNs"""
     try:
-        with open(file, "r", encoding="utf-8") as f:
+        with open(file, mode="r", encoding="utf-8") as f:
             for i in f:
-                i = str(i)[0:-1]
+                i = str(i).strip()
                 # i = i[2:-2]
                 c.search(
                     "ou=Madison,dc=mlsd,dc=local",
-                    "(" + i + ")",
+                    "(CN=" + i + ")",
                     attributes=[
                         "mail",
                         "title",
@@ -383,14 +376,7 @@ def batch(c, file, disabled_ou, now, gcds):
                     + " drive vault"
                 )
                 os.system(cmd2)
-        print(Color.CYAN + Color.BOLD + "Running GCDS. Please wait....." + Color.END)
-        # Connects to madhs01gcds server via SSH and runs a Google Sync
-        stdin, stdout, stderr = gcds.exec_command("C:\\Tools\\gcds.cmd")
-        for line in stdout:
-            print(Color.YELLOW + line.strip("\n") + Color.END)
-
         f.close()
-        print(Color.GREEN + "\nDone!\n" + Color.END)
     except IndexError:  # Error received if empty search result
         print(
             Color.RED
@@ -399,6 +385,15 @@ def batch(c, file, disabled_ou, now, gcds):
             + Color.END
         )
 
+def run_gcds(gcds):
+    '''Runs gcds after account(s) is/are disabled'''
+    print(Color.CYAN + Color.BOLD + "Running GCDS. Please wait....." + Color.END)
+    # Connects to madhs01gcds server via SSH and runs a Google Sync
+    stdin, stdout, stderr = gcds.exec_command("C:\\Tools\\gcds.cmd")
+    for line in stdout:
+        print(Color.YELLOW + line.strip("\n") + Color.END)
+    print(Color.GREEN + "\nDone!\n" + Color.END)
+    gcds.close()
 
 # Sets up parser and adds arguements
 def main():
@@ -418,8 +413,7 @@ def main():
         metavar="Filename",
         default="",
         type=str,
-        help="Batch mode with a text file. File must contain full cn\
-            (one per line). EX: cn=some_user",
+        help="Batch mode with a text file (one username per line).",
     )
     args = parser.parse_args()
     usr = args.usr
@@ -428,18 +422,20 @@ def main():
     cred()
 
     if file == "" and usr != "":
-        single(c, usr, disabled_ou, now, gcds)
-        c.unbind()
-        gcds.close()
+        single(con, usr, dis_ou, right_now)
+        con.unbind()
+        run_gcds(gcds_server)
     elif file != "" and usr == "":
-        batch(c, file, disabled_ou, now, gcds)
-        c.unbind()
-        gcds.close()
+        batch(con, file, dis_ou, right_now)
+        con.unbind()
+        run_gcds(gcds_server)
     else:
-        c.unbind()
-        gcds.close()
+        con.unbind()
+        gcds_server.close()
         parser.print_help()
         parser.exit(1)
+
+    
 
 
 if __name__ == "__main__":

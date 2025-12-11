@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+'''Script to see when a user last changed their AD password'''
 
 # MIT License
 
@@ -25,12 +26,12 @@
 
 import argparse
 import datetime
-import time
 
 from ldap3 import ALL, Connection, Server, Tls
 
 
 class Color:
+    '''Colors'''
     PURPLE = "\033[95m"
     CYAN = "\033[96m"
     DARKCYAN = "\033[36m"
@@ -44,6 +45,7 @@ class Color:
 
 
 def cred():
+    '''Credentials'''
     print(
         Color.DARKCYAN
         + "\n"
@@ -52,8 +54,8 @@ def cred():
         + "*    A Password Was Changed     *\n"
         + "*                               *\n"
         + "*  Written and maintained by:   *\n"
-        + "*        Luke Strohm            *\n"
-        + "*    strohm.luke@gmail.com      *\n"
+        + "*         Luke Strohm           *\n"
+        + "*     strohm.luke@gmail.com     *\n"
         + "*  https://github.com/strohmy86 *\n"
         + "*********************************\n"
         + "\n"
@@ -62,26 +64,24 @@ def cred():
 
 
 def main(username):
-    today = str(datetime.datetime.today())[:-16]
-    today2 = datetime.datetime.strptime(today, "%Y-%m-%d")
+    '''Main function'''
     # Connect and bind to LDAP server
-    f = open("/home/lstrohm/Scripts/ADcreds.txt", "r")
-    lines = f.readlines()
-    usern = lines[0]
-    password = lines[1]
-    f.close()
+    with open("/home/lstrohm/Scripts/ADcreds.txt", mode="r", encoding="utf-8") as f:
+        lines = f.readlines()
+        usern = lines[0].strip()
+        password = lines[1].strip()
     tls = Tls(
             local_private_key_file=None,
             local_certificate_file=None,
         )
     s = Server("madhs01dc3.mlsd.local", use_ssl=True, get_info=ALL, tls=tls)
-    c = Connection(s, user=usern.strip(), password=password.strip())
+    c = Connection(s, user=usern, password=password)
     c.bind()
     # Search for user. Lists all usernames matching string provided.
     try:
         c.search(
             "ou=Madison,dc=mlsd,dc=local",
-            "(&(objectclass=person)" + "(cn=*" + username + "*))",
+            f"(&(objectclass=person)(|(cn=*{username}*)(displayName=*{username}*)))",
             attributes=[
                 "title",
                 "displayName",
@@ -116,62 +116,38 @@ def main(username):
         name = str(user.displayName.value)
         setstr = str(user.pwdLastSet.value)[:-22]
         setdate = datetime.datetime.strptime(setstr, "%Y-%m-%d")
-        expDate = setdate + datetime.timedelta(days=90)  # Checks PW expiration
-        expStr = expDate.strftime("%m-%d-%Y")  # Pretty date
-        setStr = setdate.strftime("%m-%d-%Y")  # Pretty date
-        if today2 > expDate:  # If PW is expired
-            print(
-                Color.RED
-                + name
-                + "'s password expired on "
-                + expStr
-                + "!"
-                + Color.END
-            )
-        else:  # PW not expired
-            print(
-                Color.GREEN
-                + name
-                + "'s"
-                + Color.END
-                + " password expires on "
-                + Color.CYAN
-                + expStr
-                + Color.END
-            )
-            print(
-                Color.GREEN
-                + name
-                + Color.END
-                + " changed their password on "
-                + Color.YELLOW
-                + setStr
-                + Color.END
-            )
-        time.sleep(1)
+        set_str = setdate.strftime("%m-%d-%Y")  # Pretty date
+        print(
+            Color.GREEN
+            + name
+            + Color.END
+            + " changed their password on "
+            + Color.YELLOW
+            + set_str
+            + Color.END
+        )
         c.unbind()
     except IndexError:  # Error received if empty search result
         print(Color.RED + "No username found! Try again.\n" + Color.END)
     except KeyboardInterrupt:  # User exited script with CTRL + C
-        print(Color.CYAN + "\nExiting..." + Color.END)
+        print(Color.CYAN + "\nCtrl-C detected. Exiting..." + Color.END)
         exit()
 
 
-# Sets up parser and adds arguement
-parser = argparse.ArgumentParser(
-    description="Script to check the password\
-                                 expiration date for a user."
-)
-parser.add_argument(
-    "username",
-    metavar="Username",
-    default="",
-    type=str,
-    help="Username of user to check.",
-)
-args = parser.parse_args()
-username = args.username
+if __name__ == "__main__":
+    # Sets up parser and adds arguement
+    parser = argparse.ArgumentParser(
+        description="Script to check the password\
+                                    expiration date for a user."
+    )
+    parser.add_argument(
+        "user_name",
+        metavar="Username",
+        default="",
+        type=str,
+        help="Username of user to check.",
+    )
+    args = parser.parse_args()
 
-
-cred()
-main(username)
+    cred()
+    main(args.user_name)

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+'''Scripts to detect media files on student Google Drives 
+and offer the option to download for inspection'''
 
 # MIT License
 
@@ -23,7 +25,7 @@
 # SOFTWARE.
 
 
-import argparse
+from argparse import ArgumentParser
 import csv
 import datetime
 import os
@@ -32,6 +34,7 @@ import time
 
 
 class Color:
+    '''Colors'''
     PURPLE = "\033[95m"
     CYAN = "\033[96m"
     DARKCYAN = "\033[36m"
@@ -45,6 +48,7 @@ class Color:
 
 
 def cred():
+    '''Credentials'''
     print(
         Color.DARKCYAN
         + "\n"
@@ -65,15 +69,16 @@ def cred():
 
 
 def download(building, all_stu):
+    '''Function to download student files'''
     if all_stu is True:
         building = "AllStudents"
     basedir = "/data/Audit-Files/"
     file = "/home/lstrohm/" + building + "-Filelist.csv"
-    with open(file[:-4] + "-Modded.csv", mode="w", newline="") as fa:
+    with open(file[:-4] + "-Modded.csv", mode="w", newline="", encoding="utf-8") as fa:
         writer = csv.writer(fa)
         headers = ["email", "id", "folder"]
         writer.writerow(headers)
-        fs = open(file, mode="r")
+        fs = open(file, mode="r", encoding="utf-8")
         reader = csv.reader(fs)
         next(reader)  # Skip header row
         total = 0
@@ -93,7 +98,7 @@ def download(building, all_stu):
             if all_stu is True:
                 basedir = "/data/Audit-Files/"
                 cmd2 = (
-                    "/home/lstrohm/bin/gamadv-xtd3/gam user "
+                    "/home/lstrohm/bin/gam7/gam user "
                     + email
                     + " print fields orgunitpath | grep 'Student' | "
                     + "cut -d '/' -f3"
@@ -110,7 +115,7 @@ def download(building, all_stu):
         fs.close()
     fa.close()
     cmd = (
-        "/home/lstrohm/bin/gamadv-xtd3/gam config num_threads = 5 csv "
+        "/home/lstrohm/bin/gam7/gam config num_threads = 5 csv "
         + "/home/lstrohm/"
         + building
         + "-Filelist-Modded.csv gam user ~email "
@@ -150,7 +155,8 @@ def download(building, all_stu):
         sys.exit(1)
 
 
-def makeCsv(building, all_stu):
+def make_csv(building, all_stu):
+    '''Function to create csv of students with specific filetypes in their Drive'''
     now = time.localtime()
     # Get the last day of last month by taking the first day of this month
     # and subtracting 1 day.
@@ -180,7 +186,7 @@ def makeCsv(building, all_stu):
     query1 = query.replace("*", r"'")
     if all_stu is True:
         cmd = (
-            "/home/lstrohm/bin/gamadv-xtd3/gam redirect csv /home/"
+            "/home/lstrohm/bin/gam7/gam redirect csv /home/"
             + "lstrohm/AllStudents-Filelist.csv multiprocess ou_and_children "
             + '"/Student/" print filelist '
             + query1
@@ -190,7 +196,7 @@ def makeCsv(building, all_stu):
         building = "AllStudents"
     else:
         cmd = (
-            "/home/lstrohm/bin/gamadv-xtd3/gam redirect csv /home/"
+            "/home/lstrohm/bin/gam7/gam redirect csv /home/"
             + "lstrohm/"
             + building
             + '-Filelist.csv multiprocess ou "/Student/'
@@ -205,33 +211,31 @@ def makeCsv(building, all_stu):
     print(Color.YELLOW + "\nFile saved as " + file + "\n" + Color.END)
 
 
-parser = argparse.ArgumentParser(
-    description="Script to search for and\
-                                 download suspicious files on student\
-                                 Google Drives"
-)
-parser.add_argument(
-    "bldg",
-    metavar="Building",
-    default="",
-    type=str,
-    help="2 digit building code",
-    nargs="?",
-)
-parser.add_argument(
-    "-a",
-    "--all",
-    metavar="All",
-    default=False,
-    action="store_const",
-    const=True,
-    help="All Students",
-)
-args = parser.parse_args()
-building = args.bldg.upper()
-all_stu = args.all
+if __name__ == "__main__":
+    parser = ArgumentParser(
+        description="Script to search for and download suspicious \
+            files on student Google Drives"
+    )
+    parser.add_argument(
+        "bldg",
+        metavar="Building",
+        default="",
+        type=str,
+        help="2 digit building code",
+        nargs="?",
+    )
+    parser.add_argument(
+        "-a",
+        "--all",
+        metavar="All",
+        default=False,
+        action="store_const",
+        const=True,
+        help="All Students",
+    )
+    args = parser.parse_args()
 
 
-cred()
-makeCsv(building, all_stu)
-download(building, all_stu)
+    cred()
+    make_csv(args.bldg.upper(), args.all)
+    download(args.bldg.upper(), args.all)

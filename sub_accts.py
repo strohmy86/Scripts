@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+'''Script to send email to all admin assistants 
+to notify them of the temporary sub account password for the week'''
 
 # MIT License
 
@@ -28,11 +30,10 @@ import smtplib
 from datetime import datetime
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-
-from ldap3 import ALL, MODIFY_REPLACE, Connection, Server, Tls
-
+from ldap3 import ALL, Connection, Server, Tls
 
 class Color:
+    '''Colors'''
     PURPLE = "\033[95m"
     CYAN = "\033[96m"
     DARKCYAN = "\033[36m"
@@ -46,6 +47,7 @@ class Color:
 
 
 def cred():
+    '''Credentials'''
     print(Color.DARKCYAN + "\n")
     print("*********************************")
     print("* Python 3 Script For Changing  *")
@@ -62,6 +64,7 @@ def cred():
 
 
 def main():
+    '''Main function'''
     d = datetime.now().strftime("%m/%d/%y")
     # String of useable characters for the random password
     sx = "abcdefghjkmnopqrstuvwxyz123456789ABCDEFGHJKLMNPQRSTUVWXYZ!@#"
@@ -71,11 +74,10 @@ def main():
     pw = "".join(random.sample(sx, passlen))
 
     # LDAP Section, change to suit your environment
-    f = open("/home/lstrohm/Scripts/ADcreds.txt", "r")
-    lines = f.readlines()
-    username = lines[0]
-    password = lines[1]
-    f.close()
+    with open("/home/lstrohm/Scripts/ADcreds.txt", mode="r", encoding="utf-8") as f:
+        lines = f.readlines()
+        username = lines[0]
+        password = lines[1]
     tls = Tls(
             local_private_key_file=None,
             local_certificate_file=None,
@@ -92,7 +94,8 @@ def main():
     )
     # Stores query results to a variable.
     subs = c.entries
-    # Iterates through the results and changes the account password to the random password generated earlier.
+    # Iterates through the results and changes the account
+    # password to the random password generated earlier.
     for i in subs:
         c.extend.microsoft.modify_password(i.entry_dn, pw)
         # print(c.result)
@@ -100,15 +103,15 @@ def main():
 
     # Email Section
 
-    frAddr = "noreply@madisonrams.net"
+    fr_addr = "noreply@madisonrams.net"
     server = smtplib.SMTP(host="relay.mlsd.net", port=25)
     # email = ['lstrohm@mlsd.net',
     #'sbarr@mlsd.net',
     #'mad-mail-secretary@madisonrams.net',
     #'mad-mail-prin@madisonrams.net']
-    email = ["lstrohm@mlsd.net"]
+    email = ["lstrohm@madisonrams.net"]
     msg = MIMEMultipart("alternative")
-    msg["From"] = frAddr
+    msg["From"] = fr_addr
     msg["Subject"] = "Substitute Account Password"
     msg["To"] = ", ".join(email)
     # msg['To'] = email
@@ -145,7 +148,7 @@ The Madison Technology Office"""
     msg.attach(part2)
     message = msg.as_string()
     server.sendmail(
-        frAddr,
+        fr_addr,
         email,
         message.format(pw=pw, d=d),
     )

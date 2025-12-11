@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+'''script to detect text in images'''
 
 # MIT License
 
@@ -23,11 +24,8 @@
 # SOFTWARE.
 
 
-try:
-    from PIL import Image
-except ImportError:
-    import Image
-import argparse
+from PIL import Image
+from argparse import ArgumentParser
 import csv
 import glob
 
@@ -35,6 +33,7 @@ import pytesseract
 
 
 class Color:
+    '''colors'''
     PURPLE = "\033[95m"
     CYAN = "\033[96m"
     DARKCYAN = "\033[36m"
@@ -48,6 +47,7 @@ class Color:
 
 
 def cred():
+    '''credentials'''
     print(
         "\n"
         + Color.DARKCYAN
@@ -67,7 +67,8 @@ def cred():
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Detect text in images.")
+    '''main function'''
+    parser = ArgumentParser(description="Detect text in images.")
     parser.add_argument(
         "-f",
         "--file",
@@ -103,7 +104,7 @@ def main():
         print(Color.CYAN + text + Color.END)
     elif args.batch is not False and args.file is False:
         print("Searching " + args.batch + " for picture files...")
-        with open(args.batch + "OCR-Text.csv", mode="w", newline="") as fa:
+        with open(args.batch + "OCR-Text.csv", mode="w", newline="", encoding="utf-8") as fa:
             writer = csv.writer(fa)
             headers = ["File Name", "Detected Text"]
             writer.writerow(headers)

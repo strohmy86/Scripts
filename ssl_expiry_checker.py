@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+'''Script to check for SSL certificate expiration'''
 
 import sys
 import multiprocessing
@@ -19,24 +20,31 @@ EXIT_ERROR = 2
 EXIT_NO_HOST_LIST = 9
 
 def make_host_port_pair(endpoint):
+    '''format host and port'''
     host, _, specified_port = endpoint.partition(':')
     port = int(specified_port or DEFAULT_HTTPS_PORT)
 
     return host, port
 
 def pluralise(singular, count):
-    return '{} {}{}'.format(count, singular, '' if count == 1 else 's')
+    '''Get argument count'''
+    return f'{count} {singular}{'' if count == 1 else 's'}'
 
 def get_certificate_expiry_date_time(context, host, port):
+    '''get cert expiration date and time'''
     with socket.create_connection((host, port), SOCKET_CONNECTION_TIMEOUT_SECONDS) as tcp_socket:
         with context.wrap_socket(tcp_socket, server_hostname=host) as ssl_socket:
             # certificate_info is a dict with lots of information about the certificate
             certificate_info = ssl_socket.getpeercert()
             exp_date_text = certificate_info['notAfter']
-            return datetime.datetime.fromtimestamp(ssl.cert_time_to_seconds(exp_date_text), datetime.timezone.utc)
+            return datetime.datetime.fromtimestamp(
+                ssl.cert_time_to_seconds(exp_date_text),
+                datetime.timezone.utc
+                )
 
 
 def format_time_remaining(time_remaining):
+    '''format remaining SSL time'''
     day_count = time_remaining.days
 
     if day_count >= WARN_IF_DAYS_LESS_THAN:
@@ -52,13 +60,14 @@ def format_time_remaining(time_remaining):
 
         minutes = int(seconds_unaccounted_for / seconds_per_minute)
 
-        return '{} {} {}'.format(
-            pluralise('day', day_count),
-            pluralise('hour', hours),
-            pluralise('min', minutes)
-        )
+        return f'\
+        {pluralise('day', day_count)} \
+        {pluralise('hour', hours)} \
+        {pluralise('min', minutes)}\
+        '
 
 def get_exit_code(err_count, min_days):
+    '''Gets exit code if there is an error'''
     code = EXIT_SUCCESS
 
     if err_count:
@@ -70,9 +79,11 @@ def get_exit_code(err_count, min_days):
     return code
 
 def format_host_port(host, port):
-    return host + ('' if port == DEFAULT_HTTPS_PORT else ':{}'.format(port))
+    '''self explanatory'''
+    return host + ('' if port == DEFAULT_HTTPS_PORT else f':{port}')
 
 def check_certificates(endpoints):
+    '''self explanatory'''
     context = ssl.create_default_context()
     host_port_pairs = [make_host_port_pair(endpoint) for endpoint in endpoints]
 
@@ -85,34 +96,38 @@ def check_certificates(endpoints):
         endpoint_count = len(endpoints)
         err_count = 0
         min_days = math.inf
-        max_host_port_len = max([len(format_host_port(host, port)) for host, port in host_port_pairs])
-        print('Checking {}...'.format(pluralise('endpoint', endpoint_count)))
+        max_host_port_len = max(
+                [
+                len(format_host_port(host, port)) for host, port in host_port_pairs
+                ]
+            )
+        print(f'Checking {pluralise('endpoint', endpoint_count)}...')
         for future in concurrent.futures.as_completed(futures):
             host, port = futures[future]
             try:
                 expiry_time = future.result()
             except Exception as ex:
                 err_count += 1
-                print('{} ERROR {}'.format(format_host_port(host, port).ljust(max_host_port_len), ex))
+                print(f'{format_host_port(host, port).ljust(max_host_port_len)} ERROR {ex}')
             else:
                 time_remaining = expiry_time - datetime.datetime.now(datetime.timezone.utc)
                 time_remaining_txt = format_time_remaining(time_remaining)
                 days_remaining = time_remaining.days
                 min_days = min(min_days, days_remaining)
 
-                print('{} {:<5} expires in {}'.format(
-                    format_host_port(host, port).ljust(max_host_port_len),
-                    'WARN' if days_remaining < WARN_IF_DAYS_LESS_THAN else 'OK',
-                    time_remaining_txt))
+                print(f'{format_host_port(host, port).ljust(max_host_port_len)}',
+                    f'{'WARN' if days_remaining < WARN_IF_DAYS_LESS_THAN else 'OK'}',
+                    f'  expires in {time_remaining_txt}'
+                    )
 
     exit_code = get_exit_code(err_count, min_days)
     sys.exit(exit_code)
 
 if __name__ == '__main__':
-    endpoints = sys.argv[1:]
+    servers = sys.argv[1:]
 
-    if len(endpoints):
-        check_certificates(endpoints)
+    if len(servers):
+        check_certificates(servers)
     else:
-        print('Usage: {} <list of endpoints>'.format(sys.argv[0]))
+        print(f'Usage: {sys.argv[0]} <list of endpoints>')
         sys.exit(EXIT_NO_HOST_LIST)

@@ -6,18 +6,22 @@ import subprocess
 
 
 def replace_chars(network_address):
+    '''Self Explanatory'''
     network_address = network_address.replace(".", "_")
     network_address = network_address.replace("/", "-")
     return network_address
 
 
 def ping_hosts_on_network(network_address):
+    '''Pings hosts'''
     network = ipaddress.ip_network(network_address)
     processes = {}
     for host in network.hosts():
         ip = str(host)
         processes[ip] = subprocess.Popen(
-            ["ping", "-n", "-c", "1", "-w", "2", ip], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+            ["ping", "-n", "-c", "1", "-w", "2", ip],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
         )
     active_ips = []
     while processes:
@@ -31,23 +35,26 @@ def ping_hosts_on_network(network_address):
 
 
 def write_to_file(file_path, active_ips):
-    with open(file_path, "w") as f:
+    '''Writes active hosts to file'''
+    with open(file_path, mode="w", encoding="utf-8") as f:
         for ip in active_ips:
             f.write(f"{ip}\n")
 
 
 def count_active_ips(file_path):
-    with open(file_path, "r") as f:
+    '''Counts active IP addresses'''
+    with open(file_path, mode="r", encoding="utf-8") as f:
         total = len(f.readlines())
-    with open(file_path, "a") as f:
+    with open(file_path, mode="a", encoding="utf-8") as f:
         f.write(f"Total Active Devices: {total}")
     return total
 
 
-def main(network_address, write_to_file):
+def main(network_address, to_file):
+    '''Main Function'''
     #network_address = replace_chars(network_address)
     active_ips = ping_hosts_on_network(network_address)
-    if write_to_file:
+    if to_file:
         file_path = f"/home/lstrohm/ActiveIps-{network_address}.txt"
         write_to_file(file_path, active_ips)
         total = count_active_ips(file_path)
@@ -58,7 +65,20 @@ def main(network_address, write_to_file):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Script ping sweep a subnet")
-    parser.add_argument("-f", "--file", default=False, action="store_const", const=True, help="Write results to a text file.")
-    parser.add_argument("network_address", metavar="Network Subnet", default="", type=str, help="network address in CIDR format (ex.192.168.1.0/24)")
+    parser.add_argument(
+        "-f",
+        "--file",
+        default=False,
+        action="store_const",
+        const=True,
+        help="Write results to a text file.")
+
+    parser.add_argument(
+        "network_address",
+        metavar="Network Subnet",
+        default="",
+        type=str,
+        help="network address in CIDR format (ex.192.168.1.0/24)")
+
     args = parser.parse_args()
     main(args.network_address, args.file)

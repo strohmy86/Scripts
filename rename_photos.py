@@ -27,6 +27,7 @@ from ldap3 import ALL, Connection, Server, Tls
 
 
 class Color:
+    '''Colors'''
     PURPLE = "\033[95m"
     CYAN = "\033[96m"
     DARKCYAN = "\033[36m"
@@ -40,6 +41,7 @@ class Color:
 
 
 def cred():
+    '''Credentials'''
     print(
         Color.DARKCYAN
         + "\n"
@@ -60,11 +62,10 @@ def cred():
 def main(source):
     '''Main Function'''
     # Connect and bind to LDAP server.
-    f = open("/home/lstrohm/Scripts/ADcreds.txt", mode="r", encoding="UTF-8")
-    lines = f.readlines()
-    username = lines[0]
-    password = lines[1]
-    f.close()
+    with open("/home/lstrohm/Scripts/ADcreds.txt", mode="r", encoding="UTF-8") as f:
+        lines = f.readlines()
+        username = lines[0]
+        password = lines[1]
     tls = Tls(
         local_private_key_file=None,
         local_certificate_file=None,
@@ -93,19 +94,20 @@ def main(source):
     c.unbind()
 
 
-# Creates parser and adds arguements
-parser = argparse.ArgumentParser(
-    description="Script to rename student school photos"
-)
-parser.add_argument(
-    "source",
-    metavar="Source",
-    default="",
-    type=str,
-    help="Source image directory.",
-)
-args = parser.parse_args()
-source = args.source
+if __name__ == "__main__":
+    # Creates parser and adds arguements
+    parser = argparse.ArgumentParser(
+        description="Script to rename student school photos"
+    )
+    parser.add_argument(
+        "source_dir",
+        metavar="Source",
+        default="",
+        type=str,
+        help="Source image directory.",
+    )
+    args = parser.parse_args()
+    source_dir = args.source_dir
 
-cred()
-main(source)
+    cred()
+    main(source_dir)

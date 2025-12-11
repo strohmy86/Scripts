@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+'''Scripts to update a user's phone number in AD'''
 
 import csv
 from ldap3 import ALL, MODIFY_REPLACE, Connection, Server, Tls

@@ -83,11 +83,11 @@ def main(net_addr, file):
             if proc.poll() is not None:  # ping finished
                 del p[ip]  # remove from the process list
                 if proc.returncode == 0 and file is False:
-                    print("%s active" % ip)
+                    print(f"{ip} active")
                     t.append(ip)
                 elif proc.returncode == 0 and file is True:
                     f = open("/home/lstrohm/ActiveIps-" + net + ".txt", "a")
-                    f.write("%s\n" % ip)
+                    f.write(f"{ip}\n")
                 # else:
                 #    print('%s error' % ip)
                 break
@@ -97,7 +97,7 @@ def main(net_addr, file):
         total = len(fr.readlines())
         fr.close()
         fw = open("/home/lstrohm/ActiveIps-" + net + ".txt", "a")
-        fw.write("Total Active Devices: %s" % total)
+        fw.write(f"Total Active Devices: {total}")
         fw.close()
         print(
             Color.CYAN
@@ -107,7 +107,7 @@ def main(net_addr, file):
             + Color.END
         )
     elif file is False:
-        print(Color.YELLOW + "Total Active Devices: %s" % len(t) + Color.END)
+        print(Color.YELLOW + f"Total Active Devices: {len(t)}" + Color.END)
 
 
 # Starts the script.

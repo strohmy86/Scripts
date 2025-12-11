@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+'''Script to email users who have insecurely shared files on their Google Drive'''
 
 # MIT License
 
@@ -23,7 +24,7 @@
 # SOFTWARE.
 
 
-import argparse
+from argparse import ArgumentParser
 import csv
 import datetime
 import smtplib
@@ -32,6 +33,7 @@ from email.mime.text import MIMEText
 
 
 class Color:
+    '''Colors'''
     PURPLE = "\033[95m"
     CYAN = "\033[96m"
     DARKCYAN = "\033[36m"
@@ -45,6 +47,7 @@ class Color:
 
 
 def cred():
+    '''Credentials'''
     print(
         Color.DARKCYAN
         + "\n"
@@ -64,26 +67,13 @@ def cred():
     )
 
 
-def main():
-    parser = argparse.ArgumentParser(
-        description="This is a python script to\
-                     send emails to users that have a file\
-                     shared with anyone."
-    )
-    parser.add_argument(
-        "file",
-        metavar="File",
-        default="",
-        type=str,
-        help="CSV file containing Drive file info.",
-    )
-    args = parser.parse_args()
+def main(file):
+    '''Main function'''
     now = datetime.datetime.now()
     date = now.strftime("%Y-%m-%d")
-    frAddr = "noreply@madisonrams.net"
+    fr_addr = "noreply@madisonrams.net"
     server = smtplib.SMTP(host="relay.mlsd.net", port=25)
-    file = args.file
-    with open(file, mode="r") as fh:
+    with open(file, mode="r", encoding="utf-8") as fh:
         reader = csv.reader(fh)
         next(reader)  # Skip header row
         for email, ids, title, permissionid, role, discoverable in reader:
@@ -104,10 +94,8 @@ def main():
                 edit = ""
             print("Sending email to " + Color.GREEN + f"{email}" + Color.END)
             msg = MIMEMultipart("alternative")
-            msg["From"] = frAddr
-            msg[
-                "Subject"
-            ] = "Risky Sharing Settings Found on your Google Drive"
+            msg["From"] = fr_addr
+            msg["Subject"] = "Risky Sharing Settings Found on your Google Drive"
             msg["To"] = email
             text = """Hello,
 
@@ -130,7 +118,7 @@ Thank you for your cooperation,
 
 
 The Madison Technology Office"""
-            html = """\
+            html = """
 <html>
     <body>
         <p>Hello,</p>
@@ -164,7 +152,7 @@ The Madison Technology Office"""
             msg.attach(part2)
             message = msg.as_string()
             server.sendmail(
-                frAddr,
+                fr_addr,
                 email,
                 message.format(
                     title=title,
@@ -174,7 +162,6 @@ The Madison Technology Office"""
                     edit=edit,
                 ),
             )
-    fh.close()
     with open(
         "/home/lstrohm/DriveSharingAudit-" + date + ".csv",
         mode="w",
@@ -184,21 +171,32 @@ The Madison Technology Office"""
         writer = csv.writer(fa)
         headers = ["Email", "File", "Permission", "Role", "Discoverable"]
         writer.writerow(headers)
-        fs = open(file, mode="r", encoding="utf-8")
-        reader2 = csv.reader(fs)
-        next(reader2)  # Skip header row
-        for email, ids, title, permissionid, role, discoverable in reader2:
-            if permissionid == "id:anyone":
-                permission = "Anyone"
-            elif permissionid == "id:anyoneWithLink":
-                permission = "Anyone with the link"
-            else:
-                permission = None
-            data = [email, title, permission, role, discoverable]
-            writer.writerow(data)
-        fs.close()
-    fa.close()
+        with open(file, mode="r", encoding="utf-8") as fs:
+            reader2 = csv.reader(fs)
+            next(reader2)  # Skip header row
+            for email, ids, title, permissionid, role, discoverable in reader2:
+                if permissionid == "id:anyone":
+                    permission = "Anyone"
+                elif permissionid == "id:anyoneWithLink":
+                    permission = "Anyone with the link"
+                else:
+                    permission = None
+                data = [email, title, permission, role, discoverable]
+                writer.writerow(data)
 
+if __name__ == "__main__":
+    parser = ArgumentParser(
+    description="This is a python script to send emails to \
+        users that have a file shared with anyone."
+    )
+    parser.add_argument(
+        "file",
+        metavar="File",
+        default="",
+        type=str,
+        help="CSV file containing Drive file info.",
+    )
+    args = parser.parse_args()
 
-cred()
-main()
+    cred()
+    main(args.file)

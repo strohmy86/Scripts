@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+'''Tool to hash stuff'''
 
 # MIT License
 
