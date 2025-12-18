@@ -29,7 +29,7 @@ import datetime
 import hashlib
 
 import xlsxwriter
-from ldap3 import ALL, Connection, Server, Tls
+from ldap3 import ALL, Connection, Server, Tls, SUBTREE
 from tzlocal import get_localzone
 
 # Global variables. Change these to suit your environment
@@ -143,9 +143,24 @@ def cred():
 
 def extract_stu():
     '''Search for all active student accounts in AD'''
-    CON.search(
-        BASE_DN,
-        STU_SEARCH,
+    # CON.search(
+    #     BASE_DN,
+    #     STU_SEARCH,
+    #     attributes=[
+    #         "displayName",
+    #         "employeeID",
+    #         "mail",
+    #         "cn",
+    #         "l",
+    #         "description",
+    #         "memberOf",
+    #     ],
+    # )
+    # users = CON.entries  # Store search results to list
+    users = CON.extend.standard.paged_search(
+        search_base=str("OU=Student," + BASE_DN),
+        search_filter=STU_SEARCH,
+        search_scope=SUBTREE,
         attributes=[
             "displayName",
             "employeeID",
@@ -155,8 +170,9 @@ def extract_stu():
             "description",
             "memberOf",
         ],
+        paged_size=5,
+        generator=False,
     )
-    users = CON.entries  # Store search results to list
     # Create Students worksheet
     ws_stu = WB.add_worksheet("Students")
     # Open the Data worksheet for writing
@@ -180,17 +196,17 @@ def extract_stu():
     bldgr = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
     # Iterates through search results, and writes data to sheet
     for x in users:
-        loc = str(x.l.value).strip()
-        grade = str(x.description.value).strip()
-        name = str(x.displayName.value).strip()
-        cn = str(x.cn.value)
-        mail = str(x.mail.value).strip()
-        ids = str(x.employeeID.value).strip()
-        pw = str(x.employeeID.value).strip()
+        loc = str(x["attributes"]["l"]).strip()
+        grade = str(x["attributes"]["description"]).strip()
+        name = str(x["attributes"]["displayName"]).strip()
+        cn = str(x["attributes"]["cn"])
+        mail = str(x["attributes"]["mail"]).strip()
+        ids = str(x["attributes"]["employeeID"]).strip()
+        pw = str(x["attributes"]["employeeID"]).strip()
         while len(pw) < 8:  # Ensures all students' pw is min 8 characters
             pw = "0" + pw
         hashed = hashlib.sha1(str(pw).encode("utf-8")).hexdigest()
-        groups = str(x.memberOf.value)
+        groups = str(x["attributes"]["memberOf"])
         # Adds student count to list based on current grade
         if "5" in grade:
             grd[0] += 1
@@ -349,21 +365,38 @@ def extract_staff():
     today = str(datetime.datetime.today())[:-16]
     today2 = datetime.datetime.strptime(today, "%Y-%m-%d")
     # Searches for active staff accounts in LDAP
-    CON.search(
-        BASE_DN,
-        STA_SEARCH,
+    # CON.search(
+    #     BASE_DN,
+    #     STA_SEARCH,
+    #     attributes=[
+    #         "displayName",
+    #         "title",
+    #         "mail",
+    #         "cn",
+    #         "physicalDeliveryOfficeName",
+    #         "department",
+    #         "lastLogon",
+    #         "memberOf",
+    #     ],
+    # )
+    # users = CON.entries  # Stores search results in a list
+    users = CON.extend.standard.paged_search(
+        search_base=BASE_DN,
+        search_filter=STA_SEARCH,
+        search_scope=SUBTREE,
         attributes=[
             "displayName",
             "title",
             "mail",
             "cn",
             "physicalDeliveryOfficeName",
-            "department",
             "lastLogon",
+            "department",
             "memberOf",
         ],
+        paged_size=5,
+        generator=False,
     )
-    users = CON.entries  # Stores search results in a list
     # Adds the Staff worksheet for writing
     ws_sta = WB.add_worksheet("Staff")
     # Opens the Data sheet for writing
@@ -385,7 +418,7 @@ def extract_staff():
     loca = [0, 0, 0, 0, 0, 0, 0, 0]  # EA, MI, SO, MS, HS, BO, BG, JB
     # Iterates through search results and writes data to sheet
     for x in users:
-        logstr = str(x.lastLogon.value)
+        logstr = str(x["attributes"]["lastLogon"])
         # Checks for last login date and time
         if len(logstr) == 0:
             last_logon = "Never"
@@ -399,13 +432,13 @@ def extract_staff():
         else:
             last_logon = "Never"
             logdate2 = last_logon
-        title = str(x.title.value)
-        loc = str(x.physicalDeliveryOfficeName.value)
-        dept = str(x.department.value)
-        name = str(x.displayName.value)
-        cn = str(x.cn.value)
-        mail = str(x.mail.value)
-        groups = str(x.memberOf.value)
+        title = str(x["attributes"]["title"])
+        loc = str(x["attributes"]["physicalDeliveryOfficeName"])
+        dept = str(x["attributes"]["department"])
+        name = str(x["attributes"]["displayName"])
+        cn = str(x["attributes"]["cn"])
+        mail = str(x["attributes"]["mail"])
+        groups = str(x["attributes"]["memberOf"])
         # Checks employee classification (Classified or Certified)
         if "CLSFD" in dept:
             clfcn[0] += 1
@@ -518,13 +551,8 @@ if __name__ == "__main__":
     staff = args.staff
     stu = args.student
 
-
     cred()  # Shows credits
-
     
-
-
-
     # Logic to determine which functions to execute
     if staff and stu:
         extract_staff()
